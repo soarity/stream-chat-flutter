@@ -9,12 +9,19 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.17.0"
 
+publish_to: 'none'
+
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  stream_chat_flutter: ^3.0.0
+  stream_chat_flutter:
+    git:
+      url: git://github.com/soarity/stream-chat-flutter.git
+      ref: wer6/release/3.3.1
+      path: packages/stream_chat_flutter
+
 
 dev_dependencies:
   dart_code_metrics: ^4.4.0
