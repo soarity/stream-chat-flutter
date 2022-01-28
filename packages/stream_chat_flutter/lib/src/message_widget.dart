@@ -1,21 +1,16 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:jiffy/jiffy.dart';
+
 import 'package:stream_chat_flutter/src/attachment/url_attachment.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/image_group.dart';
-import 'package:stream_chat_flutter/src/message_action.dart';
+
 import 'package:stream_chat_flutter/src/message_actions_modal.dart';
 import 'package:stream_chat_flutter/src/message_reactions_modal.dart';
 import 'package:stream_chat_flutter/src/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/src/reaction_bubble.dart';
-import 'package:stream_chat_flutter/src/theme/themes.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Widget builder for building attachments
@@ -40,11 +35,6 @@ enum DisplayWidget {
   show,
 }
 
-/// ![screenshot](https://raw.githubusercontent.com/GetStream/stream-chat-flutter/master/packages/stream_chat_flutter/screenshots/message_widget.png)
-/// ![screenshot](https://raw.githubusercontent.com/GetStream/stream-chat-flutter/master/packages/stream_chat_flutter/screenshots/message_widget_paint.png)
-///
-/// It shows a message with reactions, replies and user avatar.
-///
 /// Usually you don't use this widget as it's the default message widget used by
 /// [MessageListView].
 ///
@@ -70,17 +60,14 @@ class MessageWidget extends StatefulWidget {
     this.showReactionPickerIndicator = false,
     this.showUserAvatar = DisplayWidget.show,
     this.showSendingIndicator = true,
-    this.showThreadReplyIndicator = false,
     this.showInChannelIndicator = false,
     this.onReplyTap,
-    this.onThreadTap,
     this.showUsername = true,
     this.showTimestamp = true,
     this.showReactions = true,
     this.showDeleteMessage = true,
     this.showEditMessage = true,
     this.showReplyMessage = true,
-    this.showThreadReplyMessage = true,
     this.showResendMessage = true,
     this.showCopyMessage = true,
     this.showFlagButton = true,
@@ -277,9 +264,6 @@ class MessageWidget extends StatefulWidget {
   /// Function called on mention tap
   final void Function(User)? onMentionTap;
 
-  /// The function called when tapping on threads
-  final void Function(Message)? onThreadTap;
-
   /// The function called when tapping on replies
   final void Function(Message)? onReplyTap;
 
@@ -352,9 +336,6 @@ class MessageWidget extends StatefulWidget {
   ///
   final bool allRead;
 
-  /// If true the widget will show the thread reply indicator
-  final bool showThreadReplyIndicator;
-
   /// If true the widget will show the show in channel indicator
   final bool showInChannelIndicator;
 
@@ -384,9 +365,6 @@ class MessageWidget extends StatefulWidget {
 
   /// Show reply action
   final bool showReplyMessage;
-
-  /// Show thread reply action
-  final bool showThreadReplyMessage;
 
   /// Show edit action
   final bool showEditMessage;
@@ -434,7 +412,6 @@ class MessageWidget extends StatefulWidget {
   MessageWidget copyWith({
     Key? key,
     void Function(User)? onMentionTap,
-    void Function(Message)? onThreadTap,
     void Function(Message)? onReplyTap,
     Widget Function(BuildContext, Message)? editMessageInputBuilder,
     Widget Function(BuildContext, Message)? textBuilder,
@@ -458,7 +435,6 @@ class MessageWidget extends StatefulWidget {
     bool? showSendingIndicator,
     bool? showReactions,
     bool? allRead,
-    bool? showThreadReplyIndicator,
     bool? showInChannelIndicator,
     void Function(User)? onUserAvatarTap,
     void Function(String)? onLinkTap,
@@ -469,7 +445,6 @@ class MessageWidget extends StatefulWidget {
     bool? showUsername,
     bool? showTimestamp,
     bool? showReplyMessage,
-    bool? showThreadReplyMessage,
     bool? showEditMessage,
     bool? showCopyMessage,
     bool? showDeleteMessage,
@@ -488,7 +463,6 @@ class MessageWidget extends StatefulWidget {
       MessageWidget(
         key: key ?? this.key,
         onMentionTap: onMentionTap ?? this.onMentionTap,
-        onThreadTap: onThreadTap ?? this.onThreadTap,
         onReplyTap: onReplyTap ?? this.onReplyTap,
         editMessageInputBuilder:
             editMessageInputBuilder ?? this.editMessageInputBuilder,
@@ -514,8 +488,6 @@ class MessageWidget extends StatefulWidget {
         showUserAvatar: showUserAvatar ?? this.showUserAvatar,
         showSendingIndicator: showSendingIndicator ?? this.showSendingIndicator,
         showReactions: showReactions ?? this.showReactions,
-        showThreadReplyIndicator:
-            showThreadReplyIndicator ?? this.showThreadReplyIndicator,
         showInChannelIndicator:
             showInChannelIndicator ?? this.showInChannelIndicator,
         onUserAvatarTap: onUserAvatarTap ?? this.onUserAvatarTap,
@@ -527,8 +499,6 @@ class MessageWidget extends StatefulWidget {
         showUsername: showUsername ?? this.showUsername,
         showTimestamp: showTimestamp ?? this.showTimestamp,
         showReplyMessage: showReplyMessage ?? this.showReplyMessage,
-        showThreadReplyMessage:
-            showThreadReplyMessage ?? this.showThreadReplyMessage,
         showEditMessage: showEditMessage ?? this.showEditMessage,
         showCopyMessage: showCopyMessage ?? this.showCopyMessage,
         showDeleteMessage: showDeleteMessage ?? this.showDeleteMessage,
@@ -552,8 +522,7 @@ class MessageWidget extends StatefulWidget {
 
 class _MessageWidgetState extends State<MessageWidget>
     with AutomaticKeepAliveClientMixin<MessageWidget> {
-  bool get showThreadReplyIndicator => widget.showThreadReplyIndicator;
-
+  final secondaryColor = const Color(0xFFF28B82);
   bool get showSendingIndicator => widget.showSendingIndicator;
 
   bool get isDeleted => widget.message.isDeleted;
@@ -589,7 +558,6 @@ class _MessageWidgetState extends State<MessageWidget>
       .any((it) => it.titleLink != null && it.type != 'giphy');
 
   bool get showBottomRow =>
-      showThreadReplyIndicator ||
       showUsername ||
       showTimeStamp ||
       showInChannel ||
@@ -605,10 +573,6 @@ class _MessageWidgetState extends State<MessageWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final avatarWidth =
-        widget.messageTheme.avatarTheme?.constraints.maxWidth ?? 40;
-    final bottomRowPadding =
-        widget.showUserAvatar != DisplayWidget.gone ? avatarWidth + 8.5 : 0.5;
 
     final showReactions = _shouldShowReactions;
 
@@ -628,218 +592,157 @@ class _MessageWidgetState extends State<MessageWidget>
               ? null
               : () => onLongPress(context),
           child: Padding(
-            padding: widget.padding ?? const EdgeInsets.all(8),
+            padding: widget.padding ?? const EdgeInsets.fromLTRB(8, 10, 8, 10),
             child: FractionallySizedBox(
               alignment:
                   widget.reverse ? Alignment.centerRight : Alignment.centerLeft,
               widthFactor: 0.78,
-              child: Column(
-                crossAxisAlignment: widget.reverse
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Stack(
-                    clipBehavior: Clip.none,
-                    alignment: widget.reverse
-                        ? AlignmentDirectional.bottomEnd
-                        : AlignmentDirectional.bottomStart,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          bottom:
-                              isPinned && widget.showPinHighlight ? 8.0 : 0.0,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: widget.reverse
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (widget.message.pinned &&
-                                widget.message.pinnedBy != null &&
-                                widget.showPinHighlight)
-                              _buildPinnedMessage(widget.message),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                if (!widget.reverse &&
-                                    widget.showUserAvatar ==
-                                        DisplayWidget.show &&
-                                    widget.message.user != null) ...[
-                                  _buildUserAvatar(),
-                                  const SizedBox(width: 4),
-                                ],
-                                if (widget.showUserAvatar == DisplayWidget.hide)
-                                  SizedBox(width: avatarWidth + 4),
-                                Flexible(
-                                  child: PortalEntry(
-                                    visible: showReactions,
-                                    portal: showReactions
-                                        ? Container(
-                                            transform:
-                                                Matrix4.translationValues(
-                                              widget.reverse ? 12 : -12,
-                                              0,
-                                              0,
-                                            ),
-                                            constraints: const BoxConstraints(
-                                              maxWidth: 22 * 6.0,
-                                            ),
-                                            child: _buildReactionIndicator(
-                                              context,
-                                            ),
-                                          )
-                                        : null,
-                                    portalAnchor:
-                                        Alignment(widget.reverse ? 1 : -1, -1),
-                                    childAnchor:
-                                        Alignment(widget.reverse ? -1 : 1, -1),
-                                    child: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        Padding(
-                                          padding: widget.showReactions
-                                              ? EdgeInsets.only(
-                                                  top: widget
-                                                              .message
-                                                              .reactionCounts
-                                                              ?.isNotEmpty ==
-                                                          true
-                                                      ? 18
-                                                      : 0,
-                                                )
-                                              : EdgeInsets.zero,
-                                          child: (widget.message.isDeleted &&
-                                                  !isFailedState)
-                                              ? Container(
-                                                  // ignore: lines_longer_than_80_chars
-                                                  margin: EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        // ignore: lines_longer_than_80_chars
-                                                        widget.showUserAvatar ==
-                                                                // ignore: lines_longer_than_80_chars
-                                                                DisplayWidget
-                                                                    .gone
-                                                            ? 0
-                                                            : 4.0,
-                                                  ),
-                                                  child: DeletedMessage(
-                                                    borderRadiusGeometry: widget
-                                                        .borderRadiusGeometry,
-                                                    borderSide:
-                                                        widget.borderSide,
-                                                    shape: widget.shape,
-                                                    messageTheme:
-                                                        widget.messageTheme,
-                                                  ),
-                                                )
-                                              : Card(
-                                                  clipBehavior: Clip.hardEdge,
-                                                  elevation: 0,
-                                                  margin: EdgeInsets.symmetric(
-                                                    horizontal: (isFailedState
-                                                            ? 15.0
-                                                            : 0.0) +
-                                                        // ignore: lines_longer_than_80_chars
-                                                        (widget.showUserAvatar ==
-                                                                DisplayWidget
-                                                                    .gone
-                                                            ? 0
-                                                            : 4.0),
-                                                  ),
-                                                  shape: widget.shape ??
-                                                      RoundedRectangleBorder(
-                                                        side: widget
-                                                                .borderSide ??
-                                                            BorderSide(
-                                                              color: widget
-                                                                      // ignore: lines_longer_than_80_chars
-                                                                      .messageTheme
-                                                                      // ignore: lines_longer_than_80_chars
-                                                                      .messageBorderColor ??
-                                                                  Colors.grey,
-                                                            ),
-                                                        borderRadius: widget
-                                                                // ignore: lines_longer_than_80_chars
-                                                                .borderRadiusGeometry ??
-                                                            BorderRadius.zero,
-                                                      ),
-                                                  color: _getBackgroundColor(),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: <Widget>[
-                                                      if (hasQuotedMessage)
-                                                        _buildQuotedMessage(),
-                                                      if (hasNonUrlAttachments)
-                                                        _parseAttachments(),
-                                                      if (!isGiphy)
-                                                        _buildTextBubble(),
-                                                    ],
-                                                  ),
-                                                ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: isPinned && widget.showPinHighlight ? 8.0 : 0.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: widget.reverse
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.message.pinned &&
+                        widget.message.pinnedBy != null &&
+                        widget.showPinHighlight)
+                      _buildPinnedMessage(widget.message),
+                    if (!widget.reverse &&
+                        widget.showUserAvatar == DisplayWidget.show &&
+                        widget.message.user != null) ...[
+                      _buildUsername(const Key('usernameKey')),
+                    ],
+                    Column(
+                      children: [
+                        PortalEntry(
+                          visible: showReactions,
+                          portal: showReactions
+                              ? Container(
+                                  transform: Matrix4.translationValues(
+                                    widget.reverse ? 12 : -12,
+                                    0,
+                                    0,
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 22 * 6.0,
+                                  ),
+                                  child: _buildReactionIndicator(
+                                    context,
+                                  ),
+                                )
+                              : null,
+                          portalAnchor: Alignment(widget.reverse ? 1 : -1, -1),
+                          childAnchor: Alignment(widget.reverse ? -1 : 1, -1),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Padding(
+                                padding: widget.showReactions
+                                    ? EdgeInsets.only(
+                                        top: widget.message.reactionCounts
+                                                    ?.isNotEmpty ==
+                                                true
+                                            ? 18
+                                            : 0,
+                                      )
+                                    : EdgeInsets.zero,
+                                child: (widget.message.isDeleted &&
+                                        !isFailedState)
+                                    ? Container(
+                                        // ignore: lines_longer_than_80_chars
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal:
+                                              // ignore: lines_longer_than_80_chars
+                                              widget.showUserAvatar ==
+                                                      // ignore: lines_longer_than_80_chars
+                                                      DisplayWidget.gone
+                                                  ? 0
+                                                  : 4.0,
                                         ),
-                                        if (widget.showReactionPickerIndicator)
-                                          Positioned(
-                                            right: widget.reverse ? null : 4,
-                                            left: widget.reverse ? 4 : null,
-                                            top: -8,
-                                            child: CustomPaint(
-                                              painter: ReactionBubblePainter(
-                                                _streamChatTheme
-                                                    .colorTheme.barsBg,
-                                                Colors.transparent,
-                                                Colors.transparent,
-                                                tailCirclesSpace: 1,
-                                              ),
+                                        child: DeletedMessage(
+                                          borderRadiusGeometry:
+                                              widget.borderRadiusGeometry,
+                                          borderSide: widget.borderSide,
+                                          shape: widget.shape,
+                                          messageTheme: widget.messageTheme,
+                                        ),
+                                      )
+                                    : Card(
+                                        clipBehavior: Clip.hardEdge,
+                                        elevation: 0.2,
+                                        margin: const EdgeInsets.all(0),
+                                        shape: widget.shape ??
+                                            RoundedRectangleBorder(
+                                              side: widget.borderSide ??
+                                                  BorderSide(
+                                                    color: widget
+                                                            // ignore: lines_longer_than_80_chars
+                                                            .messageTheme
+                                                            // ignore: lines_longer_than_80_chars
+                                                            .messageBorderColor ??
+                                                        Colors.grey,
+                                                  ),
+                                              borderRadius: widget
+                                                      // ignore: lines_longer_than_80_chars
+                                                      .borderRadiusGeometry ??
+                                                  BorderRadius.zero,
                                             ),
-                                          ),
-                                      ],
+                                        color: _getBackgroundColor(),
+                                        child: Wrap(
+                                          alignment: WrapAlignment.end,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.end,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                if (hasQuotedMessage)
+                                                  _buildQuotedMessage(),
+                                                if (hasNonUrlAttachments)
+                                                  _parseAttachments(),
+                                                if (!isGiphy)
+                                                  _buildTextBubble(),
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                bottom: 2,
+                                                right: 4,
+                                              ),
+                                              child: _bottomRow,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                              ),
+                              if (widget.showReactionPickerIndicator)
+                                Positioned(
+                                  right: widget.reverse ? null : 4,
+                                  left: widget.reverse ? 4 : null,
+                                  top: -8,
+                                  child: CustomPaint(
+                                    painter: ReactionBubblePainter(
+                                      _streamChatTheme.colorTheme.barsBg,
+                                      Colors.transparent,
+                                      Colors.transparent,
+                                      tailCirclesSpace: 1,
                                     ),
                                   ),
                                 ),
-                                if (widget.reverse &&
-                                    widget.showUserAvatar ==
-                                        DisplayWidget.show &&
-                                    widget.message.user != null) ...[
-                                  _buildUserAvatar(),
-                                  const SizedBox(width: 4),
-                                ],
-                              ],
-                            ),
-                            if (showBottomRow)
-                              SizedBox(height: context.textScaleFactor * 18.0),
-                          ],
-                        ),
-                      ),
-                      if (showBottomRow)
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: !widget.reverse ? bottomRowPadding : 0,
-                            right: widget.reverse ? bottomRowPadding : 0,
-                            bottom:
-                                isPinned && widget.showPinHighlight ? 6.0 : 0.0,
+                            ],
                           ),
-                          child: widget.bottomRowBuilder?.call(
-                                context,
-                                widget.message,
-                              ) ??
-                              _bottomRow,
                         ),
-                      if (isFailedState)
-                        Positioned(
-                          right: widget.reverse ? 0 : null,
-                          left: widget.reverse ? null : 0,
-                          bottom: showBottomRow ? 18 : -2,
-                          child: StreamSvgIcon.error(size: 20),
-                        ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                    if (isFailedState) StreamSvgIcon.error(size: 20),
+                  ],
+                ),
               ),
             ),
           ),
@@ -870,10 +773,10 @@ class _MessageWidgetState extends State<MessageWidget>
           : chatThemeData.ownMessageTheme,
       reverse: widget.reverse,
       padding: EdgeInsets.only(
-        right: 8,
-        left: 8,
-        top: 8,
-        bottom: hasNonUrlAttachments ? 8 : 0,
+        right: 3,
+        left: 3,
+        top: 3,
+        bottom: hasNonUrlAttachments ? 3 : 0,
       ),
     );
   }
@@ -889,106 +792,30 @@ class _MessageWidgetState extends State<MessageWidget>
 
     final children = <Widget>[];
 
-    final threadParticipants = widget.message.threadParticipants?.take(2);
-    final showThreadParticipants = threadParticipants?.isNotEmpty == true;
-    final replyCount = widget.message.replyCount;
-
-    var msg = context.translations.threadReplyLabel;
-    if (showThreadReplyIndicator && replyCount! > 1) {
-      msg = context.translations.threadReplyCountText(replyCount);
-    }
-
-    // ignore: prefer_function_declarations_over_variables
-    final onThreadTap = () async {
-      try {
-        var message = widget.message;
-        if (showInChannel) {
-          final channel = StreamChannel.of(context);
-          message = await channel.getMessage(widget.message.parentId!);
-        }
-        return widget.onThreadTap!(message);
-      } catch (e, stk) {
-        print(e);
-        print(stk);
-        // ignore: avoid_returning_null_for_void
-        return null;
-      }
-    };
-
     const usernameKey = Key('username');
 
     children.addAll([
-      if (showInChannel || showThreadReplyIndicator) ...[
-        if (showThreadParticipants)
-          SizedBox.fromSize(
-            size: Size((threadParticipants!.length * 8.0) + 8, 16),
-            child: _buildThreadParticipantsIndicator(threadParticipants),
-          ),
-        InkWell(
-          onTap: widget.onThreadTap != null ? onThreadTap : null,
-          child: Text(msg, style: widget.messageTheme.repliesStyle),
-        ),
-      ],
-      if (showUsername) _buildUsername(usernameKey),
-      if (showTimeStamp)
-        Text(
-          Jiffy(widget.message.createdAt.toLocal()).jm,
-          style: widget.messageTheme.createdAtStyle,
-        ),
-      if (showSendingIndicator) _buildSendingIndicator(),
+      Text(
+        Jiffy(widget.message.createdAt.toLocal()).jm,
+        style: widget.messageTheme.createdAtStyle,
+      ),
+      if (widget.reverse) _buildSendingIndicator(),
     ]);
 
-    final showThreadTail = !(hasUrlAttachments || isGiphy || isOnlyEmoji) &&
-        (showThreadReplyIndicator || showInChannel);
-
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisAlignment:
-          widget.reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (showThreadTail && !widget.reverse)
-          Container(
-            margin: EdgeInsets.only(
-              bottom: context.textScaleFactor *
-                  ((widget.messageTheme.repliesStyle?.fontSize ?? 1) / 2),
-            ),
-            child: CustomPaint(
-              size: const Size(16, 32) * context.textScaleFactor,
-              painter: _ThreadReplyPainter(
-                context: context,
-                color: widget.messageTheme.messageBorderColor,
-                reverse: widget.reverse,
-              ),
-            ),
-          ),
         ...children.map(
           (child) {
-            Widget mappedChild = SizedBox(
-              height: context.textScaleFactor * 14,
-              child: child,
-            );
+            Widget mappedChild = child;
             if (child.key == usernameKey) {
               mappedChild = Flexible(child: mappedChild);
             }
             return mappedChild;
           },
         ),
-        if (showThreadTail && widget.reverse)
-          Container(
-            margin: EdgeInsets.only(
-              bottom: context.textScaleFactor *
-                  ((widget.messageTheme.repliesStyle?.fontSize ?? 1) / 2),
-            ),
-            child: CustomPaint(
-              size: const Size(16, 32) * context.textScaleFactor,
-              painter: _ThreadReplyPainter(
-                context: context,
-                color: widget.messageTheme.messageBorderColor,
-                reverse: widget.reverse,
-              ),
-            ),
-          ),
-      ].insertBetween(const SizedBox(width: 8)),
+      ].insertBetween(const SizedBox(width: 2)),
     );
   }
 
@@ -996,12 +823,17 @@ class _MessageWidgetState extends State<MessageWidget>
     if (widget.usernameBuilder != null) {
       return widget.usernameBuilder!(context, widget.message);
     }
-    return Text(
-      widget.message.user?.name ?? '',
-      maxLines: 1,
-      key: usernameKey,
-      style: widget.messageTheme.messageAuthorStyle,
-      overflow: TextOverflow.ellipsis,
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 5),
+      child: Text(
+        widget.message.user?.name ?? '',
+        maxLines: 1,
+        key: usernameKey,
+        style: widget.messageTheme.messageAuthorStyle!.copyWith(
+          color: secondaryColor,
+        ),
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
@@ -1023,12 +855,6 @@ class _MessageWidgetState extends State<MessageWidget>
       messageTheme: widget.messageTheme,
     );
   }
-
-  Widget _buildThreadParticipantsIndicator(Iterable<User> threadParticipants) =>
-      _ThreadParticipants(
-        streamChatTheme: _streamChatTheme,
-        threadParticipants: threadParticipants,
-      );
 
   Widget _buildReactionIndicator(
     BuildContext context,
@@ -1110,7 +936,7 @@ class _MessageWidgetState extends State<MessageWidget>
           message: widget.message,
           editMessageInputBuilder: widget.editMessageInputBuilder,
           onReplyTap: widget.onReplyTap,
-          onThreadReplyTap: widget.onThreadTap,
+          showThreadReplyMessage: false,
           showResendMessage:
               widget.showResendMessage && (isSendFailed || isUpdateFailed),
           showCopyMessage: widget.showCopyMessage &&
@@ -1124,9 +950,6 @@ class _MessageWidgetState extends State<MessageWidget>
           showReplyMessage: widget.showReplyMessage &&
               !isFailedState &&
               widget.onReplyTap != null,
-          showThreadReplyMessage: widget.showThreadReplyMessage &&
-              !isFailedState &&
-              widget.onThreadTap != null,
           showFlagButton: widget.showFlagButton,
           showPinButton: widget.showPinButton,
           customActions: widget.customActions,
@@ -1242,7 +1065,7 @@ class _MessageWidgetState extends State<MessageWidget>
           message.attachments.where((it) => !it.uploadState.isSuccess).length;
       if (uploadRemaining == 0) {
         return StreamSvgIcon.check(
-          size: style!.fontSize,
+          size: style!.fontSize! + 6,
           color: IconTheme.of(context).color!.withOpacity(0.5),
         );
       }
@@ -1269,7 +1092,7 @@ class _MessageWidgetState extends State<MessageWidget>
         Widget child = SendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
-          size: style!.fontSize,
+          size: style!.fontSize! + 6,
         );
         if (isMessageRead) {
           child = Row(
@@ -1290,24 +1113,6 @@ class _MessageWidgetState extends State<MessageWidget>
       },
     );
   }
-
-  Widget _buildUserAvatar() => Transform.translate(
-        offset: Offset(
-          0,
-          widget.translateUserAvatar
-              ? (widget.messageTheme.avatarTheme?.constraints.maxHeight ?? 40) /
-                  2
-              : 0,
-        ),
-        child: widget.userAvatarBuilder?.call(context, widget.message.user!) ??
-            UserAvatar(
-              user: widget.message.user!,
-              onTap: widget.onUserAvatarTap,
-              constraints: widget.messageTheme.avatarTheme!.constraints,
-              borderRadius: widget.messageTheme.avatarTheme!.borderRadius,
-              showOnlineStatus: false,
-            ),
-      );
 
   Widget _buildTextBubble() {
     if (widget.message.text?.trim().isEmpty ?? false) return const Offstage();
@@ -1383,10 +1188,6 @@ class _MessageWidgetState extends State<MessageWidget>
       return Colors.transparent;
     }
 
-    if (isGiphy) {
-      return Colors.transparent;
-    }
-
     return widget.messageTheme.messageBackgroundColor;
   }
 
@@ -1406,83 +1207,4 @@ class _MessageWidgetState extends State<MessageWidget>
       return;
     }
   }
-}
-
-class _ThreadParticipants extends StatelessWidget {
-  const _ThreadParticipants({
-    Key? key,
-    required StreamChatThemeData streamChatTheme,
-    required this.threadParticipants,
-  })  : _streamChatTheme = streamChatTheme,
-        super(key: key);
-
-  final StreamChatThemeData _streamChatTheme;
-  final Iterable<User> threadParticipants;
-
-  @override
-  Widget build(BuildContext context) {
-    var padding = 0.0;
-    return Stack(
-      children: threadParticipants.map((user) {
-        padding += 8.0;
-        return Positioned(
-          right: padding - 8,
-          bottom: 0,
-          top: 0,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _streamChatTheme.colorTheme.barsBg,
-            ),
-            padding: const EdgeInsets.all(1),
-            child: UserAvatar(
-              user: user,
-              constraints: BoxConstraints.loose(const Size.fromRadius(7)),
-              showOnlineStatus: false,
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _ThreadReplyPainter extends CustomPainter {
-  const _ThreadReplyPainter({
-    this.context,
-    required this.color,
-    this.reverse = false,
-  });
-
-  final Color? color;
-  final BuildContext? context;
-  final bool reverse;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color ?? StreamChatTheme.of(context!).colorTheme.disabled
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..strokeCap = StrokeCap.round;
-
-    final path = Path()
-      ..moveTo(reverse ? size.width : 0, 0)
-      ..quadraticBezierTo(
-        reverse ? size.width : 0,
-        size.height * 0.38,
-        reverse ? size.width : 0,
-        size.height * 0.5,
-      )
-      ..quadraticBezierTo(
-        reverse ? size.width : 0,
-        size.height,
-        reverse ? 0 : size.width,
-        size.height,
-      );
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

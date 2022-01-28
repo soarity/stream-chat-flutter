@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
-import 'package:stream_chat_flutter/src/theme/themes.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 import 'package:video_player/video_player.dart';
 
 /// Widget builder for quoted message attachment thumnail
@@ -106,18 +104,48 @@ class QuotedMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      Flexible(child: _buildMessage(context)),
+      if (message.user != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 2),
+          child: Text(
+            message.user!.id == StreamChat.of(context).currentUser!.id
+                ? 'You'
+                : message.user?.name ?? '',
+            maxLines: 1,
+            key: const Key('usernameKey'),
+            style: messageTheme.messageAuthorStyle!.copyWith(
+              color: const Color(0xFFF28B82),
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      _buildMessage(context),
       const SizedBox(width: 8),
-      if (message.user != null) _buildUserAvatar(),
     ];
     return Padding(
       padding: padding,
       child: InkWell(
         onTap: onTap,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: reverse ? children.reversed.toList() : children,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(12),
+            bottom: Radius.circular(6),
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.1),
+              border: const Border(
+                left: BorderSide(color: Color(0xFFF28B82), width: 4),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: children,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -153,29 +181,12 @@ class QuotedMessageWidget extends StatelessWidget {
         ),
     ].insertBetween(const SizedBox(width: 8));
 
-    return Container(
-      decoration: BoxDecoration(
-        color: _getBackgroundColor(context),
-        border: showBorder
-            ? Border.all(
-                color: StreamChatTheme.of(context).colorTheme.disabled,
-              )
-            : null,
-        borderRadius: BorderRadius.only(
-          topRight: const Radius.circular(12),
-          topLeft: const Radius.circular(12),
-          bottomRight: reverse ? const Radius.circular(12) : Radius.zero,
-          bottomLeft: reverse ? Radius.zero : const Radius.circular(12),
-        ),
-      ),
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment:
-            reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: reverse ? children.reversed.toList() : children,
-      ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment:
+          reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: children,
     );
   }
 
@@ -233,15 +244,6 @@ class QuotedMessageWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       );
 
-  Widget _buildUserAvatar() => UserAvatar(
-        user: message.user!,
-        constraints: const BoxConstraints.tightFor(
-          height: 24,
-          width: 24,
-        ),
-        showOnlineStatus: false,
-      );
-
   Map<String, QuotedMessageAttachmentThumbnailBuilder>
       get _defaultAttachmentBuilder => {
             'image': (_, attachment) => ImageAttachment(
@@ -282,11 +284,4 @@ class QuotedMessageWidget extends StatelessWidget {
                   ),
                 ),
           };
-
-  Color? _getBackgroundColor(BuildContext context) {
-    if (_containsLinkAttachment) {
-      return messageTheme.linkBackgroundColor;
-    }
-    return messageTheme.messageBackgroundColor;
-  }
 }

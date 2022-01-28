@@ -4,8 +4,9 @@ import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
 
 /// It shows a date divider depending on the date difference
+
 class DateDivider extends StatelessWidget {
-  /// Constructor for creating a [DateDivider]
+  /// Constructor for creating a [CustomDateDivider]
   const DateDivider({
     Key? key,
     required this.dateTime,
@@ -38,16 +39,16 @@ class DateDivider extends StatelessWidget {
 
     final chatThemeData = StreamChatTheme.of(context);
     return Center(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-        decoration: BoxDecoration(
-          color: chatThemeData.colorTheme.overlayDark,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          dayInfo,
-          style: chatThemeData.textTheme.footnote.copyWith(
-            color: chatThemeData.colorTheme.barsBg,
+      child: Material(
+        shape: const StadiumBorder(),
+        color: chatThemeData.colorTheme.overlayDark,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: Text(
+            dayInfo,
+            style: chatThemeData.textTheme.footnote.copyWith(
+              color: chatThemeData.colorTheme.barsBg,
+            ),
           ),
         ),
       ),

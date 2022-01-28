@@ -2,25 +2,23 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:jiffy/jiffy.dart';
+
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
-import 'package:stream_chat_flutter/src/info_tile.dart';
-import 'package:stream_chat_flutter/src/message_widget.dart';
-import 'package:stream_chat_flutter/src/stream_svg_icon.dart';
+
+import 'package:stream_chat_flutter/src/progress_indicator.dart';
+
 import 'package:stream_chat_flutter/src/swipeable.dart';
-import 'package:stream_chat_flutter/src/system_message.dart';
-import 'package:stream_chat_flutter/src/theme/themes.dart';
+
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 /// Widget builder for message
 /// [defaultMessageWidget] is the default [MessageWidget] configuration
 /// Use [defaultMessageWidget.copyWith] to easily customize it
+
 typedef MessageBuilder = Widget Function(
   BuildContext,
   MessageDetails,
@@ -43,12 +41,6 @@ typedef SystemMessageBuilder = Widget Function(
   Message,
 );
 
-/// Widget builder for thread
-typedef ThreadBuilder = Widget Function(BuildContext context, Message? parent);
-
-/// Callback for thread taps
-typedef ThreadTapCallback = void Function(Message, Widget?);
-
 /// Callback on message swiped
 typedef OnMessageSwiped = void Function(Message);
 
@@ -61,9 +53,6 @@ typedef ReplyTapCallback = void Function(Message);
 /// Spacing Types (These are properties of a message to help inform the decision
 /// of how much space / which widget to build after it)
 enum SpacingType {
-  /// Message is a thread
-  thread,
-
   /// There is a >1s time diff between current and last message
   timeDiff,
 
@@ -78,21 +67,7 @@ enum SpacingType {
   defaultSpacing,
 }
 
-/// Builder for building certain spacing after widgets.
-/// This spacing can be in form of any widgets you like.
-/// A List of [SpacingType] is provided to help inform the decision of
-/// what to build after the message.
 ///
-/// As an example:
-///               MessageListView(
-///                 spacingWidgetBuilder: (context, list) {
-///                   if(list.contains(SpacingType.defaultSpacing)) {
-///                     return SizedBox(height: 2.0,);
-///                   } else {
-///                     return SizedBox(height: 8.0,);
-///                   }
-///                 },
-///               ),
 typedef SpacingWidgetBuilder = Widget Function(
   BuildContext context,
   List<SpacingType> spacingTypes,
@@ -131,41 +106,6 @@ class MessageDetails {
   final int index;
 }
 
-/// ![screenshot](https://raw.githubusercontent.com/GetStream/stream-chat-flutter/master/packages/stream_chat_flutter/screenshots/message_listview.png)
-/// ![screenshot](https://raw.githubusercontent.com/GetStream/stream-chat-flutter/master/packages/stream_chat_flutter/screenshots/message_listview_paint.png)
-///
-/// It shows the list of messages of the current channel.
-///
-/// ```dart
-/// class ChannelPage extends StatelessWidget {
-///   const ChannelPage({
-///     Key key,
-///   }) : super(key: key);
-///
-///   @override
-///   Widget build(BuildContext context) {
-///     return Scaffold(
-///       appBar: ChannelHeader(),
-///       body: Column(
-///         children: <Widget>[
-///           Expanded(
-///             child: MessageListView(
-///               threadBuilder: (_, parentMessage) {
-///                 return ThreadPage(
-///                   parent: parentMessage,
-///                 );
-///               },
-///             ),
-///           ),
-///           MessageInput(),
-///         ],
-///       ),
-///     );
-///   }
-/// }
-/// ```
-///
-///
 /// Make sure to have a [StreamChannel] ancestor in order to
 /// provide the information about the channels.
 /// The widget uses a [ListView.custom] to render the list of channels.
@@ -181,8 +121,6 @@ class MessageListView extends StatefulWidget {
     this.messageBuilder,
     this.parentMessageBuilder,
     this.parentMessage,
-    this.threadBuilder,
-    this.onThreadTap,
     this.dateDividerBuilder,
     this.scrollPhysics =
         const ClampingScrollPhysics(), // we need to use ClampingScrollPhysics to avoid the list view to animate and break while loading
@@ -206,7 +144,6 @@ class MessageListView extends StatefulWidget {
     this.onSystemMessageTap,
     this.pinPermissions = const [],
     this.showFloatingDateDivider = true,
-    this.threadSeparatorBuilder,
     this.messageListController,
     this.reverse = true,
     this.paginationLimit = 20,
@@ -237,14 +174,6 @@ class MessageListView extends StatefulWidget {
 
   /// Function used to build a custom parent message widget
   final ParentMessageBuilder? parentMessageBuilder;
-
-  /// Function used to build a custom thread widget
-  final ThreadBuilder? threadBuilder;
-
-  /// Function called when tapping on a thread
-  /// By default it calls [Navigator.push] using the widget
-  /// built using [threadBuilder]
-  final ThreadTapCallback? onThreadTap;
 
   /// If true will show a scroll to bottom message when there are new
   /// messages and the scroll offset is not zero
@@ -325,9 +254,6 @@ class MessageListView extends StatefulWidget {
   /// A List of user types that have permission to pin messages
   final List<String> pinPermissions;
 
-  /// Builder used to build the thread separator in case it's a thread view
-  final WidgetBuilder? threadSeparatorBuilder;
-
   /// A [MessageListController] allows pagination.
   /// Use [ChannelListController.paginateData] pagination.
   final MessageListController? messageListController;
@@ -347,7 +273,6 @@ class MessageListView extends StatefulWidget {
 
 class _MessageListViewState extends State<MessageListView> {
   ItemScrollController? _scrollController;
-  void Function(Message)? _onThreadTap;
   final ValueNotifier<bool> _showScrollToBottom = ValueNotifier(false);
   late final ItemPositionsListener _itemPositionListener;
   int? _messageListLength;
@@ -384,8 +309,6 @@ class _MessageListViewState extends State<MessageListView> {
 
   bool get _upToDate => streamChannel!.channel.state!.isUpToDate;
 
-  bool get _isThreadConversation => widget.parentMessage != null;
-
   bool _bottomPaginationActive = false;
 
   int initialIndex = 0;
@@ -410,7 +333,7 @@ class _MessageListViewState extends State<MessageListView> {
         messageFilter: widget.messageFilter,
         loadingBuilder: widget.loadingBuilder ??
             (context) => const Center(
-                  child: CircularProgressIndicator(),
+                  child: CustomProgressIndicator(size: 20),
                 ),
         emptyBuilder: widget.emptyBuilder ??
             (context) => Center(
@@ -559,16 +482,12 @@ class _MessageListViewState extends State<MessageListView> {
 
                   separatorBuilder: (context, i) {
                     if (i == itemCount - 2) {
-                      if (widget.parentMessage == null) {
-                        return const Offstage();
-                      }
-                      return _buildThreadSeparator();
+                      return const Offstage();
                     }
                     if (i == itemCount - 3) {
                       if (widget.reverse
                           ? widget.headerBuilder == null
                           : widget.footerBuilder == null) {
-                        if (_isThreadConversation) return const Offstage();
                         return const SizedBox(height: 52);
                       }
                       return const SizedBox(height: 8);
@@ -618,7 +537,7 @@ class _MessageListViewState extends State<MessageListView> {
 
                     final isNextUserSame =
                         message.user!.id == nextMessage.user?.id;
-                    final isThread = message.replyCount! > 0;
+
                     final isDeleted = message.isDeleted;
                     final hasTimeDiff = timeDiff >= 1;
 
@@ -628,10 +547,6 @@ class _MessageListViewState extends State<MessageListView> {
 
                     if (!isNextUserSame) {
                       spacingRules.add(SpacingType.otherUser);
-                    }
-
-                    if (isThread) {
-                      spacingRules.add(SpacingType.thread);
                     }
 
                     if (isDeleted) {
@@ -753,27 +668,6 @@ class _MessageListViewState extends State<MessageListView> {
     }
 
     return child;
-  }
-
-  Widget _buildThreadSeparator() {
-    if (widget.threadSeparatorBuilder != null) {
-      return widget.threadSeparatorBuilder!.call(context);
-    }
-
-    final replyCount = widget.parentMessage!.replyCount!;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: _streamTheme.colorTheme.bgGradient,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Text(
-          context.translations.threadSeparatorText(replyCount),
-          textAlign: TextAlign.center,
-          style: ChannelHeaderTheme.of(context).subtitleStyle,
-        ),
-      ),
-    );
   }
 
   Positioned _buildFloatingDateDivider(int itemCount) => Positioned(
@@ -940,7 +834,6 @@ class _MessageListViewState extends State<MessageListView> {
         direction: direction,
         streamTheme: _streamTheme,
         streamChannel: streamChannel,
-        isThreadConversation: _isThreadConversation,
         indicatorBuilder: indicatorBuilder,
       );
 
@@ -988,14 +881,13 @@ class _MessageListViewState extends State<MessageListView> {
     final defaultMessageWidget = MessageWidget(
       showReplyMessage: false,
       showResendMessage: false,
-      showThreadReplyMessage: false,
       showCopyMessage: false,
       showDeleteMessage: false,
       showEditMessage: false,
       message: message,
       reverse: isMyMessage,
       showUsername: !isMyMessage,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
       showSendingIndicator: false,
       borderRadiusGeometry: BorderRadius.only(
         topLeft: const Radius.circular(16),
@@ -1007,7 +899,7 @@ class _MessageListViewState extends State<MessageListView> {
       ),
       textPadding: EdgeInsets.symmetric(
         vertical: 8,
-        horizontal: isOnlyEmoji ? 0 : 16.0,
+        horizontal: isOnlyEmoji ? 0 : 12.0,
       ),
       borderSide: isMyMessage || isOnlyEmoji ? BorderSide.none : null,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
@@ -1077,33 +969,24 @@ class _MessageListViewState extends State<MessageListView> {
     final hasFileAttachment =
         message.attachments.any((it) => it.type == 'file');
 
-    final isThreadMessage =
-        message.parentId != null && message.showInChannel == true;
-
     final hasReplies = message.replyCount! > 0;
 
     final attachmentBorderRadius = hasFileAttachment ? 12.0 : 14.0;
 
-    final showTimeStamp = (!isThreadMessage || _isThreadConversation) &&
-        !hasReplies &&
-        (timeDiff >= 1 || !isNextUserSame);
+    final showTimeStamp = !hasReplies && (timeDiff >= 1 || !isNextUserSame);
 
-    final showUsername = !isMyMessage &&
-        (!isThreadMessage || _isThreadConversation) &&
-        !hasReplies &&
-        (timeDiff >= 1 || !isNextUserSame);
+    final showUsername =
+        !isMyMessage && !hasReplies && (timeDiff >= 1 || !isNextUserSame);
 
     final showUserAvatar = isMyMessage
         ? DisplayWidget.gone
         : (timeDiff >= 1 || !isNextUserSame)
-            ? DisplayWidget.show
-            : DisplayWidget.hide;
+            ? DisplayWidget.hide
+            : DisplayWidget.show;
 
     final showSendingIndicator =
         isMyMessage && (index == 0 || timeDiff >= 1 || !isNextUserSame);
 
-    final showInChannelIndicator = !_isThreadConversation && isThreadMessage;
-    final showThreadReplyIndicator = !_isThreadConversation && hasReplies;
     final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
 
     final hasUrlAttachment =
@@ -1123,9 +1006,7 @@ class _MessageListViewState extends State<MessageListView> {
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      showInChannelIndicator: showInChannelIndicator,
-      showThreadReplyIndicator: showThreadReplyIndicator,
+      padding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
       showUsername: showUsername,
       showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,
@@ -1150,17 +1031,15 @@ class _MessageListViewState extends State<MessageListView> {
       },
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
-      showThreadReplyMessage: !isThreadMessage,
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
-      onThreadTap: _onThreadTap,
       attachmentBorderRadiusGeometry: BorderRadius.only(
         topLeft: Radius.circular(attachmentBorderRadius),
         bottomLeft: isMyMessage
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage || hasFileAttachment)
+                        !(hasReplies || hasFileAttachment)
                     ? 0
                     : attachmentBorderRadius,
               ),
@@ -1168,7 +1047,7 @@ class _MessageListViewState extends State<MessageListView> {
         bottomRight: isMyMessage
             ? Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage || hasFileAttachment)
+                        !(hasReplies || hasFileAttachment)
                     ? 0
                     : attachmentBorderRadius,
               )
@@ -1180,24 +1059,18 @@ class _MessageListViewState extends State<MessageListView> {
         bottomLeft: isMyMessage
             ? const Radius.circular(16)
             : Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage)
-                    ? 0
-                    : 16,
+                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16,
               ),
         topRight: const Radius.circular(16),
         bottomRight: isMyMessage
             ? Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage)
-                    ? 0
-                    : 16,
+                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16,
               )
             : const Radius.circular(16),
       ),
       textPadding: EdgeInsets.symmetric(
         vertical: 8,
-        horizontal: isOnlyEmoji ? 0 : 16.0,
+        horizontal: isOnlyEmoji ? 0 : 12.0,
       ),
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme
@@ -1291,7 +1164,6 @@ class _MessageListViewState extends State<MessageListView> {
     _itemPositionListener =
         widget.itemPositionListener ?? ItemPositionsListener.create();
 
-    _getOnThreadTap();
     super.initState();
   }
 
@@ -1329,44 +1201,9 @@ class _MessageListViewState extends State<MessageListView> {
           });
         }
       });
-
-      if (_isThreadConversation) {
-        streamChannel!.getReplies(widget.parentMessage!.id);
-      }
     }
 
     super.didChangeDependencies();
-  }
-
-  void _getOnThreadTap() {
-    if (widget.onThreadTap != null) {
-      _onThreadTap = (Message message) {
-        widget.onThreadTap!(
-          message,
-          widget.threadBuilder != null
-              ? widget.threadBuilder!(context, message)
-              : null,
-        );
-      };
-    } else if (widget.threadBuilder != null) {
-      _onThreadTap = (Message message) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BetterStreamBuilder<Message>(
-              stream: streamChannel!.channel.state!.messagesStream.map(
-                (messages) => messages.firstWhere((m) => m.id == message.id),
-              ),
-              initialData: message,
-              builder: (_, data) => StreamChannel(
-                channel: streamChannel!.channel,
-                child: widget.threadBuilder!(context, data),
-              ),
-            ),
-          ),
-        );
-      };
-    }
   }
 
   @override
@@ -1383,14 +1220,12 @@ class _LoadingIndicator extends StatelessWidget {
   const _LoadingIndicator({
     Key? key,
     required this.streamTheme,
-    required this.isThreadConversation,
     required this.direction,
     required this.streamChannel,
     this.indicatorBuilder,
   }) : super(key: key);
 
   final StreamChatThemeData streamTheme;
-  final bool isThreadConversation;
   final QueryDirection direction;
   final StreamChannelState streamChannel;
   final WidgetBuilder? indicatorBuilder;
@@ -1416,7 +1251,7 @@ class _LoadingIndicator extends StatelessWidget {
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: CircularProgressIndicator(),
+                child: CustomProgressIndicator(),
               ),
             );
       },
