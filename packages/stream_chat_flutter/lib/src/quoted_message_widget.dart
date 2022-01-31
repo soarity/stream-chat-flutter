@@ -141,7 +141,7 @@ class QuotedMessageWidget extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: children,
               ),
             ),

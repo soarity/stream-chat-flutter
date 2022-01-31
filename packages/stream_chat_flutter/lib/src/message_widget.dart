@@ -697,20 +697,18 @@ class _MessageWidgetState extends State<MessageWidget>
                                           crossAxisAlignment:
                                               WrapCrossAlignment.end,
                                           children: [
-                                            IntrinsicWidth(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: <Widget>[
-                                                  if (hasQuotedMessage)
-                                                    _buildQuotedMessage(),
-                                                  if (hasNonUrlAttachments)
-                                                    _parseAttachments(),
-                                                  if (!isGiphy)
-                                                    _buildTextBubble(),
-                                                ],
-                                              ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                if (hasQuotedMessage)
+                                                  _buildQuotedMessage(),
+                                                if (hasNonUrlAttachments)
+                                                  _parseAttachments(),
+                                                if (!isGiphy)
+                                                  _buildTextBubble(),
+                                              ],
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.only(
