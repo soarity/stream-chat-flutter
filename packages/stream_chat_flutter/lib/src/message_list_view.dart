@@ -978,11 +978,8 @@ class _MessageListViewState extends State<MessageListView> {
     final showUsername =
         !isMyMessage && !hasReplies && (timeDiff >= 1 || !isNextUserSame);
 
-    final showUserAvatar = isMyMessage
-        ? DisplayWidget.gone
-        : (timeDiff >= 1 || !isNextUserSame)
-            ? DisplayWidget.hide
-            : DisplayWidget.show;
+    final showUserAvatar =
+        isMyMessage ? DisplayWidget.gone : DisplayWidget.show;
 
     final showSendingIndicator =
         isMyMessage && (index == 0 || timeDiff >= 1 || !isNextUserSame);

@@ -711,9 +711,9 @@ class _MessageWidgetState extends State<MessageWidget>
                                               ],
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.only(
-                                                bottom: 2,
-                                                right: 4,
+                                              padding: EdgeInsets.only(
+                                                bottom: 4,
+                                                right: widget.reverse ? 4 : 8,
                                               ),
                                               child: _bottomRow,
                                             ),
@@ -824,7 +824,7 @@ class _MessageWidgetState extends State<MessageWidget>
       return widget.usernameBuilder!(context, widget.message);
     }
     return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 5),
+      padding: const EdgeInsets.only(top: 2, bottom: 2, left: 8),
       child: Text(
         widget.message.user?.name ?? '',
         maxLines: 1,
@@ -1055,7 +1055,6 @@ class _MessageWidgetState extends State<MessageWidget>
   Widget _buildSendingIndicator() {
     final style = widget.messageTheme.createdAtStyle;
     final message = widget.message;
-    final memberCount = StreamChannel.of(context).channel.memberCount ?? 0;
 
     if (hasNonUrlAttachments &&
         (message.status == MessageSendingStatus.sending ||
@@ -1089,27 +1088,11 @@ class _MessageWidgetState extends State<MessageWidget>
             (it.lastRead.isAfter(message.createdAt) ||
                 it.lastRead.isAtSameMomentAs(message.createdAt)));
         final isMessageRead = readList.length >= (channel.memberCount ?? 0) - 1;
-        Widget child = SendingIndicator(
+        return SendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
           size: style!.fontSize! + 6,
         );
-        if (isMessageRead) {
-          child = Row(
-            children: [
-              if (memberCount > 2)
-                Text(
-                  readList.length.toString(),
-                  style: style.copyWith(
-                    color: _streamChatTheme.colorTheme.accentPrimary,
-                  ),
-                ),
-              const SizedBox(width: 2),
-              child,
-            ],
-          );
-        }
-        return child;
       },
     );
   }
