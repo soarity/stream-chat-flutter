@@ -32,7 +32,7 @@ class FullScreenMedia extends StatefulWidget {
     String? userName,
     this.onShowMessage,
     this.attachmentActionsModalBuilder,
-    this.autoplayVideos = false,
+    this.autoplayVideos = true,
   })  : userName = userName ?? '',
         super(key: key);
 
