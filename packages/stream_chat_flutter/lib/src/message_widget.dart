@@ -715,6 +715,7 @@ class _MessageWidgetState extends State<MessageWidget>
                                               ),
                                               Padding(
                                                 padding: EdgeInsets.only(
+                                                  top: 2,
                                                   right: widget.reverse ? 4 : 8,
                                                 ),
                                                 child: _bottomRow,
@@ -808,6 +809,7 @@ class _MessageWidgetState extends State<MessageWidget>
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         ...children.map(
           (child) {
