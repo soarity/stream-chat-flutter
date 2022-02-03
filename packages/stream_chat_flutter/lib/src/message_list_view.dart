@@ -4,14 +4,10 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
-
 import 'package:stream_chat_flutter/src/progress_indicator.dart';
-
 import 'package:stream_chat_flutter/src/swipeable.dart';
-
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
