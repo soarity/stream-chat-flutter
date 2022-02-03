@@ -899,9 +899,9 @@ class _MessageListViewState extends State<MessageListView> {
       ),
       textPadding: EdgeInsets.fromLTRB(
         isOnlyEmoji ? 0 : 8.0,
-        8,
+        4,
         isOnlyEmoji ? 0 : 8.0,
-        2,
+        0,
       ),
       borderSide: isMyMessage || isOnlyEmoji ? BorderSide.none : null,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
@@ -1069,9 +1069,9 @@ class _MessageListViewState extends State<MessageListView> {
       ),
       textPadding: EdgeInsets.fromLTRB(
         isOnlyEmoji ? 0 : 8.0,
-        8,
+        4,
         isOnlyEmoji ? 0 : 8.0,
-        2,
+        0,
       ),
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme

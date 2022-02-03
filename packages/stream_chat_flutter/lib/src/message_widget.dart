@@ -692,32 +692,35 @@ class _MessageWidgetState extends State<MessageWidget>
                                                   BorderRadius.zero,
                                             ),
                                         color: _getBackgroundColor(),
-                                        child: Wrap(
-                                          alignment: WrapAlignment.end,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.end,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: <Widget>[
-                                                if (hasQuotedMessage)
-                                                  _buildQuotedMessage(),
-                                                if (hasNonUrlAttachments)
-                                                  _parseAttachments(),
-                                                if (!isGiphy)
-                                                  _buildTextBubble(),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                bottom: 4,
-                                                right: widget.reverse ? 4 : 8,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 3),
+                                          child: Wrap(
+                                            alignment: WrapAlignment.end,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.end,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  if (hasQuotedMessage)
+                                                    _buildQuotedMessage(),
+                                                  if (hasNonUrlAttachments)
+                                                    _parseAttachments(),
+                                                  if (!isGiphy)
+                                                    _buildTextBubble(),
+                                                ],
                                               ),
-                                              child: _bottomRow,
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                  right: widget.reverse ? 4 : 8,
+                                                ),
+                                                child: _bottomRow,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                               ),
