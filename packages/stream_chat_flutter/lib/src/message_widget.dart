@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/attachment/url_attachment.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/image_group.dart';
@@ -589,14 +590,15 @@ class _MessageWidgetState extends State<MessageWidget>
               ? null
               : () => onLongPress(context),
           child: Padding(
-            padding: widget.padding ?? const EdgeInsets.fromLTRB(8, 10, 8, 10),
+            padding:
+                widget.padding ?? EdgeInsets.fromLTRB(8.w, 10.h, 8.w, 10.h),
             child: FractionallySizedBox(
               alignment:
                   widget.reverse ? Alignment.centerRight : Alignment.centerLeft,
               widthFactor: 0.78,
               child: Padding(
                 padding: EdgeInsets.only(
-                  bottom: isPinned && widget.showPinHighlight ? 8.0 : 0.0,
+                  bottom: isPinned && widget.showPinHighlight ? 8.h : 0.0,
                 ),
                 child: Column(
                   crossAxisAlignment: widget.reverse
@@ -643,7 +645,7 @@ class _MessageWidgetState extends State<MessageWidget>
                                         top: widget.message.reactionCounts
                                                     ?.isNotEmpty ==
                                                 true
-                                            ? 18
+                                            ? 18.h
                                             : 0,
                                       )
                                     : EdgeInsets.zero,
@@ -690,8 +692,7 @@ class _MessageWidgetState extends State<MessageWidget>
                                             ),
                                         color: _getBackgroundColor(),
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 3),
+                                          padding: EdgeInsets.only(bottom: 3.h),
                                           child: Wrap(
                                             alignment: WrapAlignment.end,
                                             crossAxisAlignment:
@@ -712,8 +713,10 @@ class _MessageWidgetState extends State<MessageWidget>
                                               ),
                                               Padding(
                                                 padding: EdgeInsets.only(
-                                                  top: 2,
-                                                  right: widget.reverse ? 4 : 8,
+                                                  top: 2.h,
+                                                  right: widget.reverse
+                                                      ? 4.w
+                                                      : 8.w,
                                                 ),
                                                 child: _bottomRow,
                                               ),
@@ -741,7 +744,7 @@ class _MessageWidgetState extends State<MessageWidget>
                         ),
                       ],
                     ),
-                    if (isFailedState) StreamSvgIcon.error(size: 20),
+                    if (isFailedState) StreamSvgIcon.error(size: 20.r),
                   ],
                 ),
               ),
@@ -774,10 +777,10 @@ class _MessageWidgetState extends State<MessageWidget>
           : chatThemeData.ownMessageTheme,
       reverse: widget.reverse,
       padding: EdgeInsets.only(
-        right: 3,
-        left: 3,
-        top: 3,
-        bottom: hasNonUrlAttachments ? 3 : 0,
+        right: 3.w,
+        left: 3.w,
+        top: 3.h,
+        bottom: hasNonUrlAttachments ? 3.h : 0,
       ),
     );
   }
@@ -826,7 +829,7 @@ class _MessageWidgetState extends State<MessageWidget>
       return widget.usernameBuilder!(context, widget.message);
     }
     return Padding(
-      padding: const EdgeInsets.only(top: 2, bottom: 2, left: 8),
+      padding: EdgeInsets.only(top: 2.h, bottom: 2.h, left: 8.w),
       child: Text(
         widget.message.user?.name ?? '',
         maxLines: 1,
@@ -1066,7 +1069,7 @@ class _MessageWidgetState extends State<MessageWidget>
           message.attachments.where((it) => !it.uploadState.isSuccess).length;
       if (uploadRemaining == 0) {
         return StreamSvgIcon.check(
-          size: style!.fontSize! + 6,
+          size: style!.fontSize! + 5.fz,
           color: IconTheme.of(context).color!.withOpacity(0.5),
         );
       }
@@ -1093,7 +1096,7 @@ class _MessageWidgetState extends State<MessageWidget>
         return SendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
-          size: style!.fontSize! + 6,
+          size: style!.fontSize! + 5.fz,
         );
       },
     );
@@ -1116,7 +1119,7 @@ class _MessageWidgetState extends State<MessageWidget>
                       ? widget.messageTheme.copyWith(
                           messageTextStyle:
                               widget.messageTheme.messageTextStyle!.copyWith(
-                            fontSize: 42,
+                            fontSize: 42.fz,
                           ),
                         )
                       : widget.messageTheme,
@@ -1132,16 +1135,14 @@ class _MessageWidgetState extends State<MessageWidget>
     final currentUser = _streamChat.currentUser!;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 8),
+      padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 4.h, bottom: 8.h),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           StreamSvgIcon.pin(
-            size: 16,
+            size: 16.r,
           ),
-          const SizedBox(
-            width: 4,
-          ),
+          SizedBox(width: 4.w),
           Text(
             context.translations.pinnedByUserText(
               pinnedBy: pinnedBy,
@@ -1149,7 +1150,7 @@ class _MessageWidgetState extends State<MessageWidget>
             ),
             style: TextStyle(
               color: _streamChatTheme.colorTheme.textLowEmphasis,
-              fontSize: 13,
+              fontSize: 13.fz,
               fontWeight: FontWeight.w400,
             ),
           ),

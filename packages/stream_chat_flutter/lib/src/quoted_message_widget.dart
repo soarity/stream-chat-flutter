@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:video_player/video_player.dart';
@@ -46,8 +47,8 @@ class _VideoAttachmentThumbnailState extends State<_VideoAttachmentThumbnail> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: widget.size.height,
-        width: widget.size.width,
+        height: widget.size.height.r,
+        width: widget.size.width.r,
         child: _controller.value.isInitialized
             ? VideoPlayer(_controller)
             : const CircularProgressIndicator(),
@@ -106,7 +107,7 @@ class QuotedMessageWidget extends StatelessWidget {
     final children = [
       if (message.user != null)
         Padding(
-          padding: const EdgeInsets.only(bottom: 2),
+          padding: EdgeInsets.only(bottom: 2.h),
           child: Text(
             message.user!.id == StreamChat.of(context).currentUser!.id
                 ? 'You'
@@ -120,26 +121,26 @@ class QuotedMessageWidget extends StatelessWidget {
           ),
         ),
       _buildMessage(context),
-      const SizedBox(width: 8),
+      SizedBox(width: 8.w),
     ];
     return Padding(
       padding: padding,
       child: InkWell(
         onTap: onTap,
         child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(12),
-            bottom: Radius.circular(6),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(12.r),
+            bottom: Radius.circular(6.r),
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.1),
-              border: const Border(
-                left: BorderSide(color: Color(0xFFF28B82), width: 4),
+              border: Border(
+                left: BorderSide(color: const Color(0xFFF28B82), width: 4.w),
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+              padding: EdgeInsets.all(8.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: children,
@@ -169,17 +170,17 @@ class QuotedMessageWidget extends StatelessWidget {
             messageTheme: isOnlyEmoji && _containsText
                 ? messageTheme.copyWith(
                     messageTextStyle: messageTheme.messageTextStyle?.copyWith(
-                      fontSize: 32,
+                      fontSize: 32.fz,
                     ),
                   )
                 : messageTheme.copyWith(
                     messageTextStyle: messageTheme.messageTextStyle?.copyWith(
-                      fontSize: 12,
+                      fontSize: 12.fz,
                     ),
                   ),
           ),
         ),
-    ].insertBetween(const SizedBox(width: 8));
+    ].insertBetween(SizedBox(width: 8.w));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +192,7 @@ class QuotedMessageWidget extends StatelessWidget {
   }
 
   Widget _buildUrlAttachment(Attachment attachment) {
-    const size = Size(32, 32);
+    final size = Size(32.r, 32.r);
     if (attachment.thumbUrl != null) {
       return Container(
         height: size.height,
@@ -206,7 +207,7 @@ class QuotedMessageWidget extends StatelessWidget {
         ),
       );
     }
-    return const AttachmentError(size: size);
+    return AttachmentError(size: size);
   }
 
   Widget _parseAttachments(BuildContext context) {
@@ -241,7 +242,7 @@ class QuotedMessageWidget extends StatelessWidget {
 
   ShapeBorder _getDefaultShape(BuildContext context) => RoundedRectangleBorder(
         side: const BorderSide(width: 0, color: Colors.transparent),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
       );
 
   Map<String, QuotedMessageAttachmentThumbnailBuilder>
@@ -250,14 +251,14 @@ class QuotedMessageWidget extends StatelessWidget {
                   attachment: attachment,
                   message: message,
                   messageTheme: messageTheme,
-                  size: const Size(32, 32),
+                  size: Size(32.r, 32.r),
                 ),
             'video': (_, attachment) => _VideoAttachmentThumbnail(
                   key: ValueKey(attachment.assetUrl),
                   attachment: attachment,
                 ),
             'giphy': (_, attachment) {
-              const size = Size(32, 32);
+              final size = Size(32.r, 32.r);
               return CachedNetworkImage(
                 height: size.height,
                 width: size.width,
@@ -272,13 +273,13 @@ class QuotedMessageWidget extends StatelessWidget {
                     attachment.imageUrl ??
                     attachment.assetUrl!,
                 errorWidget: (context, url, error) =>
-                    const AttachmentError(size: size),
+                    AttachmentError(size: size),
                 fit: BoxFit.cover,
               );
             },
             'file': (_, attachment) => SizedBox(
-                  height: 32,
-                  width: 32,
+                  height: 32.r,
+                  width: 32.r,
                   child: getFileTypeImage(
                     attachment.extraData['mime_type'] as String?,
                   ),

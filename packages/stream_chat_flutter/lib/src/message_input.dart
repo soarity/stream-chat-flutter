@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -435,12 +436,12 @@ class MessageInputState extends State<MessageInput> {
             children: [
               if (_hasQuotedMessage)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  padding: EdgeInsets.fromLTRB(8.r, 8.r, 8.r, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8.r),
                         child: StreamSvgIcon.reply(
                           color: _streamChatTheme.colorTheme.disabled,
                         ),
@@ -1422,8 +1423,8 @@ class MessageInputState extends State<MessageInput> {
         return Stack(
           children: [
             VideoThumbnailImage(
-              height: 104,
-              width: 104,
+              height: 104.h,
+              width: 104.w,
               video: (attachment.file?.path ?? attachment.assetUrl)!,
               fit: BoxFit.cover,
             ),
@@ -2065,7 +2066,7 @@ class _CountdownButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: StreamChatTheme.of(context).colorTheme.disabled,

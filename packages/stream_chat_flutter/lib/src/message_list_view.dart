@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/progress_indicator.dart';
@@ -492,9 +493,9 @@ class _MessageListViewState extends State<MessageListView> {
                       if (widget.reverse
                           ? widget.footerBuilder == null
                           : widget.headerBuilder == null) {
-                        return const SizedBox(height: 30);
+                        return SizedBox(height: 30.h);
                       }
-                      return const SizedBox(height: 8);
+                      return SizedBox(height: 8.h);
                     }
 
                     if (i == 1 || i == itemCount - 4) return const Offstage();
@@ -516,7 +517,7 @@ class _MessageListViewState extends State<MessageListView> {
                               nextMessage.createdAt.toLocal(),
                             )
                           : Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
                               child: DateDivider(
                                 dateTime: nextMessage.createdAt.toLocal(),
                               ),
@@ -552,11 +553,11 @@ class _MessageListViewState extends State<MessageListView> {
                     if (spacingRules.isNotEmpty) {
                       return widget.spacingWidgetBuilder
                               ?.call(context, spacingRules) ??
-                          const SizedBox(height: 8);
+                          SizedBox(height: 8.h);
                     }
                     return widget.spacingWidgetBuilder
                             ?.call(context, [SpacingType.defaultSpacing]) ??
-                        const SizedBox(height: 2);
+                        SizedBox(height: 2.h);
                   },
                   itemBuilder: (context, i) {
                     if (i == itemCount - 1) {
@@ -804,11 +805,11 @@ class _MessageListViewState extends State<MessageListView> {
                     top: -10,
                     child: CircleAvatar(
                       child: Padding(
-                        padding: const EdgeInsets.all(3),
+                        padding: EdgeInsets.all(3.r),
                         child: Text(
                           '$unreadCount',
-                          style: const TextStyle(
-                            fontSize: 11,
+                          style: TextStyle(
+                            fontSize: 11.fz,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -883,7 +884,7 @@ class _MessageListViewState extends State<MessageListView> {
       message: message,
       reverse: isMyMessage,
       showUsername: !isMyMessage,
-      padding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
+      padding: EdgeInsets.fromLTRB(14.w, 0, 12.w, 0),
       showSendingIndicator: false,
       borderRadiusGeometry: BorderRadius.only(
         topLeft: const Radius.circular(16),
@@ -894,9 +895,9 @@ class _MessageListViewState extends State<MessageListView> {
             isMyMessage ? const Radius.circular(2) : const Radius.circular(16),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 8.0,
-        4,
-        isOnlyEmoji ? 0 : 8.0,
+        isOnlyEmoji ? 0 : 8.w,
+        4.h,
+        isOnlyEmoji ? 0 : 8.w,
         0,
       ),
       borderSide: isMyMessage || isOnlyEmoji ? BorderSide.none : null,
@@ -969,7 +970,7 @@ class _MessageListViewState extends State<MessageListView> {
 
     final hasReplies = message.replyCount! > 0;
 
-    final attachmentBorderRadius = hasFileAttachment ? 12.0 : 14.0;
+    final attachmentBorderRadius = hasFileAttachment ? 12.r : 14.r;
 
     final showTimeStamp = !hasReplies && (timeDiff >= 1 || !isNextUserSame);
 
@@ -1001,7 +1002,7 @@ class _MessageListViewState extends State<MessageListView> {
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
-      padding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
+      padding: EdgeInsets.fromLTRB(14.w, 0, 12.w, 0),
       showUsername: showUsername,
       showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,
@@ -1048,25 +1049,25 @@ class _MessageListViewState extends State<MessageListView> {
               )
             : Radius.circular(attachmentBorderRadius),
       ),
-      attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4 : 2),
+      attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4.r : 2.r),
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: const Radius.circular(16),
+        topLeft: Radius.circular(16.r),
         bottomLeft: isMyMessage
-            ? const Radius.circular(16)
+            ? Radius.circular(16.r)
             : Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16,
+                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16.r,
               ),
-        topRight: const Radius.circular(16),
+        topRight: Radius.circular(16.r),
         bottomRight: isMyMessage
             ? Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16,
+                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16.r,
               )
             : const Radius.circular(16),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 8.0,
-        4,
-        isOnlyEmoji ? 0 : 8.0,
+        isOnlyEmoji ? 0 : 8.w,
+        4.h,
+        isOnlyEmoji ? 0 : 8.w,
         0,
       ),
       messageTheme: isMyMessage
@@ -1145,7 +1146,7 @@ class _MessageListViewState extends State<MessageListView> {
           child: child,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: EdgeInsets.symmetric(vertical: 4.h),
           child: child,
         ),
       );
@@ -1245,10 +1246,10 @@ class _LoadingIndicator extends StatelessWidget {
       builder: (context, data) {
         if (!data) return const Offstage();
         return indicatorBuilder?.call(context) ??
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(8),
-                child: CustomProgressIndicator(),
+                padding: EdgeInsets.all(8.r),
+                child: const CustomProgressIndicator(),
               ),
             );
       },
