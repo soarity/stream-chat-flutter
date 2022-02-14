@@ -809,7 +809,7 @@ class _MessageListViewState extends State<MessageListView> {
                         child: Text(
                           '$unreadCount',
                           style: TextStyle(
-                            fontSize: 11.fz,
+                            fontSize: 11.fzs,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

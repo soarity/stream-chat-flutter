@@ -175,6 +175,6 @@ class StreamChatState extends State<StreamChat> {
 extension SizeExtension on num {
   ///[ScreenUtil.setSp]
   /// used to reduce font sizes on bigger screens
-  double get fz =>
+  double get fzs =>
       1.sw <= 576 ? ScreenUtil().setSp(this) : ScreenUtil().setSp(this - 1.6);
 }

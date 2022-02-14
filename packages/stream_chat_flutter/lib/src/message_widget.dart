@@ -1069,7 +1069,7 @@ class _MessageWidgetState extends State<MessageWidget>
           message.attachments.where((it) => !it.uploadState.isSuccess).length;
       if (uploadRemaining == 0) {
         return StreamSvgIcon.check(
-          size: style!.fontSize! + 5.fz,
+          size: style!.fontSize! + 5.fzs,
           color: IconTheme.of(context).color!.withOpacity(0.5),
         );
       }
@@ -1096,7 +1096,7 @@ class _MessageWidgetState extends State<MessageWidget>
         return SendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
-          size: style!.fontSize! + 5.fz,
+          size: style!.fontSize! + 5.fzs,
         );
       },
     );
@@ -1119,7 +1119,7 @@ class _MessageWidgetState extends State<MessageWidget>
                       ? widget.messageTheme.copyWith(
                           messageTextStyle:
                               widget.messageTheme.messageTextStyle!.copyWith(
-                            fontSize: 42.fz,
+                            fontSize: 42.fzs,
                           ),
                         )
                       : widget.messageTheme,
@@ -1150,7 +1150,7 @@ class _MessageWidgetState extends State<MessageWidget>
             ),
             style: TextStyle(
               color: _streamChatTheme.colorTheme.textLowEmphasis,
-              fontSize: 13.fz,
+              fontSize: 13.fzs,
               fontWeight: FontWeight.w400,
             ),
           ),
