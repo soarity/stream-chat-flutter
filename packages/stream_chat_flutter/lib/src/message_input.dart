@@ -755,7 +755,7 @@ class MessageInputState extends State<MessageInput> {
           color: Colors.transparent,
         ),
       ),
-      contentPadding: EdgeInsets.fromLTRB(16.w, 12.h, 13.w, 11.h),
+      contentPadding: EdgeInsets.fromLTRB(12.w, 8.h, 8.w, 8.h),
       prefixIcon: _commandEnabled
           ? Row(
               mainAxisSize: MainAxisSize.min,

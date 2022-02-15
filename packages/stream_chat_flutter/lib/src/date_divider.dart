@@ -44,7 +44,7 @@ class DateDivider extends StatelessWidget {
         shape: const StadiumBorder(),
         color: chatThemeData.colorTheme.overlayDark,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
           child: Text(
             dayInfo,
             style: chatThemeData.textTheme.footnote.copyWith(
