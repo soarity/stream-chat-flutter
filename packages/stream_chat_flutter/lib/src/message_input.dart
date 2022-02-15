@@ -470,9 +470,9 @@ class MessageInputState extends State<MessageInput> {
               if (widget.parentMessage != null && !widget.hideSendAsDm)
                 Padding(
                   padding: EdgeInsets.only(
-                    right: 12.w,
-                    left: 12.w,
-                    bottom: 12.h,
+                    right: 8.w,
+                    left: 8.w,
+                    bottom: 8.h,
                   ),
                   child: _buildDmCheckbox(),
                 ),
@@ -537,8 +537,8 @@ class MessageInputState extends State<MessageInput> {
   Widget _buildDmCheckbox() => Row(
         children: [
           Container(
-            height: 16.h,
-            width: 16.w,
+            height: 16.r,
+            width: 16.r,
             foregroundDecoration: BoxDecoration(
               border: _sendAsDm
                   ? null
@@ -640,8 +640,8 @@ class MessageInputState extends State<MessageInput> {
           ),
           padding: const EdgeInsets.all(0),
           constraints: BoxConstraints.tightFor(
-            height: 24.h,
-            width: 24.w,
+            height: 24.r,
+            width: 24.r,
           ),
           splashRadius: 24.r,
         ),
@@ -684,38 +684,35 @@ class MessageInputState extends State<MessageInput> {
               ? _messageInputTheme.activeBorderGradient
               : _messageInputTheme.idleBorderGradient,
         ),
-        child: Padding(
-          padding: EdgeInsets.all(1.5.r),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: _messageInputTheme.borderRadius,
-              color: _messageInputTheme.inputBackgroundColor,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildReplyToMessage(),
-                _buildAttachments(),
-                LimitedBox(
-                  maxHeight: widget.maxHeight,
-                  child: TextField(
-                    key: const Key('messageInputText'),
-                    enabled: _inputEnabled,
-                    maxLines: null,
-                    onSubmitted: (_) => sendMessage(),
-                    keyboardType: widget.keyboardType,
-                    controller: textEditingController,
-                    focusNode: _focusNode,
-                    style: _messageInputTheme.inputTextStyle,
-                    autofocus: widget.autofocus,
-                    textAlignVertical: TextAlignVertical.center,
-                    decoration: _getInputDecoration(context),
-                    textCapitalization: TextCapitalization.sentences,
-                  ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: _messageInputTheme.borderRadius,
+            color: _messageInputTheme.inputBackgroundColor,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildReplyToMessage(),
+              _buildAttachments(),
+              LimitedBox(
+                maxHeight: widget.maxHeight,
+                child: TextField(
+                  key: const Key('messageInputText'),
+                  enabled: _inputEnabled,
+                  maxLines: null,
+                  onSubmitted: (_) => sendMessage(),
+                  keyboardType: widget.keyboardType,
+                  controller: textEditingController,
+                  focusNode: _focusNode,
+                  style: _messageInputTheme.inputTextStyle,
+                  autofocus: widget.autofocus,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: _getInputDecoration(context),
+                  textCapitalization: TextCapitalization.sentences,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -795,8 +792,6 @@ class MessageInputState extends State<MessageInput> {
                   children: [_buildExpandActionsButton(context)],
                 )
               : null),
-      suffixIconConstraints: BoxConstraints.tightFor(height: 40.h),
-      prefixIconConstraints: BoxConstraints.tightFor(height: 40.h),
       suffixIcon: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -809,8 +804,8 @@ class MessageInputState extends State<MessageInput> {
                 splashRadius: 24.r,
                 padding: const EdgeInsets.all(0),
                 constraints: BoxConstraints.tightFor(
-                  height: 24.h,
-                  width: 24.w,
+                  height: 24.r,
+                  width: 24.r,
                 ),
                 onPressed: () {
                   setState(() => _commandEnabled = false);
