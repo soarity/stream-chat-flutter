@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
 
 /// Tile to display a message, used in stream chat to display connection status
@@ -45,7 +46,7 @@ class InfoTile extends StatelessWidget {
       portalAnchor: tileAnchor ?? Alignment.topCenter,
       childAnchor: childAnchor ?? Alignment.bottomCenter,
       portal: Container(
-        height: 25,
+        height: 25.h,
         color: backgroundColor ??
             chatThemeData.colorTheme.textLowEmphasis.withOpacity(0.9),
         child: Center(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// This widget is used for showing user tiles for mentions
@@ -35,25 +36,21 @@ class MentionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatThemeData = StreamChatTheme.of(context);
     return SizedBox(
-      height: 56,
+      height: 56.h,
       child: Row(
         children: [
-          const SizedBox(
-            width: 16,
-          ),
+          SizedBox(width: 16.w),
           leading ??
               UserAvatar(
                 constraints: BoxConstraints.tight(
-                  const Size(
-                    40,
-                    40,
+                  Size(
+                    40.r,
+                    40.r,
                   ),
                 ),
                 user: member.user!,
               ),
-          const SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8.w),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -68,9 +65,7 @@ class MentionTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: chatThemeData.textTheme.bodyBold,
                       ),
-                  const SizedBox(
-                    height: 2,
-                  ),
+                  SizedBox(height: 2.h),
                   subtitle ??
                       Text(
                         '@${member.userId}',
@@ -86,11 +81,9 @@ class MentionTile extends StatelessWidget {
           ),
           trailing ??
               Padding(
-                padding: const EdgeInsets.only(
-                  right: 18,
-                  left: 8,
-                ),
+                padding: EdgeInsets.only(right: 18.w, left: 8.w),
                 child: StreamSvgIcon.mentions(
+                  size: 24.r,
                   color: chatThemeData.colorTheme.accentPrimary,
                 ),
               ),

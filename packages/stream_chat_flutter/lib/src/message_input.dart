@@ -443,31 +443,36 @@ class MessageInputState extends State<MessageInput> {
                       Padding(
                         padding: EdgeInsets.all(8.r),
                         child: StreamSvgIcon.reply(
+                          size: 24.r,
                           color: _streamChatTheme.colorTheme.disabled,
                         ),
                       ),
                       Text(
                         context.translations.replyToMessageLabel,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.fzs,
+                        ),
                       ),
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        icon: StreamSvgIcon.closeSmall(),
+                        iconSize: 24.r,
+                        icon: StreamSvgIcon.closeSmall(size: 24.r),
                         onPressed: widget.onQuotedMessageCleared,
                       ),
                     ],
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: EdgeInsets.symmetric(vertical: 8.h),
                 child: _buildTextField(context),
               ),
               if (widget.parentMessage != null && !widget.hideSendAsDm)
                 Padding(
-                  padding: const EdgeInsets.only(
-                    right: 12,
-                    left: 12,
-                    bottom: 12,
+                  padding: EdgeInsets.only(
+                    right: 12.w,
+                    left: 12.w,
+                    bottom: 12.h,
                   ),
                   child: _buildDmCheckbox(),
                 ),
@@ -532,8 +537,8 @@ class MessageInputState extends State<MessageInput> {
   Widget _buildDmCheckbox() => Row(
         children: [
           Container(
-            height: 16,
-            width: 16,
+            height: 16.h,
+            width: 16.w,
             foregroundDecoration: BoxDecoration(
               border: _sendAsDm
                   ? null
@@ -563,20 +568,17 @@ class MessageInputState extends State<MessageInput> {
                         ? CrossFadeState.showFirst
                         : CrossFadeState.showSecond,
                     firstChild: StreamSvgIcon.check(
-                      size: 16,
+                      size: 16.r,
                       color: _streamChatTheme.colorTheme.barsBg,
                     ),
-                    secondChild: const SizedBox(
-                      height: 16,
-                      width: 16,
-                    ),
+                    secondChild: SizedBox(height: 16.h, width: 16.w),
                   ),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: Text(
               context.translations.alsoSendAsDirectMessageLabel,
               style: _streamChatTheme.textTheme.footnote.copyWith(
@@ -612,7 +614,7 @@ class MessageInputState extends State<MessageInput> {
   Widget _buildExpandActionsButton(BuildContext context) {
     final channel = StreamChannel.of(context).channel;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8.w),
       child: AnimatedCrossFade(
         crossFadeState: _actionsShrunk
             ? CrossFadeState.showFirst
@@ -620,6 +622,7 @@ class MessageInputState extends State<MessageInput> {
         firstCurve: Curves.easeOut,
         secondCurve: Curves.easeIn,
         firstChild: IconButton(
+          iconSize: 24.r,
           onPressed: () {
             if (_actionsShrunk) {
               setState(() => _actionsShrunk = false);
@@ -631,15 +634,16 @@ class MessageInputState extends State<MessageInput> {
                 ? pi
                 : 0,
             child: StreamSvgIcon.emptyCircleLeft(
+              size: 24.r,
               color: _messageInputTheme.expandButtonColor,
             ),
           ),
           padding: const EdgeInsets.all(0),
-          constraints: const BoxConstraints.tightFor(
-            height: 24,
-            width: 24,
+          constraints: BoxConstraints.tightFor(
+            height: 24.h,
+            width: 24.w,
           ),
-          splashRadius: 24,
+          splashRadius: 24.r,
         ),
         secondChild: widget.disableAttachments &&
                 !widget.showCommandsButton &&
@@ -655,7 +659,7 @@ class MessageInputState extends State<MessageInput> {
                       channel.config?.commands.isNotEmpty == true)
                     _buildCommandButton(context),
                   ...widget.actions,
-                ].insertBetween(const SizedBox(width: 8)),
+                ].insertBetween(SizedBox(width: 8.w)),
               ),
         duration: const Duration(milliseconds: 300),
         alignment: Alignment.center,
@@ -665,10 +669,10 @@ class MessageInputState extends State<MessageInput> {
 
   Expanded _buildTextInput(BuildContext context) {
     final margin = (widget.sendButtonLocation == SendButtonLocation.inside
-            ? const EdgeInsets.only(right: 8)
+            ? EdgeInsets.only(right: 8.w)
             : EdgeInsets.zero) +
         (widget.actionsLocation != ActionsLocation.left || _commandEnabled
-            ? const EdgeInsets.only(left: 8)
+            ? EdgeInsets.only(left: 8.w)
             : EdgeInsets.zero);
     return Expanded(
       child: Container(
@@ -681,7 +685,7 @@ class MessageInputState extends State<MessageInput> {
               : _messageInputTheme.idleBorderGradient,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(1.5),
+          padding: EdgeInsets.all(1.5.r),
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: _messageInputTheme.borderRadius,
@@ -751,17 +755,17 @@ class MessageInputState extends State<MessageInput> {
           color: Colors.transparent,
         ),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(16, 12, 13, 11),
+      contentPadding: EdgeInsets.fromLTRB(16.w, 12.h, 13.w, 11.h),
       prefixIcon: _commandEnabled
           ? Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.r),
                   child: Container(
-                    constraints: BoxConstraints.tight(const Size(64, 24)),
+                    constraints: BoxConstraints.tight(Size(64.w, 24.h)),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       color: _streamChatTheme.colorTheme.accentPrimary,
                     ),
                     alignment: Alignment.center,
@@ -770,7 +774,7 @@ class MessageInputState extends State<MessageInput> {
                       children: [
                         StreamSvgIcon.lightning(
                           color: Colors.white,
-                          size: 16,
+                          size: 16.r,
                         ),
                         Text(
                           _chosenCommand?.name.toUpperCase() ?? '',
@@ -791,21 +795,22 @@ class MessageInputState extends State<MessageInput> {
                   children: [_buildExpandActionsButton(context)],
                 )
               : null),
-      suffixIconConstraints: const BoxConstraints.tightFor(height: 40),
-      prefixIconConstraints: const BoxConstraints.tightFor(height: 40),
+      suffixIconConstraints: BoxConstraints.tightFor(height: 40.h),
+      prefixIconConstraints: BoxConstraints.tightFor(height: 40.h),
       suffixIcon: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (_commandEnabled)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: EdgeInsets.only(right: 8.w),
               child: IconButton(
+                iconSize: 24.r,
                 icon: StreamSvgIcon.closeSmall(),
-                splashRadius: 24,
+                splashRadius: 24.r,
                 padding: const EdgeInsets.all(0),
-                constraints: const BoxConstraints.tightFor(
-                  height: 24,
-                  width: 24,
+                constraints: BoxConstraints.tightFor(
+                  height: 24.h,
+                  width: 24.w,
                 ),
                 onPressed: () {
                   setState(() => _commandEnabled = false);
@@ -999,7 +1004,9 @@ class MessageInputState extends State<MessageInput> {
                 Row(
                   children: [
                     IconButton(
+                      iconSize: 24.r,
                       icon: StreamSvgIcon.pictures(
+                        size: 24.r,
                         color: _getIconColor(0),
                       ),
                       onPressed:
@@ -1012,8 +1019,9 @@ class MessageInputState extends State<MessageInput> {
                                 },
                     ),
                     IconButton(
-                      iconSize: 32,
+                      iconSize: 32.r,
                       icon: StreamSvgIcon.files(
+                        size: 24.r,
                         color: _getIconColor(1),
                       ),
                       onPressed:
@@ -1024,7 +1032,9 @@ class MessageInputState extends State<MessageInput> {
                                 },
                     ),
                     IconButton(
+                      iconSize: 24.r,
                       icon: StreamSvgIcon.camera(
+                        size: 24.r,
                         color: _getIconColor(2),
                       ),
                       onPressed: attachmentLimitCrossed ||
@@ -1039,8 +1049,10 @@ class MessageInputState extends State<MessageInput> {
                             },
                     ),
                     IconButton(
+                      iconSize: 24.r,
                       padding: const EdgeInsets.all(0),
                       icon: StreamSvgIcon.record(
+                        size: 24.r,
                         color: _getIconColor(3),
                       ),
                       onPressed: attachmentLimitCrossed ||
@@ -1059,20 +1071,20 @@ class MessageInputState extends State<MessageInput> {
                 DecoratedBox(
                   decoration: BoxDecoration(
                     color: _streamChatTheme.colorTheme.barsBg,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16.r),
+                      topRight: Radius.circular(16.r),
                     ),
                   ),
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8.r),
                       child: Container(
-                        width: 40,
-                        height: 4,
+                        width: 40.w,
+                        height: 4.h,
                         decoration: BoxDecoration(
                           color: _streamChatTheme.colorTheme.inputBg,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(4.r),
                         ),
                       ),
                     ),
@@ -1083,7 +1095,7 @@ class MessageInputState extends State<MessageInput> {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: _streamChatTheme.colorTheme.barsBg,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: _PickerWidget(
                         filePickerIndex: _filePickerIndex,
@@ -1197,7 +1209,7 @@ class MessageInputState extends State<MessageInput> {
       mentionAllAppUsers: widget.mentionAllAppUsers,
       client: StreamChat.of(context).client,
       channel: channel,
-      size: Size(renderObject.size.width - 16, 400),
+      size: Size(renderObject.size.width - 16, 400.h),
       mentionsTileBuilder: tileBuilder,
       onMentionUserTap: (user) {
         _mentionedUsers.add(user);
@@ -1233,7 +1245,7 @@ class MessageInputState extends State<MessageInput> {
     final renderObject = context.findRenderObject() as RenderBox;
 
     return EmojiOverlay(
-      size: Size(renderObject.size.width - 16, 200),
+      size: Size(renderObject.size.width - 16, 200.h),
       query: query,
       onEmojiResult: (emoji) {
         _chooseEmoji(splits, emoji);
@@ -1272,7 +1284,7 @@ class MessageInputState extends State<MessageInput> {
       showBorder: !containsUrl,
       message: widget.quotedMessage!,
       messageTheme: _streamChatTheme.otherMessageTheme,
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 0),
     );
   }
 
@@ -1288,16 +1300,16 @@ class MessageInputState extends State<MessageInput> {
       children: [
         if (fileAttachments.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 0),
             child: LimitedBox(
-              maxHeight: 136,
+              maxHeight: 136.h,
               child: ListView(
                 reverse: true,
                 shrinkWrap: true,
                 children: fileAttachments.reversed
                     .map<Widget>(
                       (e) => ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         child: FileAttachment(
                           message: Message(
                             status: MessageSendingStatus.sending,
@@ -1305,7 +1317,7 @@ class MessageInputState extends State<MessageInput> {
                           attachment: e,
                           size: Size(
                             MediaQuery.of(context).size.width * 0.65,
-                            56,
+                            56.h,
                           ),
                           trailing: Padding(
                             padding: const EdgeInsets.all(8),
@@ -1314,13 +1326,13 @@ class MessageInputState extends State<MessageInput> {
                         ),
                       ),
                     )
-                    .insertBetween(const SizedBox(height: 8)),
+                    .insertBetween(SizedBox(height: 8.h)),
               ),
             ),
           ),
         if (remainingAttachments.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 0),
             child: LimitedBox(
               maxHeight: 104,
               child: ListView(
@@ -1328,14 +1340,14 @@ class MessageInputState extends State<MessageInput> {
                 children: remainingAttachments
                     .map<Widget>(
                       (attachment) => ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         child: Stack(
                           children: <Widget>[
                             AspectRatio(
                               aspectRatio: 1,
                               child: SizedBox(
-                                height: 104,
-                                width: 104,
+                                height: 104.h,
+                                width: 10.w,
                                 child: _buildAttachment(attachment),
                               ),
                             ),
@@ -1348,7 +1360,7 @@ class MessageInputState extends State<MessageInput> {
                         ),
                       ),
                     )
-                    .insertBetween(const SizedBox(width: 8)),
+                    .insertBetween(SizedBox(width: 8.w)),
               ),
             ),
           ),
@@ -1357,8 +1369,8 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget _buildRemoveButton(Attachment attachment) => SizedBox(
-        height: 24,
-        width: 24,
+        height: 24.r,
+        width: 24.r,
         child: RawMaterialButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -1374,7 +1386,7 @@ class MessageInputState extends State<MessageInput> {
               _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.5),
           child: Center(
             child: StreamSvgIcon.close(
-              size: 24,
+              size: 24.r,
               color: _streamChatTheme.colorTheme.barsBg,
             ),
           ),
@@ -1441,7 +1453,7 @@ class MessageInputState extends State<MessageInput> {
       default:
         return Container(
           color: Colors.black26,
-          child: const Icon(Icons.insert_drive_file),
+          child: Icon(Icons.insert_drive_file, size: 24.r),
         );
     }
   }
@@ -1449,7 +1461,9 @@ class MessageInputState extends State<MessageInput> {
   Widget _buildCommandButton(BuildContext context) {
     final s = textEditingController.text.trim();
     final defaultButton = IconButton(
+      iconSize: 24.r,
       icon: StreamSvgIcon.lightning(
+        size: 24.r,
         color: s.isNotEmpty
             ? _streamChatTheme.colorTheme.disabled
             : (_showCommandsOverlay
@@ -1457,11 +1471,11 @@ class MessageInputState extends State<MessageInput> {
                 : _messageInputTheme.actionButtonIdleColor),
       ),
       padding: const EdgeInsets.all(0),
-      constraints: const BoxConstraints.tightFor(
-        height: 24,
-        width: 24,
+      constraints: BoxConstraints.tightFor(
+        height: 24.r,
+        width: 24.r,
       ),
-      splashRadius: 24,
+      splashRadius: 24.r,
       onPressed: () async {
         if (_openFilePickerSection) {
           setState(() => _openFilePickerSection = false);
@@ -1480,17 +1494,19 @@ class MessageInputState extends State<MessageInput> {
 
   Widget _buildAttachmentButton(BuildContext context) {
     final defaultButton = IconButton(
+      iconSize: 24.r,
       icon: StreamSvgIcon.attach(
+        size: 24.r,
         color: _openFilePickerSection
             ? _messageInputTheme.actionButtonColor
             : _messageInputTheme.actionButtonIdleColor,
       ),
       padding: const EdgeInsets.all(0),
-      constraints: const BoxConstraints.tightFor(
-        height: 24,
-        width: 24,
+      constraints: BoxConstraints.tightFor(
+        height: 24.r,
+        width: 24.r,
       ),
-      splashRadius: 24,
+      splashRadius: 24.r,
       onPressed: () async {
         _showCommandsOverlay = false;
         _showMentionsOverlay = false;
@@ -1521,10 +1537,10 @@ class MessageInputState extends State<MessageInput> {
     } else {
       showModalBottomSheet(
         clipBehavior: Clip.hardEdge,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(32),
-            topRight: Radius.circular(32),
+            topLeft: Radius.circular(32.r),
+            topRight: Radius.circular(32.r),
           ),
         ),
         context: context,
@@ -1535,13 +1551,11 @@ class MessageInputState extends State<MessageInput> {
             ListTile(
               title: Text(
                 context.translations.addAFileLabel,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.fzs),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.image),
+              leading: Icon(Icons.image, size: 24.r),
               title: Text(context.translations.uploadAPhotoLabel),
               onTap: () {
                 pickFile(DefaultAttachmentTypes.image);
@@ -1549,7 +1563,7 @@ class MessageInputState extends State<MessageInput> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.video_library),
+              leading: Icon(Icons.video_library, size: 24.r),
               title: Text(context.translations.uploadAVideoLabel),
               onTap: () {
                 pickFile(DefaultAttachmentTypes.video);
@@ -1557,7 +1571,7 @@ class MessageInputState extends State<MessageInput> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.insert_drive_file),
+              leading: Icon(Icons.insert_drive_file, size: 24.r),
               title: Text(context.translations.uploadAFileLabel),
               onTap: () {
                 pickFile(DefaultAttachmentTypes.file);
@@ -1713,26 +1727,31 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget _buildIdleSendButton(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         child: StreamSvgIcon(
           assetName: _getIdleSendIcon(),
           color: _messageInputTheme.sendButtonIdleColor,
+          width: 24.r,
+          height: 24.r,
         ),
       );
 
   Widget _buildSendButton(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         child: IconButton(
           onPressed: sendMessage,
+          iconSize: 24.r,
           padding: const EdgeInsets.all(0),
-          splashRadius: 24,
-          constraints: const BoxConstraints.tightFor(
-            height: 24,
-            width: 24,
+          splashRadius: 24.r,
+          constraints: BoxConstraints.tightFor(
+            height: 24.r,
+            width: 24.r,
           ),
           icon: StreamSvgIcon(
             assetName: _getSendIcon(),
             color: _messageInputTheme.sendButtonColor,
+            height: 24.r,
+            width: 24.r,
           ),
         ),
       );
@@ -1861,33 +1880,27 @@ class MessageInputState extends State<MessageInput> {
       builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            height: 26,
+          SizedBox(
+            height: 26.h,
           ),
           StreamSvgIcon.error(
             color: _streamChatTheme.colorTheme.accentError,
-            size: 24,
+            size: 24.r,
           ),
-          const SizedBox(
-            height: 26,
-          ),
+          SizedBox(height: 26.h),
           Text(
             context.translations.somethingWentWrongError,
             style: _streamChatTheme.textTheme.headlineBold,
           ),
-          const SizedBox(
-            height: 7,
-          ),
+          SizedBox(height: 7.h),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Text(
               description,
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(
-            height: 36,
-          ),
+          SizedBox(height: 36.h),
           Container(
             color:
                 _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.08),
@@ -2028,7 +2041,7 @@ class _PickerWidgetState extends State<_PickerWidget> {
                 SvgPicture.asset(
                   'svgs/icon_picture_empty_state.svg',
                   package: 'stream_chat_flutter',
-                  height: 140,
+                  height: 140.h,
                   color: widget.streamChatTheme.colorTheme.disabled,
                 ),
                 Text(
@@ -2038,7 +2051,7 @@ class _PickerWidgetState extends State<_PickerWidget> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6.h),
                 Center(
                   child: Text(
                     context.translations.allowGalleryAccessMessage,
@@ -2066,15 +2079,15 @@ class _CountdownButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: StreamChatTheme.of(context).colorTheme.disabled,
             shape: BoxShape.circle,
           ),
           child: SizedBox(
-            height: 24,
-            width: 24,
+            height: 24.r,
+            width: 24.r,
             child: Center(
               child: Text('$count'),
             ),

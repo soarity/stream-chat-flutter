@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
@@ -43,7 +44,7 @@ class DateDivider extends StatelessWidget {
         shape: const StadiumBorder(),
         color: chatThemeData.colorTheme.overlayDark,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
           child: Text(
             dayInfo,
             style: chatThemeData.textTheme.footnote.copyWith(

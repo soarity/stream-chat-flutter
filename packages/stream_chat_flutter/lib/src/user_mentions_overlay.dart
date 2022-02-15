@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/user_mention_tile.dart';
@@ -89,7 +90,7 @@ class _UserMentionsOverlayState extends State<UserMentionsOverlay> {
   Widget build(BuildContext context) {
     final theme = StreamChatTheme.of(context);
     return Card(
-      margin: const EdgeInsets.all(8),
+      margin: EdgeInsets.all(8.r),
       elevation: 2,
       color: theme.colorTheme.barsBg,
       shape: RoundedRectangleBorder(

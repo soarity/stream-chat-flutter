@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Back button implementation
@@ -27,7 +28,7 @@ class StreamBackButton extends StatelessWidget {
         children: [
           RawMaterialButton(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(4.r),
             ),
             elevation: 0,
             highlightElevation: 0,
@@ -40,9 +41,9 @@ class StreamBackButton extends StatelessWidget {
                 Navigator.maybePop(context);
               }
             },
-            padding: const EdgeInsets.all(14),
+            padding: EdgeInsets.all(14.r),
             child: StreamSvgIcon.left(
-              size: 24,
+              size: 24.r,
               color: StreamChatTheme.of(context).colorTheme.textHighEmphasis,
             ),
           ),

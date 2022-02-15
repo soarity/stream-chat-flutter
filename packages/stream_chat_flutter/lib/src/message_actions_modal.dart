@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -246,11 +247,11 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
           messageAction.onTap?.call(widget.message);
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+          padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
           child: Row(
             children: [
               messageAction.leading ?? const Offstage(),
-              const SizedBox(width: 16),
+              SizedBox(width: 16.w),
               messageAction.title ?? const Offstage(),
             ],
           ),
@@ -266,7 +267,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
       title: context.translations.flagMessageLabel,
       icon: StreamSvgIcon.flag(
         color: streamChatThemeData.colorTheme.accentError,
-        size: 24,
+        size: 24.r,
       ),
       question: context.translations.flagMessageQuestion,
       okText: context.translations.flagLabel,
@@ -281,7 +282,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
           context,
           icon: StreamSvgIcon.flag(
             color: theme.colorTheme.accentError,
-            size: 24,
+            size: 24.r,
           ),
           details: context.translations.flagMessageSuccessfulText,
           title: context.translations.flagMessageSuccessfulLabel,
@@ -294,7 +295,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
             context,
             icon: StreamSvgIcon.flag(
               color: theme.colorTheme.accentError,
-              size: 24,
+              size: 24.r,
             ),
             details: context.translations.flagMessageSuccessfulText,
             title: context.translations.flagMessageSuccessfulLabel,
@@ -331,7 +332,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
       title: context.translations.deleteMessageLabel,
       icon: StreamSvgIcon.flag(
         color: StreamChatTheme.of(context).colorTheme.accentError,
-        size: 24,
+        size: 24.r,
       ),
       question: context.translations.deleteMessageQuestion,
       okText: context.translations.deleteLabel,
@@ -357,7 +358,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
       context,
       icon: StreamSvgIcon.error(
         color: StreamChatTheme.of(context).colorTheme.accentError,
-        size: 24,
+        size: 24.r,
       ),
       details: context.translations.operationCouldNotBeCompletedText,
       title: context.translations.somethingWentWrongError,
@@ -375,13 +376,14 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
         child: Row(
           children: [
             StreamSvgIcon.reply(
+              size: 24.r,
               color: streamChatThemeData.primaryIconTheme.color,
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Text(
               context.translations.replyLabel,
               style: streamChatThemeData.textTheme.body,
@@ -397,13 +399,14 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     return InkWell(
       onTap: _showFlagDialog,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 11.w, horizontal: 16.h),
         child: Row(
           children: [
             StreamSvgIcon.iconFlag(
+              size: 24.r,
               color: streamChatThemeData.primaryIconTheme.color,
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Text(
               context.translations.flagMessageLabel,
               style: streamChatThemeData.textTheme.body,
@@ -419,14 +422,14 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     return InkWell(
       onTap: _togglePin,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
         child: Row(
           children: [
             StreamSvgIcon.pin(
               color: streamChatThemeData.primaryIconTheme.color,
-              size: 24,
+              size: 24.r,
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Text(
               context.translations.togglePinUnpinText(
                 pinned: widget.message.pinned,
@@ -445,13 +448,14 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     return InkWell(
       onTap: _showDeleteDialog,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
         child: Row(
           children: [
             StreamSvgIcon.delete(
+              size: 24.r,
               color: Colors.red,
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Text(
               context.translations.toggleDeleteRetryDeleteMessageText(
                 isDeleteFailed: isDeleteFailed,
@@ -475,14 +479,14 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
         Navigator.pop(context);
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
         child: Row(
           children: [
             StreamSvgIcon.copy(
-              size: 24,
+              size: 24.r,
               color: streamChatThemeData.primaryIconTheme.color,
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Text(
               context.translations.copyMessageLabel,
               style: streamChatThemeData.textTheme.body,
