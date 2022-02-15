@@ -684,35 +684,38 @@ class MessageInputState extends State<MessageInput> {
               ? _messageInputTheme.activeBorderGradient
               : _messageInputTheme.idleBorderGradient,
         ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: _messageInputTheme.borderRadius,
-            color: _messageInputTheme.inputBackgroundColor,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildReplyToMessage(),
-              _buildAttachments(),
-              LimitedBox(
-                maxHeight: widget.maxHeight,
-                child: TextField(
-                  key: const Key('messageInputText'),
-                  enabled: _inputEnabled,
-                  maxLines: null,
-                  onSubmitted: (_) => sendMessage(),
-                  keyboardType: widget.keyboardType,
-                  controller: textEditingController,
-                  focusNode: _focusNode,
-                  style: _messageInputTheme.inputTextStyle,
-                  autofocus: widget.autofocus,
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: _getInputDecoration(context),
-                  textCapitalization: TextCapitalization.sentences,
+        child: Padding(
+          padding: EdgeInsets.all(1.5.r),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: _messageInputTheme.borderRadius,
+              color: _messageInputTheme.inputBackgroundColor,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildReplyToMessage(),
+                _buildAttachments(),
+                LimitedBox(
+                  maxHeight: widget.maxHeight,
+                  child: TextField(
+                    key: const Key('messageInputText'),
+                    enabled: _inputEnabled,
+                    maxLines: null,
+                    onSubmitted: (_) => sendMessage(),
+                    keyboardType: widget.keyboardType,
+                    controller: textEditingController,
+                    focusNode: _focusNode,
+                    style: _messageInputTheme.inputTextStyle,
+                    autofocus: widget.autofocus,
+                    textAlignVertical: TextAlignVertical.center,
+                    decoration: _getInputDecoration(context),
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
