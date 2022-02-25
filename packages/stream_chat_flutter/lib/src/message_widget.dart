@@ -1069,7 +1069,7 @@ class _MessageWidgetState extends State<MessageWidget>
           message.attachments.where((it) => !it.uploadState.isSuccess).length;
       if (uploadRemaining == 0) {
         return StreamSvgIcon.check(
-          size: style!.fontSize! + 5.fzs,
+          size: style!.fontSize,
           color: IconTheme.of(context).color!.withOpacity(0.5),
         );
       }
@@ -1096,7 +1096,7 @@ class _MessageWidgetState extends State<MessageWidget>
         return SendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
-          size: style!.fontSize! + 5.fzs,
+          size: style!.fontSize,
         );
       },
     );
