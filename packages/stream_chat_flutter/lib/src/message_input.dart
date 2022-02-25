@@ -170,7 +170,6 @@ class MessageInput extends StatefulWidget {
     this.preMessageSending,
     this.parentMessage,
     this.editMessage,
-    this.maxHeight = 150,
     this.keyboardType = TextInputType.multiline,
     this.disableAttachments = false,
     this.initialMessage,
@@ -236,9 +235,6 @@ class MessageInput extends StatefulWidget {
 
   /// Parent message in case of a thread
   final Message? parentMessage;
-
-  /// Maximum Height for the TextField to grow before it starts scrolling
-  final double maxHeight;
 
   /// The keyboard type assigned to the TextField
   final TextInputType keyboardType;
@@ -350,9 +346,8 @@ class MessageInputState extends State<MessageInput> {
   bool _showCommandsOverlay = false;
   bool _showMentionsOverlay = false;
 
-  Command? _chosenCommand;
+  late Command? _chosenCommand;
   bool _actionsShrunk = false;
-  bool _sendAsDm = false;
   bool _openFilePickerSection = false;
   int _filePickerIndex = 0;
 
@@ -436,7 +431,7 @@ class MessageInputState extends State<MessageInput> {
             children: [
               if (_hasQuotedMessage)
                 Padding(
-                  padding: EdgeInsets.fromLTRB(8.r, 8.r, 8.r, 0),
+                  padding: EdgeInsets.fromLTRB(8.w, 4.h, 8.w, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -464,18 +459,9 @@ class MessageInputState extends State<MessageInput> {
                   ),
                 ),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.h),
+                padding: EdgeInsets.symmetric(vertical: 4.h),
                 child: _buildTextField(context),
               ),
-              if (widget.parentMessage != null && !widget.hideSendAsDm)
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: 8.w,
-                    left: 8.w,
-                    bottom: 8.h,
-                  ),
-                  child: _buildDmCheckbox(),
-                ),
               _buildFilePickerSection(),
             ],
           ),
@@ -531,62 +517,6 @@ class MessageInputState extends State<MessageInput> {
             _buildExpandActionsButton(context),
           if (widget.sendButtonLocation == SendButtonLocation.outside)
             _animateSendButton(context),
-        ],
-      );
-
-  Widget _buildDmCheckbox() => Row(
-        children: [
-          Container(
-            height: 16.r,
-            width: 16.r,
-            foregroundDecoration: BoxDecoration(
-              border: _sendAsDm
-                  ? null
-                  : Border.all(
-                      color: _streamChatTheme.colorTheme.textHighEmphasis
-                          .withOpacity(0.5),
-                      width: 2,
-                    ),
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: Center(
-              child: Material(
-                borderRadius: BorderRadius.circular(3),
-                color: _sendAsDm
-                    ? _streamChatTheme.colorTheme.accentPrimary
-                    : _streamChatTheme.colorTheme.barsBg,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _sendAsDm = !_sendAsDm;
-                    });
-                  },
-                  child: AnimatedCrossFade(
-                    duration: const Duration(milliseconds: 300),
-                    reverseDuration: const Duration(milliseconds: 300),
-                    crossFadeState: _sendAsDm
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    firstChild: StreamSvgIcon.check(
-                      size: 16.r,
-                      color: _streamChatTheme.colorTheme.barsBg,
-                    ),
-                    secondChild: SizedBox(height: 16.h, width: 16.w),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w),
-            child: Text(
-              context.translations.alsoSendAsDirectMessageLabel,
-              style: _streamChatTheme.textTheme.footnote.copyWith(
-                color: _streamChatTheme.colorTheme.textHighEmphasis
-                    .withOpacity(0.5),
-              ),
-            ),
-          ),
         ],
       );
 
@@ -697,22 +627,20 @@ class MessageInputState extends State<MessageInput> {
               children: [
                 _buildReplyToMessage(),
                 _buildAttachments(),
-                LimitedBox(
-                  maxHeight: widget.maxHeight,
-                  child: TextField(
-                    key: const Key('messageInputText'),
-                    enabled: _inputEnabled,
-                    maxLines: null,
-                    onSubmitted: (_) => sendMessage(),
-                    keyboardType: widget.keyboardType,
-                    controller: textEditingController,
-                    focusNode: _focusNode,
-                    style: _messageInputTheme.inputTextStyle,
-                    autofocus: widget.autofocus,
-                    textAlignVertical: TextAlignVertical.center,
-                    decoration: _getInputDecoration(context),
-                    textCapitalization: TextCapitalization.sentences,
-                  ),
+                TextField(
+                  key: const Key('messageInputText'),
+                  enabled: _inputEnabled,
+                  maxLines: 5,
+                  minLines: 1,
+                  onSubmitted: (_) => sendMessage(),
+                  keyboardType: widget.keyboardType,
+                  controller: textEditingController,
+                  focusNode: _focusNode,
+                  style: _messageInputTheme.inputTextStyle,
+                  autofocus: widget.autofocus,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: _getInputDecoration(context),
+                  textCapitalization: TextCapitalization.sentences,
                 ),
               ],
             ),
@@ -755,73 +683,7 @@ class MessageInputState extends State<MessageInput> {
           color: Colors.transparent,
         ),
       ),
-      contentPadding: EdgeInsets.fromLTRB(12.w, 8.h, 8.w, 8.h),
-      prefixIcon: _commandEnabled
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.r),
-                  child: Container(
-                    constraints: BoxConstraints.tight(Size(64.w, 24.h)),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      color: _streamChatTheme.colorTheme.accentPrimary,
-                    ),
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        StreamSvgIcon.lightning(
-                          color: Colors.white,
-                          size: 16.r,
-                        ),
-                        Text(
-                          _chosenCommand?.name.toUpperCase() ?? '',
-                          style:
-                              _streamChatTheme.textTheme.footnoteBold.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : (widget.actionsLocation == ActionsLocation.leftInside
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [_buildExpandActionsButton(context)],
-                )
-              : null),
-      suffixIcon: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_commandEnabled)
-            Padding(
-              padding: EdgeInsets.only(right: 8.w),
-              child: IconButton(
-                iconSize: 24.r,
-                icon: StreamSvgIcon.closeSmall(),
-                splashRadius: 24.r,
-                padding: const EdgeInsets.all(0),
-                constraints: BoxConstraints.tightFor(
-                  height: 24.r,
-                  width: 24.r,
-                ),
-                onPressed: () {
-                  setState(() => _commandEnabled = false);
-                },
-              ),
-            ),
-          if (!_commandEnabled &&
-              widget.actionsLocation == ActionsLocation.rightInside)
-            _buildExpandActionsButton(context),
-          if (widget.sendButtonLocation == SendButtonLocation.inside)
-            _animateSendButton(context),
-        ],
-      ),
+      contentPadding: EdgeInsets.fromLTRB(12.w, 7.h, 8.w, 7.h),
     ).merge(passedDecoration);
   }
 
@@ -1282,7 +1144,7 @@ class MessageInputState extends State<MessageInput> {
       showBorder: !containsUrl,
       message: widget.quotedMessage!,
       messageTheme: _streamChatTheme.otherMessageTheme,
-      padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 0),
+      padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
     );
   }
 
@@ -1298,7 +1160,7 @@ class MessageInputState extends State<MessageInput> {
       children: [
         if (fileAttachments.isNotEmpty)
           Padding(
-            padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 0),
+            padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
             child: LimitedBox(
               maxHeight: 136.h,
               child: ListView(
@@ -1330,7 +1192,7 @@ class MessageInputState extends State<MessageInput> {
           ),
         if (remainingAttachments.isNotEmpty)
           Padding(
-            padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 0),
+            padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
             child: LimitedBox(
               maxHeight: 104,
               child: ListView(
@@ -1812,7 +1674,6 @@ class MessageInputState extends State<MessageInput> {
         attachments: attachments,
         mentionedUsers:
             _mentionedUsers.where((u) => text.contains('@${u.name}')).toList(),
-        showInChannel: widget.parentMessage != null ? _sendAsDm : null,
       );
     }
 

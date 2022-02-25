@@ -448,6 +448,7 @@ class _MessageListViewState extends State<MessageListView> {
                   itemScrollController: _scrollController,
                   reverse: widget.reverse,
                   itemCount: itemCount,
+                  padding: const EdgeInsets.all(0),
                   findChildIndexCallback: (Key key) {
                     final indexedKey = key as IndexedKey;
                     final valueKey = indexedKey.key as ValueKey<String>?;
@@ -887,17 +888,15 @@ class _MessageListViewState extends State<MessageListView> {
       padding: EdgeInsets.fromLTRB(14.w, 0, 12.w, 0),
       showSendingIndicator: false,
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: const Radius.circular(16),
-        bottomLeft:
-            isMyMessage ? const Radius.circular(16) : const Radius.circular(2),
-        topRight: const Radius.circular(16),
-        bottomRight:
-            isMyMessage ? const Radius.circular(2) : const Radius.circular(16),
+        topLeft: isMyMessage ? Radius.circular(16.r) : Radius.circular(2.r),
+        bottomLeft: Radius.circular(16.r),
+        topRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
+        bottomRight: Radius.circular(16.r),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 8.w,
-        4.h,
-        isOnlyEmoji ? 0 : 8.w,
+        isOnlyEmoji ? 0 : 12.w,
+        6.h,
+        isOnlyEmoji ? 0 : 12.w,
         0,
       ),
       borderSide: isMyMessage || isOnlyEmoji ? BorderSide.none : null,
@@ -1030,8 +1029,7 @@ class _MessageListViewState extends State<MessageListView> {
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
       attachmentBorderRadiusGeometry: BorderRadius.only(
-        topLeft: Radius.circular(attachmentBorderRadius),
-        bottomLeft: isMyMessage
+        topLeft: isMyMessage
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
@@ -1039,8 +1037,8 @@ class _MessageListViewState extends State<MessageListView> {
                     ? 0
                     : attachmentBorderRadius,
               ),
-        topRight: Radius.circular(attachmentBorderRadius),
-        bottomRight: isMyMessage
+        bottomLeft: Radius.circular(attachmentBorderRadius),
+        topRight: isMyMessage
             ? Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
                         !(hasReplies || hasFileAttachment)
@@ -1048,26 +1046,27 @@ class _MessageListViewState extends State<MessageListView> {
                     : attachmentBorderRadius,
               )
             : Radius.circular(attachmentBorderRadius),
+        bottomRight: Radius.circular(attachmentBorderRadius),
       ),
       attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4.r : 2.r),
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: Radius.circular(16.r),
-        bottomLeft: isMyMessage
+        topLeft: isMyMessage
             ? Radius.circular(16.r)
             : Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16.r,
               ),
-        topRight: Radius.circular(16.r),
-        bottomRight: isMyMessage
+        bottomLeft: Radius.circular(16.r),
+        topRight: isMyMessage
             ? Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16.r,
               )
-            : const Radius.circular(16),
+            : Radius.circular(16.r),
+        bottomRight: Radius.circular(16.r),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 8.w,
-        4.h,
-        isOnlyEmoji ? 0 : 8.w,
+        isOnlyEmoji ? 0 : 12.w,
+        6.h,
+        isOnlyEmoji ? 0 : 12.w,
         0,
       ),
       messageTheme: isMyMessage

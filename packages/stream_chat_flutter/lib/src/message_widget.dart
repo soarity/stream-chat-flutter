@@ -692,7 +692,7 @@ class _MessageWidgetState extends State<MessageWidget>
                                             ),
                                         color: _getBackgroundColor(),
                                         child: Padding(
-                                          padding: EdgeInsets.only(bottom: 3.h),
+                                          padding: EdgeInsets.only(bottom: 5.h),
                                           child: Wrap(
                                             alignment: WrapAlignment.end,
                                             crossAxisAlignment:
