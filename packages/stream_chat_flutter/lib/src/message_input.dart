@@ -683,7 +683,7 @@ class MessageInputState extends State<MessageInput> {
           color: Colors.transparent,
         ),
       ),
-      contentPadding: EdgeInsets.fromLTRB(12.w, 6.h, 8.w, 6.h),
+      contentPadding: EdgeInsets.fromLTRB(12.w, 7.h, 8.w, 7.h),
     ).merge(passedDecoration);
   }
 
