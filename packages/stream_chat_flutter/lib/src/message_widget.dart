@@ -520,7 +520,7 @@ class MessageWidget extends StatefulWidget {
 
 class _MessageWidgetState extends State<MessageWidget>
     with AutomaticKeepAliveClientMixin<MessageWidget> {
-  final secondaryColor = const Color(0xFFF28B82);
+  final usernameColor = Colors.black;
   bool get showSendingIndicator => widget.showSendingIndicator;
 
   bool get isDeleted => widget.message.isDeleted;
@@ -825,6 +825,7 @@ class _MessageWidgetState extends State<MessageWidget>
   }
 
   Widget _buildUsername(Key usernameKey) {
+    final color = widget.message.user?.extraData['color'];
     if (widget.usernameBuilder != null) {
       return widget.usernameBuilder!(context, widget.message);
     }
@@ -835,7 +836,7 @@ class _MessageWidgetState extends State<MessageWidget>
         maxLines: 1,
         key: usernameKey,
         style: widget.messageTheme.messageAuthorStyle!.copyWith(
-          color: secondaryColor,
+          color: color == null ? usernameColor : Color(int.parse('0x$color')),
         ),
         overflow: TextOverflow.ellipsis,
       ),
