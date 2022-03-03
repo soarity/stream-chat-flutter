@@ -1695,6 +1695,8 @@ class MessageInputState extends State<MessageInput> {
 
     _mentionedUsers.clear();
 
+    message = _replaceUserNameWithId(message);
+
     try {
       Future sendingFuture;
       if (widget.editMessage == null ||
@@ -1953,4 +1955,22 @@ class _CountdownButton extends StatelessWidget {
           ),
         ),
       );
+}
+
+Message _replaceUserNameWithId(Message message) {
+  final mentionedUsers = message.mentionedUsers;
+  if (mentionedUsers.isEmpty) return message;
+
+  var messageTextToSend = message.text;
+  if (messageTextToSend == null) return message;
+
+  for (final user in mentionedUsers.toSet()) {
+    final userName = user.name;
+    messageTextToSend = messageTextToSend!.replaceAll(
+      '@$userName',
+      '@${user.id}',
+    );
+  }
+
+  return message.copyWith(text: messageTextToSend);
 }
