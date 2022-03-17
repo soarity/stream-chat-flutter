@@ -18,8 +18,8 @@ dependencies:
     sdk: flutter
   stream_chat_flutter:
     git:
-      url: git://github.com/soarity/stream-chat-flutter.git
-      ref: wer6/release/3.5.0
+      url: https://github.com/soarity/stream-chat-flutter.git
+      ref: wer6/release/3.5.1
       path: packages/stream_chat_flutter
 
 
