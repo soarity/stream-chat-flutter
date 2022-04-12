@@ -21,25 +21,30 @@ class SystemMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = StreamChatTheme.of(context);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        if (onMessageTap != null) {
-          onMessageTap!(message);
-        }
-      },
-      child: Material(
-        shape: const StadiumBorder(),
-        elevation: 1,
-        color: theme.colorTheme.overlay,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-          child: Text(
-            message.text!,
-            textAlign: TextAlign.center,
-            softWrap: true,
-            style: theme.textTheme.footnote.copyWith(
-              color: theme.colorTheme.barsBg,
+    return SizedBox(
+      width: 240.w,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          if (onMessageTap != null) {
+            onMessageTap!(message);
+          }
+        },
+        child: Center(
+          child: Material(
+            shape: const StadiumBorder(),
+            elevation: 1,
+            color: theme.colorTheme.overlay,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+              child: Text(
+                message.text!,
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: theme.textTheme.footnote.copyWith(
+                  color: theme.colorTheme.barsBg,
+                ),
+              ),
             ),
           ),
         ),
@@ -47,21 +52,3 @@ class SystemMessage extends StatelessWidget {
     );
   }
 }
-
-
-
-// Center(
-//       child: Material(
-//         shape: const StadiumBorder(),
-//         color: chatThemeData.colorTheme.overlayDark,
-//         child: Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-//           child: Text(
-//             dayInfo,
-//             style: chatThemeData.textTheme.footnote.copyWith(
-//               color: chatThemeData.colorTheme.barsBg,
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
