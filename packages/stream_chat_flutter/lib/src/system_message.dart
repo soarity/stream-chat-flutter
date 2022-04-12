@@ -36,7 +36,7 @@ class SystemMessage extends StatelessWidget {
             elevation: 1,
             color: theme.colorTheme.overlay,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
               child: Text(
                 message.text!,
                 textAlign: TextAlign.center,

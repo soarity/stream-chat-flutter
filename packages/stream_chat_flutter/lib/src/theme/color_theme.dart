@@ -16,8 +16,8 @@ class ColorTheme {
     this.accentError = const Color(0xffFF3842),
     this.accentInfo = const Color(0xff20E070),
     this.highlight = const Color(0xfffbf4dd),
-    this.overlay = const Color.fromRGBO(0, 0, 0, 0.2),
-    this.overlayDark = const Color.fromRGBO(0, 0, 0, 0.4),
+    this.overlay = const Color.fromRGBO(0, 0, 0, 0.3),
+    this.overlayDark = const Color.fromRGBO(0, 0, 0, 0.5),
     this.bgGradient = const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
