@@ -42,12 +42,13 @@ class DateDivider extends StatelessWidget {
     return Center(
       child: Material(
         shape: const StadiumBorder(),
+        elevation: 1,
         color: chatThemeData.colorTheme.overlayDark,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
           child: Text(
             dayInfo,
-            style: chatThemeData.textTheme.footnote.copyWith(
+            style: chatThemeData.textTheme.footnoteBold.copyWith(
               color: chatThemeData.colorTheme.barsBg,
             ),
           ),

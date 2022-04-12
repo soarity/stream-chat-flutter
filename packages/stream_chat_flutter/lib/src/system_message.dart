@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// It shows a date divider depending on the date difference
@@ -27,14 +28,40 @@ class SystemMessage extends StatelessWidget {
           onMessageTap!(message);
         }
       },
-      child: Text(
-        message.text!,
-        textAlign: TextAlign.center,
-        softWrap: true,
-        style: theme.textTheme.captionBold.copyWith(
-          color: theme.colorTheme.textLowEmphasis,
+      child: Material(
+        shape: const StadiumBorder(),
+        elevation: 1,
+        color: theme.colorTheme.overlay,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+          child: Text(
+            message.text!,
+            textAlign: TextAlign.center,
+            softWrap: true,
+            style: theme.textTheme.footnote.copyWith(
+              color: theme.colorTheme.barsBg,
+            ),
+          ),
         ),
       ),
     );
   }
 }
+
+
+
+// Center(
+//       child: Material(
+//         shape: const StadiumBorder(),
+//         color: chatThemeData.colorTheme.overlayDark,
+//         child: Padding(
+//           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+//           child: Text(
+//             dayInfo,
+//             style: chatThemeData.textTheme.footnote.copyWith(
+//               color: chatThemeData.colorTheme.barsBg,
+//             ),
+//           ),
+//         ),
+//       ),
+//     );

@@ -813,11 +813,10 @@ class _MessageWidgetState extends State<MessageWidget>
       children: [
         ...children.map(
           (child) {
-            Widget mappedChild = child;
             if (child.key == usernameKey) {
-              mappedChild = Flexible(child: mappedChild);
+              return Flexible(child: child);
             }
-            return mappedChild;
+            return child;
           },
         ),
       ].insertBetween(const SizedBox(width: 2)),

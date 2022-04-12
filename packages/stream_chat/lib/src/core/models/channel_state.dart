@@ -65,8 +65,6 @@ class ChannelState {
         channel: channel ?? this.channel,
         messages: messages ?? this.messages,
         members: members ?? this.members,
-        // Hack to avoid using the default value in case nothing is provided.
-        // FIXME: Use non-nullable by default instead of empty list.
         pinnedMessages: pinnedMessages == _emptyPinnedMessages
             ? this.pinnedMessages
             : pinnedMessages,

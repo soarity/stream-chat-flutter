@@ -329,8 +329,8 @@ class _MessageListViewState extends State<MessageListView> {
         paginationLimit: widget.paginationLimit,
         messageFilter: widget.messageFilter,
         loadingBuilder: widget.loadingBuilder ??
-            (context) => const Center(
-                  child: CustomProgressIndicator(size: 20),
+            (context) => Center(
+                  child: CustomProgressIndicator(size: 20.r),
                 ),
         emptyBuilder: widget.emptyBuilder ??
             (context) => Center(
@@ -458,6 +458,7 @@ class _MessageListViewState extends State<MessageListView> {
                         return ((index + 2) * 2) - 1;
                       }
                     }
+                    return null;
                   },
 
                   // Item Count -> 8 (1 parent, 2 header+footer, 2 top+bottom, 3 messages)
@@ -1249,7 +1250,7 @@ class _LoadingIndicator extends StatelessWidget {
             Center(
               child: Padding(
                 padding: EdgeInsets.all(8.r),
-                child: const CustomProgressIndicator(),
+                child: CustomProgressIndicator(size: 20.r),
               ),
             );
       },

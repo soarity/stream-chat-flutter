@@ -21,8 +21,8 @@ class CustomProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: size ?? 35.r,
-        height: size ?? 35.r,
+        width: size ?? 30.r,
+        height: size ?? 30.r,
         child: Platform.isIOS
             ? const CupertinoActivityIndicator()
             : const CircularProgressIndicator(),
