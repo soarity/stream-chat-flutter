@@ -91,7 +91,7 @@ class StreamChatState extends State<StreamChat> {
     return ScreenUtilInit(
       designSize: const Size(375, 667),
       minTextAdapt: true,
-      builder: () => Portal(
+      builder: (_) => Portal(
         child: StreamChatTheme(
           data: theme,
           child: Builder(
