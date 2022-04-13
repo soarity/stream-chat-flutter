@@ -134,6 +134,7 @@ class MessageListView extends StatefulWidget {
     this.loadingBuilder,
     this.emptyBuilder,
     this.systemMessageBuilder,
+    this.videoMessageBuilder,
     this.messageListBuilder,
     this.errorBuilder,
     this.messageFilter,
@@ -168,6 +169,9 @@ class MessageListView extends StatefulWidget {
 
   /// Function used to build a custom system message widget
   final SystemMessageBuilder? systemMessageBuilder;
+
+  /// Function used to build a custom video message widget
+  final SystemMessageBuilder? videoMessageBuilder;
 
   /// Function used to build a custom parent message widget
   final ParentMessageBuilder? parentMessageBuilder;
@@ -950,6 +954,13 @@ class _MessageListViewState extends State<MessageListView> {
               FocusScope.of(context).unfocus();
             },
           );
+    }
+
+    // Video Meeting message
+    if (message.attachments.isNotEmpty &&
+        message.attachments.first.type == 'videomeeting') {
+      return widget.videoMessageBuilder?.call(context, message) ??
+          const Offstage();
     }
 
     final userId = StreamChat.of(context).currentUser!.id;
