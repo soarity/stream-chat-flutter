@@ -1,9 +1,27 @@
+## 3.6.1
+
+- Updated `stream_chat_flutter_core` dependency to [`3.6.1`](https://pub.dev/packages/stream_chat_flutter_core/changelog).
+
+## 3.6.0
+
+🐞 Fixed
+
+-[[#892]](https://github.com/GetStream/stream-chat-flutter/issues/892): Fix default `initialAlignment` in `MessageListView`.
+- Fix `MessageInputTheme.inputBackgroundColor` color not being used in some widgets of `MessageInput`
+- Removed dependency on `visibility_detector`
+
 ## 3.5.1
 
 🐞 Fixed
 
 - Mentions overlay now doesn't overflow when there is not enough height available
 - Updated `stream_chat_flutter_core` dependency to [`3.5.1`](https://pub.dev/packages/stream_chat_flutter_core/changelog).
+
+
+✅ Added
+
+- `onLinkTap` for `MessageWidget` can now be passed down to `UrlAttachment`.
+
 
 ## 3.5.0
 
@@ -15,6 +33,7 @@
 - Fix default `Channel` route not opening from `ChannelListView` when `ChannelAvatar` is tapped
 
 ## 3.4.0
+
 - Updated `stream_chat_flutter_core` dependency to [`3.4.0`](https://pub.dev/packages/stream_chat_flutter_core/changelog).
 
 🐞 Fixed
