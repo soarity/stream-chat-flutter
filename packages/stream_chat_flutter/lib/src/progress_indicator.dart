@@ -25,6 +25,6 @@ class CustomProgressIndicator extends StatelessWidget {
         height: size ?? 30.r,
         child: Platform.isIOS
             ? const CupertinoActivityIndicator()
-            : const CircularProgressIndicator(),
+            : const CircularProgressIndicator(strokeWidth: 1.5),
       );
 }
