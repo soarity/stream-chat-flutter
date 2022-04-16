@@ -145,15 +145,6 @@ class CommandsOverlay extends StatelessWidget {
             size: 24,
           ),
         );
-      case 'ban':
-        return CircleAvatar(
-          backgroundColor: _streamChatTheme.colorTheme.accentPrimary,
-          radius: 12,
-          child: StreamSvgIcon.iconUserDelete(
-            size: 16,
-            color: Colors.white,
-          ),
-        );
       case 'flag':
         return CircleAvatar(
           backgroundColor: _streamChatTheme.colorTheme.accentPrimary,
@@ -178,15 +169,6 @@ class CommandsOverlay extends StatelessWidget {
           backgroundColor: _streamChatTheme.colorTheme.accentPrimary,
           radius: 12,
           child: StreamSvgIcon.mute(
-            size: 16,
-            color: Colors.white,
-          ),
-        );
-      case 'unban':
-        return CircleAvatar(
-          backgroundColor: _streamChatTheme.colorTheme.accentPrimary,
-          radius: 12,
-          child: StreamSvgIcon.userAdd(
             size: 16,
             color: Colors.white,
           ),

@@ -1,15 +1,8 @@
 export 'package:jiffy/jiffy.dart';
 export 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-
 export 'src/attachment/attachment.dart';
 export 'src/attachment_actions_modal.dart';
 export 'src/back_button.dart';
-export 'src/channel_avatar.dart';
-export 'src/channel_header.dart';
-export 'src/channel_list_header.dart';
-export 'src/channel_list_view.dart';
-export 'src/channel_name.dart';
-export 'src/channel_preview.dart';
 export 'src/connection_status_builder.dart';
 export 'src/date_divider.dart';
 export 'src/deleted_message.dart';
@@ -39,12 +32,9 @@ export 'src/stream_neumorphic_button.dart';
 export 'src/stream_svg_icon.dart';
 export 'src/system_message.dart';
 export 'src/theme/themes.dart';
-export 'src/thread_header.dart';
 export 'src/typing_indicator.dart';
 export 'src/unread_indicator.dart';
 export 'src/user_avatar.dart';
-export 'src/user_item.dart';
-export 'src/user_list_view.dart';
 export 'src/user_mention_tile.dart';
 export 'src/utils.dart';
 export 'src/visible_footnote.dart';

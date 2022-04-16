@@ -172,11 +172,6 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
                         if (widget.showReplyMessage &&
                             widget.message.status == MessageSendingStatus.sent)
                           _buildReplyButton(context),
-                        if (widget.showThreadReplyMessage &&
-                            (widget.message.status ==
-                                MessageSendingStatus.sent) &&
-                            widget.message.parentId == null)
-                          _buildThreadReplyButton(context),
                         if (widget.showResendMessage)
                           _buildResendMessage(context),
                         if (widget.showEditMessage) _buildEditMessage(context),
@@ -616,33 +611,6 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildThreadReplyButton(BuildContext context) {
-    final streamChatThemeData = StreamChatTheme.of(context);
-    return InkWell(
-      onTap: () {
-        Navigator.pop(context);
-        if (widget.onThreadReplyTap != null) {
-          widget.onThreadReplyTap!(widget.message);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-        child: Row(
-          children: [
-            StreamSvgIcon.thread(
-              color: streamChatThemeData.primaryIconTheme.color,
-            ),
-            const SizedBox(width: 16),
-            Text(
-              context.translations.threadReplyLabel,
-              style: streamChatThemeData.textTheme.body,
-            ),
-          ],
         ),
       ),
     );

@@ -13,18 +13,6 @@ class StreamSvgIcon extends StatelessWidget {
   }) : super(key: key);
 
   /// [StreamSvgIcon] type
-  factory StreamSvgIcon.settings({
-    double? size,
-    Color? color,
-  }) =>
-      StreamSvgIcon(
-        assetName: 'settings.svg',
-        color: color,
-        width: size,
-        height: size,
-      );
-
-  /// [StreamSvgIcon] type
   factory StreamSvgIcon.down({
     double? size,
     Color? color,
@@ -217,18 +205,6 @@ class StreamSvgIcon extends StatelessWidget {
       );
 
   /// [StreamSvgIcon] type
-  factory StreamSvgIcon.userAdd({
-    double? size,
-    Color? color,
-  }) =>
-      StreamSvgIcon(
-        assetName: 'Icon_User_add.svg',
-        color: color,
-        width: size,
-        height: size,
-      );
-
-  /// [StreamSvgIcon] type
   factory StreamSvgIcon.check({
     double? size,
     Color? color,
@@ -271,18 +247,6 @@ class StreamSvgIcon extends StatelessWidget {
   }) =>
       StreamSvgIcon(
         assetName: 'Icon_pen-write.svg',
-        color: color,
-        width: size,
-        height: size,
-      );
-
-  /// [StreamSvgIcon] type
-  factory StreamSvgIcon.contacts({
-    double? size,
-    Color? color,
-  }) =>
-      StreamSvgIcon(
-        assetName: 'Icon_contacts.svg',
         color: color,
         width: size,
         height: size,
@@ -337,18 +301,6 @@ class StreamSvgIcon extends StatelessWidget {
       );
 
   /// [StreamSvgIcon] type
-  factory StreamSvgIcon.userRemove({
-    double? size,
-    Color? color,
-  }) =>
-      StreamSvgIcon(
-        assetName: 'Icon_User_deselect.svg',
-        color: color,
-        width: size,
-        height: size,
-      );
-
-  /// [StreamSvgIcon] type
   factory StreamSvgIcon.lightning({
     double? size,
     Color? color,
@@ -379,18 +331,6 @@ class StreamSvgIcon extends StatelessWidget {
   }) =>
       StreamSvgIcon(
         assetName: 'Icon_message.svg',
-        color: color,
-        width: size,
-        height: size,
-      );
-
-  /// [StreamSvgIcon] type
-  factory StreamSvgIcon.thread({
-    double? size,
-    Color? color,
-  }) =>
-      StreamSvgIcon(
-        assetName: 'Icon_Thread_Reply.svg',
         color: color,
         width: size,
         height: size,
@@ -841,18 +781,6 @@ class StreamSvgIcon extends StatelessWidget {
       );
 
   /// [StreamSvgIcon] type
-  factory StreamSvgIcon.iconUserDelete({
-    double? size,
-    Color? color,
-  }) =>
-      StreamSvgIcon(
-        assetName: 'Icon_user_delete.svg',
-        color: color,
-        width: size,
-        height: size,
-      );
-
-  /// [StreamSvgIcon] type
   factory StreamSvgIcon.error({
     double? size,
     Color? color,
@@ -871,18 +799,6 @@ class StreamSvgIcon extends StatelessWidget {
   }) =>
       StreamSvgIcon(
         assetName: 'Icon_circle_up.svg',
-        color: color,
-        width: size,
-        height: size,
-      );
-
-  /// [StreamSvgIcon] type
-  factory StreamSvgIcon.iconUserSettings({
-    double? size,
-    Color? color,
-  }) =>
-      StreamSvgIcon(
-        assetName: 'Icon_user_settings.svg',
         color: color,
         width: size,
         height: size,
