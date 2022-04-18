@@ -950,8 +950,9 @@ class _MessageListViewState extends State<MessageListView> {
 
     final upperMessage =
         index + 1 <= messages.length ? messages[index + 1] : null;
-    final isNextSenderSame =
-        upperMessage != null && message.user!.id == upperMessage.user!.id;
+    final isNextSenderSame = upperMessage != null &&
+        upperMessage.type != 'system' &&
+        message.user!.id == upperMessage.user!.id;
 
     num timeDiff = 0;
     if (nextMessage != null) {
