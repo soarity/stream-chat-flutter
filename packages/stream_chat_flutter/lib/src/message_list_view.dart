@@ -1019,6 +1019,7 @@ class _MessageListViewState extends State<MessageListView> {
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
       showFlagButton: !isMyMessage,
+      isNextUserSame: isNextUserSame,
       borderSide: borderSide,
       attachmentBorderRadiusGeometry: BorderRadius.only(
         topLeft: isMyMessage

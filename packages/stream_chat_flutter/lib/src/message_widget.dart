@@ -71,6 +71,7 @@ class MessageWidget extends StatefulWidget {
     this.showFlagButton = true,
     this.showPinButton = true,
     this.showPinHighlight = true,
+    this.isNextUserSame = false,
     this.onUserAvatarTap,
     this.onLinkTap,
     this.onMessageActions,
@@ -385,6 +386,9 @@ class MessageWidget extends StatefulWidget {
   /// Display Pin Highlight
   final bool showPinHighlight;
 
+  /// checks if the curent message is by the previous user
+  final bool isNextUserSame;
+
   /// Builder for respective attachment types
   final Map<String, AttachmentBuilder> attachmentBuilders;
 
@@ -606,15 +610,11 @@ class _MessageWidgetState extends State<MessageWidget>
                       : CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (widget.message.pinned &&
-                        widget.message.pinnedBy != null &&
-                        widget.showPinHighlight)
-                      _buildPinnedMessage(widget.message),
                     if (!widget.reverse &&
                         widget.showUserAvatar == DisplayWidget.show &&
-                        widget.message.user != null) ...[
+                        widget.message.user != null &&
+                        !widget.isNextUserSame)
                       _buildUsername(const Key('usernameKey')),
-                    ],
                     Column(
                       children: [
                         PortalEntry(
@@ -1128,35 +1128,6 @@ class _MessageWidgetState extends State<MessageWidget>
         ),
         if (hasUrlAttachments && !hasQuotedMessage) _buildUrlAttachment(),
       ],
-    );
-  }
-
-  Widget _buildPinnedMessage(Message message) {
-    final pinnedBy = message.pinnedBy!;
-    final currentUser = _streamChat.currentUser!;
-
-    return Padding(
-      padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 4.h, bottom: 8.h),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          StreamSvgIcon.pin(
-            size: 16.r,
-          ),
-          SizedBox(width: 4.w),
-          Text(
-            context.translations.pinnedByUserText(
-              pinnedBy: pinnedBy,
-              currentUser: currentUser,
-            ),
-            style: TextStyle(
-              color: _streamChatTheme.colorTheme.textLowEmphasis,
-              fontSize: 13.fzs,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
