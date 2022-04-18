@@ -948,6 +948,11 @@ class _MessageListViewState extends State<MessageListView> {
     final isNextUserSame =
         nextMessage != null && message.user!.id == nextMessage.user!.id;
 
+    final upperMessage =
+        index + 1 <= messages.length ? messages[index + 1] : null;
+    final isNextSenderSame =
+        upperMessage != null && message.user!.id == upperMessage.user!.id;
+
     num timeDiff = 0;
     if (nextMessage != null) {
       timeDiff = Jiffy(nextMessage.createdAt.toLocal()).diff(
@@ -1019,7 +1024,7 @@ class _MessageListViewState extends State<MessageListView> {
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
       showFlagButton: !isMyMessage,
-      isNextUserSame: isNextUserSame,
+      isNextUserSame: isNextSenderSame,
       borderSide: borderSide,
       attachmentBorderRadiusGeometry: BorderRadius.only(
         topLeft: isMyMessage
