@@ -874,7 +874,7 @@ class _MessageListViewState extends State<MessageListView> {
       message: message,
       reverse: isMyMessage,
       showUsername: !isMyMessage,
-      padding: EdgeInsets.fromLTRB(14.w, 0, 12.w, 0),
+      padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 0),
       showSendingIndicator: false,
       borderRadiusGeometry: BorderRadius.only(
         topLeft: isMyMessage ? Radius.circular(16.r) : Radius.circular(2.r),
@@ -961,7 +961,7 @@ class _MessageListViewState extends State<MessageListView> {
         upperMessage.type != 'system' &&
         message.user!.id == upperMessage.user!.id &&
         Jiffy(upperMessage.createdAt.toLocal())
-                .diff(message.createdAt.toLocal(), Units.MINUTE) ==
+                .diff(message.createdAt.toLocal(), Units.DAY) ==
             0;
 
     num timeDiff = 0;
@@ -1009,7 +1009,7 @@ class _MessageListViewState extends State<MessageListView> {
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
-      padding: EdgeInsets.fromLTRB(14.w, 0, 12.w, 0),
+      padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 0),
       showUsername: showUsername,
       showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,

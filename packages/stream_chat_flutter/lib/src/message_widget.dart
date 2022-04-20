@@ -118,7 +118,7 @@ class MessageWidget extends StatefulWidget {
                     color: messageTheme.messageBackgroundColor,
                     child: ImageGroup(
                       size: Size(
-                        mediaQueryData.size.width * 0.8,
+                        mediaQueryData.size.width * 0.85,
                         mediaQueryData.size.height * 0.3,
                       ),
                       images: attachments,
@@ -142,7 +142,7 @@ class MessageWidget extends StatefulWidget {
                 message: message,
                 messageTheme: messageTheme,
                 size: Size(
-                  mediaQueryData.size.width * 0.8,
+                  mediaQueryData.size.width * 0.85,
                   mediaQueryData.size.height * 0.3,
                 ),
                 onShowMessage: onShowMessage,
@@ -171,7 +171,7 @@ class MessageWidget extends StatefulWidget {
                     attachment: attachment,
                     messageTheme: messageTheme,
                     size: Size(
-                      mediaQueryData.size.width * 0.8,
+                      mediaQueryData.size.width * 0.85,
                       mediaQueryData.size.height * 0.3,
                     ),
                     message: message,
@@ -203,7 +203,7 @@ class MessageWidget extends StatefulWidget {
                     attachment: attachment,
                     message: message,
                     size: Size(
-                      mediaQueryData.size.width * 0.8,
+                      mediaQueryData.size.width * 0.85,
                       mediaQueryData.size.height * 0.3,
                     ),
                     onShowMessage: onShowMessage,
@@ -239,7 +239,7 @@ class MessageWidget extends StatefulWidget {
                         message: message,
                         attachment: attachment,
                         size: Size(
-                          mediaQueryData.size.width * 0.8,
+                          mediaQueryData.size.width * 0.85,
                           mediaQueryData.size.height * 0.3,
                         ),
                         onAttachmentTap: onAttachmentTap != null
@@ -605,7 +605,7 @@ class _MessageWidgetState extends State<MessageWidget>
             child: FractionallySizedBox(
               alignment:
                   widget.reverse ? Alignment.centerRight : Alignment.centerLeft,
-              widthFactor: 0.78,
+              widthFactor: 0.85,
               child: Padding(
                 padding: EdgeInsets.only(
                   bottom: isPinned && widget.showPinHighlight ? 8.h : 0.0,
