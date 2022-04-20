@@ -12,6 +12,7 @@ class MessageThemeData with Diagnosticable {
     this.messageAuthorStyle,
     this.messageLinksStyle,
     this.messageBackgroundColor,
+    this.botBackgroundColor,
     this.messageBorderColor,
     this.reactionsBackgroundColor,
     this.reactionsBorderColor,
@@ -39,6 +40,9 @@ class MessageThemeData with Diagnosticable {
   /// Color for messageBackgroundColor
   final Color? messageBackgroundColor;
 
+  /// Color for messageBackgroundColor
+  final Color? botBackgroundColor;
+
   /// Color for message border color
   final Color? messageBorderColor;
 
@@ -65,6 +69,7 @@ class MessageThemeData with Diagnosticable {
     TextStyle? createdAtStyle,
     TextStyle? repliesStyle,
     Color? messageBackgroundColor,
+    Color? botBackgroundColor,
     Color? messageBorderColor,
     AvatarThemeData? avatarTheme,
     Color? reactionsBackgroundColor,
@@ -79,6 +84,7 @@ class MessageThemeData with Diagnosticable {
         createdAtStyle: createdAtStyle ?? this.createdAtStyle,
         messageBackgroundColor:
             messageBackgroundColor ?? this.messageBackgroundColor,
+        botBackgroundColor: botBackgroundColor ?? this.botBackgroundColor,
         messageBorderColor: messageBorderColor ?? this.messageBorderColor,
         avatarTheme: avatarTheme ?? this.avatarTheme,
         repliesStyle: repliesStyle ?? this.repliesStyle,
@@ -99,6 +105,8 @@ class MessageThemeData with Diagnosticable {
             TextStyle.lerp(a.messageAuthorStyle, b.messageAuthorStyle, t),
         messageBackgroundColor:
             Color.lerp(a.messageBackgroundColor, b.messageBackgroundColor, t),
+        botBackgroundColor:
+            Color.lerp(a.botBackgroundColor, b.botBackgroundColor, t),
         messageBorderColor:
             Color.lerp(a.messageBorderColor, b.messageBorderColor, t),
         messageLinksStyle:
@@ -134,6 +142,7 @@ class MessageThemeData with Diagnosticable {
       repliesStyle:
           repliesStyle?.merge(other.repliesStyle) ?? other.repliesStyle,
       messageBackgroundColor: other.messageBackgroundColor,
+      botBackgroundColor: other.botBackgroundColor,
       messageBorderColor: other.messageBorderColor,
       avatarTheme: avatarTheme?.merge(other.avatarTheme) ?? other.avatarTheme,
       reactionsBackgroundColor: other.reactionsBackgroundColor,
@@ -154,6 +163,7 @@ class MessageThemeData with Diagnosticable {
           createdAtStyle == other.createdAtStyle &&
           repliesStyle == other.repliesStyle &&
           messageBackgroundColor == other.messageBackgroundColor &&
+          botBackgroundColor == other.botBackgroundColor &&
           messageBorderColor == other.messageBorderColor &&
           reactionsBackgroundColor == other.reactionsBackgroundColor &&
           reactionsBorderColor == other.reactionsBorderColor &&
@@ -169,6 +179,7 @@ class MessageThemeData with Diagnosticable {
       createdAtStyle.hashCode ^
       repliesStyle.hashCode ^
       messageBackgroundColor.hashCode ^
+      botBackgroundColor.hashCode ^
       messageBorderColor.hashCode ^
       reactionsBackgroundColor.hashCode ^
       reactionsBorderColor.hashCode ^
@@ -186,6 +197,7 @@ class MessageThemeData with Diagnosticable {
       ..add(DiagnosticsProperty('createdAtStyle', createdAtStyle))
       ..add(DiagnosticsProperty('repliesStyle', repliesStyle))
       ..add(ColorProperty('messageBackgroundColor', messageBackgroundColor))
+      ..add(ColorProperty('messageBackgroundColor', botBackgroundColor))
       ..add(ColorProperty('messageBorderColor', messageBorderColor))
       ..add(DiagnosticsProperty('avatarTheme', avatarTheme))
       ..add(ColorProperty('reactionsBackgroundColor', reactionsBackgroundColor))

@@ -955,9 +955,14 @@ class _MessageListViewState extends State<MessageListView> {
 
     final upperMessage =
         index + 1 <= messages.length ? messages[index + 1] : null;
-    final isNextSenderSame = upperMessage != null &&
+
+    // use to show whether to show username or not
+    final hideUsername = upperMessage != null &&
         upperMessage.type != 'system' &&
-        message.user!.id == upperMessage.user!.id;
+        message.user!.id == upperMessage.user!.id &&
+        Jiffy(upperMessage.createdAt.toLocal())
+                .diff(message.createdAt.toLocal(), Units.MINUTE) ==
+            0;
 
     num timeDiff = 0;
     if (nextMessage != null) {
@@ -1030,7 +1035,7 @@ class _MessageListViewState extends State<MessageListView> {
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
       showFlagButton: !isMyMessage,
-      isNextUserSame: isNextSenderSame,
+      hideUsername: hideUsername,
       borderSide: borderSide,
       attachmentBorderRadiusGeometry: BorderRadius.only(
         topLeft: isMyMessage

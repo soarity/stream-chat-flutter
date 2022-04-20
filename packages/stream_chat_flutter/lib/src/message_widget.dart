@@ -72,7 +72,7 @@ class MessageWidget extends StatefulWidget {
     this.showFlagButton = true,
     this.showPinButton = true,
     this.showPinHighlight = true,
-    this.isNextUserSame = false,
+    this.hideUsername = false,
     this.onUserAvatarTap,
     this.onLinkTap,
     this.onMessageActions,
@@ -390,8 +390,8 @@ class MessageWidget extends StatefulWidget {
   /// Display Pin Highlight
   final bool showPinHighlight;
 
-  /// checks if the curent message is by the previous user
-  final bool isNextUserSame;
+  /// checks if the username should be hidden
+  final bool hideUsername;
 
   /// Builder for respective attachment types
   final Map<String, AttachmentBuilder> attachmentBuilders;
@@ -619,7 +619,7 @@ class _MessageWidgetState extends State<MessageWidget>
                     if (!widget.reverse &&
                         widget.showUserAvatar == DisplayWidget.show &&
                         widget.message.user != null &&
-                        !widget.isNextUserSame)
+                        !widget.hideUsername)
                       _buildUsername(const Key('usernameKey')),
                     Column(
                       children: [
@@ -1155,6 +1155,10 @@ class _MessageWidgetState extends State<MessageWidget>
 
     if (isOnlyEmoji) {
       return Colors.transparent;
+    }
+
+    if (widget.message.user!.id == 'wer6bot') {
+      return widget.messageTheme.botBackgroundColor;
     }
 
     return widget.messageTheme.messageBackgroundColor;
