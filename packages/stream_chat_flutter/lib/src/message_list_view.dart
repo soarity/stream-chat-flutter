@@ -135,6 +135,7 @@ class MessageListView extends StatefulWidget {
     this.systemMessageBuilder,
     this.videoMessageBuilder,
     this.messageListBuilder,
+    this.botBuilder,
     this.errorBuilder,
     this.messageFilter,
     this.onMessageTap,
@@ -168,6 +169,9 @@ class MessageListView extends StatefulWidget {
 
   /// Function used to build a custom system message widget
   final SystemMessageBuilder? systemMessageBuilder;
+
+  /// Widget builder for building bot message
+  final Widget Function(BuildContext, Message)? botBuilder;
 
   /// Function used to build a custom video message widget
   final SystemMessageBuilder? videoMessageBuilder;
@@ -907,6 +911,7 @@ class _MessageListViewState extends State<MessageListView> {
       },
       showPinButton: currentUserMember != null &&
           widget.pinPermissions.contains(currentUserMember.role),
+      botBuilder: widget.botBuilder,
     );
 
     if (widget.parentMessageBuilder != null) {
@@ -1089,6 +1094,7 @@ class _MessageListViewState extends State<MessageListView> {
       },
       showPinButton: currentUserMember != null &&
           widget.pinPermissions.contains(currentUserMember.role),
+      botBuilder: widget.botBuilder,
     );
 
     if (widget.messageBuilder != null) {

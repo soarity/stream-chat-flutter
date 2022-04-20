@@ -45,6 +45,7 @@ class MessageWidget extends StatefulWidget {
     Key? key,
     required this.message,
     required this.messageTheme,
+    this.botBuilder,
     this.reverse = false,
     this.translateUserAvatar = true,
     this.shape,
@@ -275,6 +276,9 @@ class MessageWidget extends StatefulWidget {
   /// Widget builder for building username
   final Widget Function(BuildContext, Message)? usernameBuilder;
 
+  /// Widget builder for building bot message
+  final Widget Function(BuildContext, Message)? botBuilder;
+
   /// Function called on long press
   final void Function(BuildContext, Message)? onMessageActions;
 
@@ -418,6 +422,7 @@ class MessageWidget extends StatefulWidget {
     Widget Function(BuildContext, Message)? editMessageInputBuilder,
     Widget Function(BuildContext, Message)? textBuilder,
     Widget Function(BuildContext, Message)? usernameBuilder,
+    Widget Function(BuildContext, Message)? botBuilder,
     Widget Function(BuildContext, Message)? bottomRowBuilder,
     Widget Function(BuildContext, Message)? deletedBottomRowBuilder,
     void Function(BuildContext, Message)? onMessageActions,
@@ -470,6 +475,7 @@ class MessageWidget extends StatefulWidget {
             editMessageInputBuilder ?? this.editMessageInputBuilder,
         textBuilder: textBuilder ?? this.textBuilder,
         usernameBuilder: usernameBuilder ?? this.usernameBuilder,
+        botBuilder: botBuilder ?? this.botBuilder,
         bottomRowBuilder: bottomRowBuilder ?? this.bottomRowBuilder,
         deletedBottomRowBuilder:
             deletedBottomRowBuilder ?? this.deletedBottomRowBuilder,
@@ -524,7 +530,7 @@ class MessageWidget extends StatefulWidget {
 
 class _MessageWidgetState extends State<MessageWidget>
     with AutomaticKeepAliveClientMixin<MessageWidget> {
-  final usernameColor = Colors.black;
+  final usernameColor = const Color(0XFF0001f6);
   bool get showSendingIndicator => widget.showSendingIndicator;
 
   bool get isDeleted => widget.message.isDeleted;
@@ -1105,6 +1111,11 @@ class _MessageWidgetState extends State<MessageWidget>
 
   Widget _buildTextBubble() {
     if (widget.message.text?.trim().isEmpty ?? false) return const Offstage();
+
+    if (widget.message.user!.id == 'wer6bot' && widget.botBuilder != null) {
+      return widget.botBuilder!(context, widget.message);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
