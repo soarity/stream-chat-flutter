@@ -34,8 +34,8 @@ class UserMentionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chatThemeData = StreamChatTheme.of(context);
-    return SizedBox(
-      height: 56.h,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       child: Row(
         children: [
           SizedBox(width: 16.w),
