@@ -4,12 +4,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 /// Launch URL
 Future<void> launchURL(BuildContext context, String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
+  if (await canLaunchUrlString(url)) {
+    await launchUrlString(url);
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.translations.launchUrlError)),
