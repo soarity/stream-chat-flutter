@@ -538,7 +538,7 @@ class _MessageListViewState extends State<MessageListView> {
                         message.user!.id == nextMessage.user?.id;
 
                     if (!isNextUserSame) {
-                      return SizedBox(height: 6.h);
+                      return SizedBox(height: 10.h);
                     } else {
                       return SizedBox(height: 3.h);
                     }
