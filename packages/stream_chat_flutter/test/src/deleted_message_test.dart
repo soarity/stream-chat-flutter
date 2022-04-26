@@ -183,10 +183,6 @@ void main() {
               child: Center(
                 child: DeletedMessage(
                   messageTheme: theme.ownMessageTheme,
-                  reverse: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                 ),
               ),
             ),

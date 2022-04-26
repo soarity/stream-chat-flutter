@@ -533,37 +533,7 @@ class _MessageListViewState extends State<MessageListView> {
                             );
                       return divider;
                     }
-                    final timeDiff =
-                        Jiffy(nextMessage.createdAt.toLocal()).diff(
-                      message.createdAt.toLocal(),
-                      Units.MINUTE,
-                    );
 
-                    final spacingRules = <SpacingType>[];
-
-                    final isNextUserSame =
-                        message.user!.id == nextMessage.user?.id;
-
-                    final isDeleted = message.isDeleted;
-                    final hasTimeDiff = timeDiff >= 1;
-
-                    if (hasTimeDiff) {
-                      spacingRules.add(SpacingType.timeDiff);
-                    }
-
-                    if (!isNextUserSame) {
-                      spacingRules.add(SpacingType.otherUser);
-                    }
-
-                    if (isDeleted) {
-                      spacingRules.add(SpacingType.deleted);
-                    }
-
-                    if (spacingRules.isNotEmpty) {
-                      return widget.spacingWidgetBuilder
-                              ?.call(context, spacingRules) ??
-                          SizedBox(height: 8.h);
-                    }
                     return widget.spacingWidgetBuilder
                             ?.call(context, [SpacingType.defaultSpacing]) ??
                         SizedBox(height: 2.h);
