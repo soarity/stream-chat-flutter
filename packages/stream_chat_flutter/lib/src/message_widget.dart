@@ -787,7 +787,7 @@ class _MessageWidgetState extends State<MessageWidget>
       return widget.usernameBuilder!(context, widget.message);
     }
     return Padding(
-      padding: EdgeInsets.only(top: 8.h, bottom: 2.h, left: 8.w),
+      padding: EdgeInsets.only(top: 6.h, bottom: 2.h, left: 8.w),
       child: Text(
         widget.message.user?.name ?? '',
         maxLines: 1,

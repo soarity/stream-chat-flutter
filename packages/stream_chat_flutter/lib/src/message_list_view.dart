@@ -534,9 +534,14 @@ class _MessageListViewState extends State<MessageListView> {
                       return divider;
                     }
 
-                    return widget.spacingWidgetBuilder
-                            ?.call(context, [SpacingType.defaultSpacing]) ??
-                        SizedBox(height: 2.h);
+                    final isNextUserSame =
+                        message.user!.id == nextMessage.user?.id;
+
+                    if (!isNextUserSame) {
+                      return SizedBox(height: 8.h);
+                    } else {
+                      return SizedBox(height: 3.h);
+                    }
                   },
                   itemBuilder: (context, i) {
                     if (i == itemCount - 1) {
