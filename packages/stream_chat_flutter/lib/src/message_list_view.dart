@@ -534,10 +534,16 @@ class _MessageListViewState extends State<MessageListView> {
                       return divider;
                     }
 
-                    final isNextUserSame =
-                        message.user!.id == nextMessage.user?.id;
+                    final spacingRules = <SpacingType>[];
 
-                    if (!isNextUserSame) {
+                    if (message.isDeleted) {
+                      spacingRules.add(SpacingType.deleted);
+                    }
+                    if (message.user!.id != nextMessage.user?.id) {
+                      spacingRules.add(SpacingType.otherUser);
+                    }
+
+                    if (spacingRules.isNotEmpty) {
                       return SizedBox(height: 10.h);
                     } else {
                       return SizedBox(height: 3.h);
