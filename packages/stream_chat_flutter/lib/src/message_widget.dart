@@ -659,8 +659,11 @@ class _MessageWidgetState extends State<MessageWidget>
                                     children: [
                                       if (widget.message.isDeleted &&
                                           !isFailedState)
-                                        DeletedMessage(
-                                          messageTheme: widget.messageTheme,
+                                        Padding(
+                                          padding: widget.textPadding,
+                                          child: DeletedMessage(
+                                            messageTheme: widget.messageTheme,
+                                          ),
                                         )
                                       else
                                         Column(
