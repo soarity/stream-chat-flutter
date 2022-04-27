@@ -1593,32 +1593,29 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget _buildIdleSendButton(BuildContext context) => Padding(
-        padding: EdgeInsets.all(8.r),
+        padding: EdgeInsets.all(6.r),
         child: StreamSvgIcon(
           assetName: _getIdleSendIcon(),
           color: _messageInputTheme.sendButtonIdleColor,
-          width: 24.r,
-          height: 24.r,
+          width: 26.r,
+          height: 26.r,
         ),
       );
 
-  Widget _buildSendButton(BuildContext context) => Padding(
-        padding: EdgeInsets.all(6.r),
-        child: IconButton(
-          onPressed: sendMessage,
-          iconSize: 24.r,
-          padding: EdgeInsets.all(2.r),
-          splashRadius: 26.r,
-          constraints: BoxConstraints.tightFor(
-            height: 26.r,
-            width: 26.r,
-          ),
-          icon: StreamSvgIcon(
-            assetName: _getSendIcon(),
-            color: _messageInputTheme.sendButtonColor,
-            height: 26.r,
-            width: 26.r,
-          ),
+  Widget _buildSendButton(BuildContext context) => IconButton(
+        onPressed: sendMessage,
+        iconSize: 26.r,
+        padding: EdgeInsets.zero,
+        splashRadius: 26.r,
+        constraints: BoxConstraints.tightFor(
+          height: 26.r,
+          width: 26.r,
+        ),
+        icon: StreamSvgIcon(
+          assetName: _getSendIcon(),
+          color: _messageInputTheme.sendButtonColor,
+          height: 26.r,
+          width: 26.r,
         ),
       );
 
