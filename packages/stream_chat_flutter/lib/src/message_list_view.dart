@@ -544,7 +544,7 @@ class _MessageListViewState extends State<MessageListView> {
                     }
 
                     if (spacingRules.isNotEmpty) {
-                      return SizedBox(height: 10.h);
+                      return SizedBox(height: 8.h);
                     } else {
                       return SizedBox(height: 3.h);
                     }

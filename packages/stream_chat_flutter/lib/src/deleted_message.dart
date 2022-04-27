@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/theme/themes.dart';
 
@@ -13,14 +12,11 @@ class DeletedMessage extends StatelessWidget {
   final MessageThemeData messageTheme;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(top: 8.h),
-        child: Text(
-          context.translations.messageDeletedLabel,
-          style: messageTheme.messageTextStyle?.copyWith(
-            fontStyle: FontStyle.italic,
-            color: messageTheme.createdAtStyle?.color,
-          ),
+  Widget build(BuildContext context) => Text(
+        context.translations.messageDeletedLabel,
+        style: messageTheme.messageTextStyle?.copyWith(
+          fontStyle: FontStyle.italic,
+          color: messageTheme.createdAtStyle?.color,
         ),
       );
 }
