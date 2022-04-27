@@ -1603,21 +1603,21 @@ class MessageInputState extends State<MessageInput> {
       );
 
   Widget _buildSendButton(BuildContext context) => Padding(
-        padding: EdgeInsets.all(8.r),
+        padding: EdgeInsets.all(6.r),
         child: IconButton(
           onPressed: sendMessage,
           iconSize: 24.r,
-          padding: const EdgeInsets.all(0),
-          splashRadius: 24.r,
+          padding: EdgeInsets.all(2.r),
+          splashRadius: 26.r,
           constraints: BoxConstraints.tightFor(
-            height: 24.r,
-            width: 24.r,
+            height: 26.r,
+            width: 26.r,
           ),
           icon: StreamSvgIcon(
             assetName: _getSendIcon(),
             color: _messageInputTheme.sendButtonColor,
-            height: 24.r,
-            width: 24.r,
+            height: 26.r,
+            width: 26.r,
           ),
         ),
       );
