@@ -426,19 +426,13 @@ class _MessageListViewState extends State<MessageListView> {
                   _inBetweenList = false;
                   if (!_upToDate) {
                     _bottomPaginationActive = true;
-                    return _paginateData(
-                      streamChannel,
-                      QueryDirection.bottom,
-                    );
+                    return _paginateData(streamChannel, QueryDirection.bottom);
                   }
                 },
                 onEndOfPage: () async {
                   _inBetweenList = false;
                   _bottomPaginationActive = false;
-                  return _paginateData(
-                    streamChannel,
-                    QueryDirection.top,
-                  );
+                  return _paginateData(streamChannel, QueryDirection.top);
                 },
                 onInBetweenOfPage: () {
                   _inBetweenList = true;
@@ -546,7 +540,7 @@ class _MessageListViewState extends State<MessageListView> {
                     if (spacingRules.isNotEmpty) {
                       return SizedBox(height: 8.h);
                     } else {
-                      return SizedBox(height: 3.h);
+                      return SizedBox(height: 2.h);
                     }
                   },
                   itemBuilder: (context, i) {
