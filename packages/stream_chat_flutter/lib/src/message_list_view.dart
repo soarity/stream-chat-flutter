@@ -1016,18 +1016,12 @@ class _MessageListViewState extends State<MessageListView> {
         topLeft: isMyMessage
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || hasFileAttachment)
-                    ? 0
-                    : attachmentBorderRadius,
+                isNextUserSame ? attachmentBorderRadius : 0,
               ),
         bottomLeft: Radius.circular(attachmentBorderRadius),
         topRight: isMyMessage
             ? Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || hasFileAttachment)
-                    ? 0
-                    : attachmentBorderRadius,
+                isNextUserSame ? attachmentBorderRadius : 0,
               )
             : Radius.circular(attachmentBorderRadius),
         bottomRight: Radius.circular(attachmentBorderRadius),
@@ -1036,14 +1030,10 @@ class _MessageListViewState extends State<MessageListView> {
       borderRadiusGeometry: BorderRadius.only(
         topLeft: isMyMessage
             ? Radius.circular(16.r)
-            : Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16.r,
-              ),
+            : Radius.circular(isNextUserSame ? 16.r : 0),
         bottomLeft: Radius.circular(16.r),
         topRight: isMyMessage
-            ? Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) && !hasReplies ? 0 : 16.r,
-              )
+            ? Radius.circular(isNextUserSame ? 16.r : 0)
             : Radius.circular(16.r),
         bottomRight: Radius.circular(16.r),
       ),
