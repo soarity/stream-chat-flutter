@@ -7,12 +7,34 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Launch URL
 Future<void> launchURL(BuildContext context, String url) async {
-  if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url));
+  if (await canLaunchUrl(Uri.parse(url).withScheme)) {
+    await launchUrl(Uri.parse(url).withScheme);
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.translations.launchUrlError)),
     );
+  }
+}
+
+/// Get centerTitle considering a default and platform specific behaviour
+bool getEffectiveCenterTitle(
+  ThemeData theme, {
+  bool? centerTitle,
+  List<Widget>? actions,
+}) {
+  if (centerTitle != null) return centerTitle;
+  if (theme.appBarTheme.centerTitle != null) {
+    return theme.appBarTheme.centerTitle!;
+  }
+  switch (theme.platform) {
+    case TargetPlatform.android:
+    case TargetPlatform.fuchsia:
+    case TargetPlatform.linux:
+    case TargetPlatform.windows:
+      return false;
+    case TargetPlatform.iOS:
+    case TargetPlatform.macOS:
+      return actions == null || actions.length < 2;
   }
 }
 

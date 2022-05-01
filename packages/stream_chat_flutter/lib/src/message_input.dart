@@ -13,6 +13,7 @@ import 'package:stream_chat_flutter/src/emoji/emoji.dart';
 import 'package:stream_chat_flutter/src/emoji_overlay.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/media_list_view.dart';
+import 'package:stream_chat_flutter/src/media_list_view_controller.dart';
 import 'package:stream_chat_flutter/src/multi_overlay.dart';
 import 'package:stream_chat_flutter/src/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/src/user_mentions_overlay.dart';
@@ -337,6 +338,7 @@ class MessageInputState extends State<MessageInput> {
   final List<User> _mentionedUsers = [];
 
   final _imagePicker = ImagePicker();
+  final _mediaListViewController = MediaListViewController();
   late final _focusNode = widget.focusNode ?? FocusNode();
   late final _isInternalFocusNode = widget.focusNode == null;
   bool _inputEnabled = true;
@@ -926,6 +928,26 @@ class MessageInputState extends State<MessageInput> {
                               );
                             },
                     ),
+                    const Spacer(),
+                    FutureBuilder(
+                      future: PhotoManager.requestPermissionExtend(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData &&
+                            snapshot.data == PermissionState.limited) {
+                          return TextButton(
+                            child: Text(context.translations.viewLibrary),
+                            onPressed: () async {
+                              await PhotoManager.presentLimited();
+                              _mediaListViewController.updateMedia(
+                                newValue: true,
+                              );
+                            },
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ],
                 ),
                 DecoratedBox(
@@ -958,6 +980,7 @@ class MessageInputState extends State<MessageInput> {
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: _PickerWidget(
+                        mediaListViewController: _mediaListViewController,
                         filePickerIndex: _filePickerIndex,
                         streamChatTheme: _streamChatTheme,
                         containsFile: _attachmentContainsFile,
@@ -1144,7 +1167,7 @@ class MessageInputState extends State<MessageInput> {
   Widget _buildReplyToMessage() {
     if (!_hasQuotedMessage) return const Offstage();
     final containsUrl = widget.quotedMessage!.attachments
-        .any((element) => element.titleLink != null);
+        .any((element) => element.ogScrapeUrl != null);
     return QuotedMessageWidget(
       reverse: true,
       showBorder: !containsUrl,
@@ -1836,6 +1859,7 @@ class _PickerWidget extends StatefulWidget {
     required this.onAddMoreFilesClick,
     required this.onMediaSelected,
     required this.streamChatTheme,
+    required this.mediaListViewController,
   }) : super(key: key);
 
   final int filePickerIndex;
@@ -1844,6 +1868,7 @@ class _PickerWidget extends StatefulWidget {
   final void Function(DefaultAttachmentTypes) onAddMoreFilesClick;
   final void Function(AssetEntity) onMediaSelected;
   final StreamChatThemeData streamChatTheme;
+  final MediaListViewController mediaListViewController;
 
   @override
   _PickerWidgetState createState() => _PickerWidgetState();
@@ -1891,7 +1916,9 @@ class _PickerWidgetState extends State<_PickerWidget> {
               ),
             );
           }
+
           return MediaListView(
+            controller: widget.mediaListViewController,
             selectedIds: widget.selectedMedias,
             onSelect: widget.onMediaSelected,
           );

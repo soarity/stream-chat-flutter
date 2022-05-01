@@ -1,3 +1,17 @@
+## Upcoming
+
+✅ Added
+
+- [[#1087]](https://github.com/GetStream/stream-chat-flutter/issues/1087): Handle limited access to camera on iOS.
+- `centerTitle` and `elevation` properties to `ChannelHeader`, `ThreadHeader` and `ChannelListHeader`.
+
+🐞 Fixed
+
+- [[#1067]](https://github.com/GetStream/stream-chat-flutter/issues/1067): Fix name text overflow in reaction card.
+- [[#842]](https://github.com/GetStream/stream-chat-flutter/issues/842): show date divider for first message.
+- Loosen up url check for attachment download.
+- Use `ogScrapeUrl` for LinkAttachments.
+
 ## 3.6.1
 
 - Updated `stream_chat_flutter_core` dependency to [`3.6.1`](https://pub.dev/packages/stream_chat_flutter_core/changelog).
@@ -6,7 +20,7 @@
 
 🐞 Fixed
 
--[[#892]](https://github.com/GetStream/stream-chat-flutter/issues/892): Fix default `initialAlignment` in `MessageListView`.
+- [[#892]](https://github.com/GetStream/stream-chat-flutter/issues/892): Fix default `initialAlignment` in `MessageListView`.
 - Fix `MessageInputTheme.inputBackgroundColor` color not being used in some widgets of `MessageInput`
 - Removed dependency on `visibility_detector`
 

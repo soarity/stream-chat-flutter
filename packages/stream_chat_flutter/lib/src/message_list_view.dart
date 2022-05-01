@@ -488,6 +488,9 @@ class _MessageListViewState extends State<MessageListView> {
                       if (widget.reverse
                           ? widget.headerBuilder == null
                           : widget.footerBuilder == null) {
+                        if (messages.isNotEmpty) {
+                          return _buildDateDivider(messages.last);
+                        }
                         return const SizedBox(height: 52);
                       }
                       return const SizedBox(height: 8);
@@ -511,21 +514,12 @@ class _MessageListViewState extends State<MessageListView> {
                       message = messages[i - 2];
                       nextMessage = messages[i - 1];
                     }
+
                     if (!Jiffy(message.createdAt.toLocal()).isSame(
                       nextMessage.createdAt.toLocal(),
                       Units.DAY,
                     )) {
-                      final divider = widget.dateDividerBuilder != null
-                          ? widget.dateDividerBuilder!(
-                              nextMessage.createdAt.toLocal(),
-                            )
-                          : Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12.h),
-                              child: DateDivider(
-                                dateTime: nextMessage.createdAt.toLocal(),
-                              ),
-                            );
-                      return divider;
+                      return _buildDateDivider(nextMessage);
                     }
 
                     final spacingRules = <SpacingType>[];
@@ -652,6 +646,20 @@ class _MessageListViewState extends State<MessageListView> {
     return child;
   }
 
+  Widget _buildDateDivider(Message message) {
+    final divider = widget.dateDividerBuilder != null
+        ? widget.dateDividerBuilder!(
+            message.createdAt.toLocal(),
+          )
+        : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: DateDivider(
+              dateTime: message.createdAt.toLocal(),
+            ),
+          );
+    return divider;
+  }
+
   Positioned _buildFloatingDateDivider(int itemCount) => Positioned(
         top: 20,
         left: 0,
@@ -687,7 +695,9 @@ class _MessageListViewState extends State<MessageListView> {
               index = _getBottomElementIndex(values);
             }
 
-            if (index == null) return const Offstage();
+            if (index == null) {
+              return const Offstage();
+            }
 
             if (index <= 2 || index >= itemCount - 3) {
               if (widget.reverse) {
@@ -968,7 +978,7 @@ class _MessageListViewState extends State<MessageListView> {
     final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
 
     final hasUrlAttachment =
-        message.attachments.any((it) => it.titleLink != null);
+        message.attachments.any((it) => it.ogScrapeUrl != null);
 
     final borderSide =
         isOnlyEmoji || hasUrlAttachment || (isMyMessage && !hasFileAttachment)
