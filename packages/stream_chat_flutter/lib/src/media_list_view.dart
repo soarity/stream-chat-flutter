@@ -164,6 +164,7 @@ class _MediaListViewState extends State<MediaListView> {
 
   void _updateMediaList() {
     if (controller.shouldUpdateMedia) {
+      _currentPage = 0;
       _getMedia(shouldRefreshMediaList: true);
     }
   }
