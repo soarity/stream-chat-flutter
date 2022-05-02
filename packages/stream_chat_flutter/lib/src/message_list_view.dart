@@ -939,7 +939,7 @@ class _MessageListViewState extends State<MessageListView> {
         nextMessage != null && message.user!.id == nextMessage.user!.id;
 
     final upperMessage =
-        index + 1 <= messages.length ? messages[index + 1] : null;
+        index + 1 < messages.length ? messages[index + 1] : null;
 
     // use to show whether to show username or not
     final hideUsername = upperMessage != null &&
