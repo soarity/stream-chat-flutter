@@ -52,10 +52,7 @@ class _MediaListViewState extends State<MediaListView> {
 
   @override
   Widget build(BuildContext context) => LazyLoadScrollView(
-        onEndOfPage: () async {
-          await _getMedia();
-          _updatePage();
-        },
+        onEndOfPage: () async => _getMedia(),
         child: GridView.builder(
           itemCount: _media.length,
           controller: _scrollController,
@@ -167,15 +164,11 @@ class _MediaListViewState extends State<MediaListView> {
 
   void _updateMediaList() {
     if (controller.shouldUpdateMedia) {
-      _getMedia();
+      _getMedia(shouldRefreshMediaList: true);
     }
   }
 
-  void _updatePage() {
-    ++_currentPage;
-  }
-
-  Future<void> _getMedia() async {
+  Future<void> _getMedia({bool shouldRefreshMediaList = false}) async {
     final assetList = (await PhotoManager.getAssetPathList(
       filterOption: FilterOptionGroup(
         orders: [
@@ -194,9 +187,17 @@ class _MediaListViewState extends State<MediaListView> {
       size: 50,
     );
     if (media?.isNotEmpty == true) {
-      setState(() {
-        _media = media!;
-      });
+      if (shouldRefreshMediaList) {
+        setState(() {
+          _media = media!;
+        });
+        _currentPage = 1;
+      } else {
+        setState(() {
+          _media.addAll(media!);
+        });
+        ++_currentPage;
+      }
     }
   }
 }
