@@ -960,6 +960,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       },
       showPinButton: currentUserMember != null &&
           _userPermissions.contains(PermissionType.pinMessage),
+      botBuilder: widget.botBuilder,
     );
 
     if (widget.parentMessageBuilder != null) {
@@ -1137,6 +1138,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       },
       showPinButton: currentUserMember != null &&
           _userPermissions.contains(PermissionType.pinMessage),
+      botBuilder: widget.botBuilder,
     );
 
     if (widget.messageBuilder != null) {
