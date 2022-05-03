@@ -25,7 +25,6 @@ class AttachmentActionsModal extends StatelessWidget {
     this.imageDownloader,
     this.fileDownloader,
     this.showReply = true,
-    this.showShowInChat = true,
     this.showSave = true,
     this.showDelete = true,
     this.customActions = const [],
@@ -49,9 +48,6 @@ class AttachmentActionsModal extends StatelessWidget {
   /// Show reply option
   final bool showReply;
 
-  /// Show show in chat option
-  final bool showShowInChat;
-
   /// Show save option
   final bool showSave;
 
@@ -71,7 +67,6 @@ class AttachmentActionsModal extends StatelessWidget {
     AttachmentDownloader? imageDownloader,
     AttachmentDownloader? fileDownloader,
     bool? showReply,
-    bool? showShowInChat,
     bool? showSave,
     bool? showDelete,
     List<AttachmentAction>? customActions,
@@ -84,7 +79,6 @@ class AttachmentActionsModal extends StatelessWidget {
         imageDownloader: imageDownloader ?? this.imageDownloader,
         fileDownloader: fileDownloader ?? this.fileDownloader,
         showReply: showReply ?? this.showReply,
-        showShowInChat: showShowInChat ?? this.showShowInChat,
         showSave: showSave ?? this.showSave,
         showDelete: showDelete ?? this.showDelete,
         customActions: customActions ?? this.customActions,
@@ -127,16 +121,6 @@ class AttachmentActionsModal extends StatelessWidget {
                       () {
                         Navigator.pop(context, ReturnActionType.reply);
                       },
-                    ),
-                  if (showShowInChat)
-                    _buildButton(
-                      context,
-                      context.translations.showInChatLabel,
-                      StreamSvgIcon.eye(
-                        size: 24,
-                        color: theme.colorTheme.textHighEmphasis,
-                      ),
-                      onShowMessage,
                     ),
                   if (showSave)
                     _buildButton(
