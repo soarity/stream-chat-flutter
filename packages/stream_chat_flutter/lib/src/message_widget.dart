@@ -33,15 +33,26 @@ enum DisplayWidget {
   show,
 }
 
+/// {@macro message_widget}
+@Deprecated("Use 'StreamMessageWidget' instead")
+typedef MessageWidget = StreamMessageWidget;
+
+/// {@template message_widget}
+/// ![screenshot](https://raw.githubusercontent.com/GetStream/stream-chat-flutter/master/packages/stream_chat_flutter/screenshots/message_widget.png)
+/// ![screenshot](https://raw.githubusercontent.com/GetStream/stream-chat-flutter/master/packages/stream_chat_flutter/screenshots/message_widget_paint.png)
+///
+/// It shows a message with reactions, replies and user avatar.
+///
 /// Usually you don't use this widget as it's the default message widget used by
-/// [MessageListView].
+/// [StreamMessageListView].
 ///
 /// The widget components render the ui based on the first ancestor of type
 /// [StreamChatTheme].
 /// Modify it to change the widget appearance.
-class MessageWidget extends StatefulWidget {
-  ///
-  MessageWidget({
+/// {@endtemplate}
+class StreamMessageWidget extends StatefulWidget {
+  /// Creates a new instance of the message widget.
+  StreamMessageWidget({
     Key? key,
     required this.message,
     required this.messageTheme,
@@ -90,14 +101,6 @@ class MessageWidget extends StatefulWidget {
       vertical: 8,
     ),
     this.attachmentPadding = EdgeInsets.zero,
-    @Deprecated('''
-    allRead is now deprecated and it will be removed in future releases. 
-    The MessageWidget now listens for read events on its own.
-    ''') this.allRead = false,
-    @Deprecated('''
-    readList is now deprecated and it will be removed in future releases. 
-    The MessageWidget now listens for read events on its own.
-    ''') this.readList,
     this.onQuotedMessageTap,
     this.customActions = const [],
     this.onAttachmentTap,
@@ -116,7 +119,7 @@ class MessageWidget extends StatefulWidget {
                   context,
                   Material(
                     color: messageTheme.messageBackgroundColor,
-                    child: ImageGroup(
+                    child: StreamImageGroup(
                       size: Size(
                         mediaQueryData.size.width * 0.85,
                         mediaQueryData.size.height * 0.3,
@@ -137,7 +140,7 @@ class MessageWidget extends StatefulWidget {
 
             return wrapAttachmentWidget(
               context,
-              ImageAttachment(
+              StreamImageAttachment(
                 attachment: attachments[0],
                 message: message,
                 messageTheme: messageTheme,
@@ -167,7 +170,7 @@ class MessageWidget extends StatefulWidget {
               Column(
                 children: attachments.map((attachment) {
                   final mediaQueryData = MediaQuery.of(context);
-                  return VideoAttachment(
+                  return StreamVideoAttachment(
                     attachment: attachment,
                     messageTheme: messageTheme,
                     size: Size(
@@ -199,7 +202,7 @@ class MessageWidget extends StatefulWidget {
               Column(
                 children: attachments.map((attachment) {
                   final mediaQueryData = MediaQuery.of(context);
-                  return GiphyAttachment(
+                  return StreamGiphyAttachment(
                     attachment: attachment,
                     message: message,
                     size: Size(
@@ -235,7 +238,7 @@ class MessageWidget extends StatefulWidget {
                     final mediaQueryData = MediaQuery.of(context);
                     return wrapAttachmentWidget(
                       context,
-                      FileAttachment(
+                      StreamFileAttachment(
                         message: message,
                         attachment: attachment,
                         size: Size(
@@ -295,7 +298,7 @@ class MessageWidget extends StatefulWidget {
   final Message message;
 
   /// The message theme
-  final MessageThemeData messageTheme;
+  final StreamMessageThemeData messageTheme;
 
   /// If true the widget will be mirrored
   final bool reverse;
@@ -336,9 +339,6 @@ class MessageWidget extends StatefulWidget {
   /// If true the widget will show the reactions
   final bool showReactions;
 
-  ///
-  final bool allRead;
-
   /// If true the widget will show the show in channel indicator
   final bool showInChannelIndicator;
 
@@ -348,11 +348,8 @@ class MessageWidget extends StatefulWidget {
   /// The function called when tapping on a link
   final void Function(String)? onLinkTap;
 
-  /// Used in [MessageReactionsModal] and [MessageActionsModal]
+  /// Used in [StreamMessageReactionsModal] and [StreamMessageActionsModal]
   final bool showReactionPickerIndicator;
-
-  /// List of users who read
-  final List<Read>? readList;
 
   /// Callback when show message is tapped
   final ShowMessageCallback? onShowMessage;
@@ -409,13 +406,14 @@ class MessageWidget extends StatefulWidget {
   final void Function(Message)? onMessageTap;
 
   /// List of custom actions shown on message long tap
-  final List<MessageAction> customActions;
+  final List<StreamMessageAction> customActions;
 
   /// Customize onTap on attachment
   final void Function(Message message, Attachment attachment)? onAttachmentTap;
 
-  /// Creates a copy of [MessageWidget] with specified attributes overridden.
-  MessageWidget copyWith({
+  /// Creates a copy of [StreamMessageWidget] with
+  /// specified attributes overridden.
+  StreamMessageWidget copyWith({
     Key? key,
     void Function(User)? onMentionTap,
     void Function(Message)? onReplyTap,
@@ -427,7 +425,7 @@ class MessageWidget extends StatefulWidget {
     Widget Function(BuildContext, Message)? deletedBottomRowBuilder,
     void Function(BuildContext, Message)? onMessageActions,
     Message? message,
-    MessageThemeData? messageTheme,
+    StreamMessageThemeData? messageTheme,
     bool? reverse,
     ShapeBorder? shape,
     ShapeBorder? attachmentShape,
@@ -463,11 +461,11 @@ class MessageWidget extends StatefulWidget {
     bool? translateUserAvatar,
     OnQuotedMessageTap? onQuotedMessageTap,
     void Function(Message)? onMessageTap,
-    List<MessageAction>? customActions,
+    List<StreamMessageAction>? customActions,
     void Function(Message message, Attachment attachment)? onAttachmentTap,
     Widget Function(BuildContext, User)? userAvatarBuilder,
   }) =>
-      MessageWidget(
+      StreamMessageWidget(
         key: key ?? this.key,
         onMentionTap: onMentionTap ?? this.onMentionTap,
         onReplyTap: onReplyTap ?? this.onReplyTap,
@@ -525,12 +523,13 @@ class MessageWidget extends StatefulWidget {
       );
 
   @override
-  _MessageWidgetState createState() => _MessageWidgetState();
+  _StreamMessageWidgetState createState() => _StreamMessageWidgetState();
 }
 
-class _MessageWidgetState extends State<MessageWidget>
-    with AutomaticKeepAliveClientMixin<MessageWidget> {
+class _StreamMessageWidgetState extends State<StreamMessageWidget>
+    with AutomaticKeepAliveClientMixin<StreamMessageWidget> {
   final usernameColor = const Color(0XFF0001f6);
+
   bool get showSendingIndicator => widget.showSendingIndicator;
 
   bool get isDeleted => widget.message.isDeleted;
@@ -606,9 +605,9 @@ class _MessageWidgetState extends State<MessageWidget>
                     _buildUsername(const Key('usernameKey')),
                   Column(
                     children: [
-                      PortalEntry(
+                      PortalTarget(
                         visible: showReactions,
-                        portal: showReactions
+                        portalFollower: showReactions
                             ? Container(
                                 transform: Matrix4.translationValues(
                                   widget.reverse ? 12 : -12,
@@ -623,8 +622,10 @@ class _MessageWidgetState extends State<MessageWidget>
                                 ),
                               )
                             : null,
-                        portalAnchor: Alignment(widget.reverse ? 1 : -1, -1),
-                        childAnchor: Alignment(widget.reverse ? -1 : 1, -1),
+                        anchor: Aligned(
+                          follower: Alignment(widget.reverse ? 1 : -1, -1),
+                          target: Alignment(widget.reverse ? -1 : 1, -1),
+                        ),
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
@@ -661,7 +662,7 @@ class _MessageWidgetState extends State<MessageWidget>
                                           !isFailedState)
                                         Padding(
                                           padding: widget.textPadding,
-                                          child: DeletedMessage(
+                                          child: StreamDeletedMessage(
                                             messageTheme: widget.messageTheme,
                                           ),
                                         )
@@ -733,7 +734,7 @@ class _MessageWidgetState extends State<MessageWidget>
         ? () => widget.onQuotedMessageTap!(widget.message.quotedMessageId)
         : null;
     final chatThemeData = _streamChatTheme;
-    return QuotedMessageWidget(
+    return StreamQuotedMessageWidget(
       onTap: onTap,
       message: widget.message.quotedMessage!,
       messageTheme: isMyMessage
@@ -814,7 +815,7 @@ class _MessageWidgetState extends State<MessageWidget>
         getWebsiteName(hostName.toLowerCase()) ??
         hostName.capitalize();
 
-    return UrlAttachment(
+    return StreamUrlAttachment(
       urlAttachment: urlAttachment,
       hostDisplayName: hostDisplayName,
       textPadding: widget.textPadding,
@@ -842,7 +843,7 @@ class _MessageWidgetState extends State<MessageWidget>
       child: _shouldShowReactions
           ? GestureDetector(
               onTap: () => _showMessageReactionsModalBottomSheet(context),
-              child: ReactionBubble(
+              child: StreamReactionBubble(
                 key: ValueKey('${widget.message.id}.reactions'),
                 reverse: widget.reverse,
                 flipTail: widget.reverse,
@@ -873,7 +874,7 @@ class _MessageWidgetState extends State<MessageWidget>
       barrierColor: _streamChatTheme.colorTheme.overlay,
       builder: (context) => StreamChannel(
         channel: channel,
-        child: MessageActionsModal(
+        child: StreamMessageActionsModal(
           messageWidget: widget.copyWith(
             key: const Key('MessageWidget'),
             message: widget.message.copyWith(
@@ -888,7 +889,8 @@ class _MessageWidgetState extends State<MessageWidget>
             showSendingIndicator: false,
             padding: const EdgeInsets.all(0),
             showReactionPickerIndicator: widget.showReactions &&
-                (widget.message.status == MessageSendingStatus.sent),
+                (widget.message.status == MessageSendingStatus.sent) &&
+                channel.ownCapabilities.contains(PermissionType.sendReaction),
             showPinHighlight: false,
             showUserAvatar:
                 widget.message.user!.id == channel.client.state.currentUser!.id
@@ -899,7 +901,6 @@ class _MessageWidgetState extends State<MessageWidget>
               Clipboard.setData(ClipboardData(text: message.text)),
           messageTheme: widget.messageTheme,
           reverse: widget.reverse,
-          showDeleteMessage: widget.showDeleteMessage || isDeleteFailed,
           message: widget.message,
           editMessageInputBuilder: widget.editMessageInputBuilder,
           onReplyTap: widget.onReplyTap,
@@ -909,16 +910,10 @@ class _MessageWidgetState extends State<MessageWidget>
           showCopyMessage: widget.showCopyMessage &&
               !isFailedState &&
               widget.message.text?.trim().isNotEmpty == true,
-          showEditMessage: widget.showEditMessage &&
-              !isDeleteFailed &&
-              !widget.message.attachments
-                  .any((element) => element.type == 'giphy'),
-          showReactions: widget.showReactions,
           showReplyMessage: widget.showReplyMessage &&
               !isFailedState &&
               widget.onReplyTap != null,
           showFlagButton: widget.showFlagButton,
-          showPinButton: widget.showPinButton,
           customActions: widget.customActions,
         ),
       ),
@@ -933,7 +928,7 @@ class _MessageWidgetState extends State<MessageWidget>
       barrierColor: _streamChatTheme.colorTheme.overlay,
       builder: (context) => StreamChannel(
         channel: channel,
-        child: MessageReactionsModal(
+        child: StreamMessageReactionsModal(
           messageWidget: widget.copyWith(
             key: const Key('MessageWidget'),
             message: widget.message.copyWith(
@@ -948,7 +943,8 @@ class _MessageWidgetState extends State<MessageWidget>
             showSendingIndicator: false,
             padding: const EdgeInsets.all(0),
             showReactionPickerIndicator: widget.showReactions &&
-                (widget.message.status == MessageSendingStatus.sent),
+                (widget.message.status == MessageSendingStatus.sent) &&
+                channel.ownCapabilities.contains(PermissionType.sendReaction),
             showPinHighlight: false,
             showUserAvatar:
                 widget.message.user!.id == channel.client.state.currentUser!.id
@@ -959,7 +955,8 @@ class _MessageWidgetState extends State<MessageWidget>
           messageTheme: widget.messageTheme,
           reverse: widget.reverse,
           message: widget.message,
-          showReactions: widget.showReactions,
+          showReactions: widget.showReactions &&
+              channel.ownCapabilities.contains(PermissionType.sendReaction),
         ),
       ),
     );
@@ -1046,6 +1043,13 @@ class _MessageWidgetState extends State<MessageWidget>
 
     final channel = StreamChannel.of(context).channel;
 
+    if (!channel.ownCapabilities.contains(PermissionType.readEvents)) {
+      return StreamSendingIndicator(
+        message: message,
+        size: style!.fontSize,
+      );
+    }
+
     return BetterStreamBuilder<List<Read>>(
       stream: channel.state?.readStream,
       initialData: channel.state?.read,
@@ -1055,7 +1059,7 @@ class _MessageWidgetState extends State<MessageWidget>
             (it.lastRead.isAfter(message.createdAt) ||
                 it.lastRead.isAtSameMomentAs(message.createdAt)));
         final isMessageRead = readList.length >= (channel.memberCount ?? 0) - 1;
-        return SendingIndicator(
+        return StreamSendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
           size: style!.fontSize! + 2.fzs,
@@ -1078,7 +1082,7 @@ class _MessageWidgetState extends State<MessageWidget>
           padding: isOnlyEmoji ? EdgeInsets.zero : widget.textPadding,
           child: widget.textBuilder != null
               ? widget.textBuilder!(context, widget.message)
-              : MessageText(
+              : StreamMessageText(
                   onLinkTap: widget.onLinkTap,
                   message: widget.message,
                   onMentionTap: widget.onMentionTap,

@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/theme/themes.dart';
 
-/// Widget to display deleted message
-class DeletedMessage extends StatelessWidget {
-  /// Constructor to create [DeletedMessage]
-  const DeletedMessage({Key? key, required this.messageTheme})
+/// {@macro deleted_message}
+@Deprecated("Use 'StreamDeletedMessage' instead")
+typedef DeletedMessage = StreamDeletedMessage;
+
+/// {@template deleted_message}
+/// Widget to display deleted message.
+/// {@endtemplate}
+class StreamDeletedMessage extends StatelessWidget {
+  /// Constructor to create [StreamDeletedMessage]
+  const StreamDeletedMessage({Key? key, required this.messageTheme})
       : super(key: key);
 
   /// The theme of the message
-  final MessageThemeData messageTheme;
+  final StreamMessageThemeData messageTheme;
 
   @override
   Widget build(BuildContext context) => Text(

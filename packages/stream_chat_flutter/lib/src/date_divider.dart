@@ -4,11 +4,16 @@ import 'package:jiffy/jiffy.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
 
-/// It shows a date divider depending on the date difference
+/// {@macro date_divider}
+@Deprecated("Use 'StreamDateDivider' instead")
+typedef DateDivider = StreamDateDivider;
 
-class DateDivider extends StatelessWidget {
-  /// Constructor for creating a [CustomDateDivider]
-  const DateDivider({
+/// {@template date_divider}
+/// It shows a date divider depending on the date difference
+/// {@endtemplate}
+class StreamDateDivider extends StatelessWidget {
+  /// Constructor for creating a [StreamDateDivider]
+  const StreamDateDivider({
     Key? key,
     required this.dateTime,
     this.uppercase = false,
