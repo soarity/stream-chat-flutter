@@ -375,29 +375,32 @@ class AttachmentActionsModal extends StatelessWidget {
     DownloadedPathCallback? downloadedPathCallback,
   }) async {
     String? filePath;
-    final appDocDir = await getTemporaryDirectory();
-    final url =
-        attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl!;
-    await Dio().download(
-      url,
-      (Headers responseHeaders) {
-        final ext = Uri.parse(url).pathSegments.last;
-        filePath ??= '${appDocDir.path}/${attachment.id}.$ext';
-        return filePath!;
-      },
-      onReceiveProgress: progressCallback,
-    );
-    final result = await ImageGallerySaver.saveFile(filePath!);
-    downloadedPathCallback?.call((result as Map)['filePath']);
-    return (result as Map)['filePath'];
+    try {
+      final appDocDir = await getTemporaryDirectory();
+      final url =
+          attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl!;
+      await Dio().download(
+        url,
+        (Headers responseHeaders) {
+          final ext = Uri.parse(url).pathSegments.last;
+          filePath ??= '${appDocDir.path}/${attachment.id}.$ext';
+          return filePath!;
+        },
+        onReceiveProgress: progressCallback,
+      );
+      final result = await ImageGallerySaver.saveFile(filePath!);
+      downloadedPathCallback?.call((result as Map)['filePath']);
+      return (result as Map)['filePath'];
+    } catch (e) {
+      return null;
+    }
   }
 }
 
 class _DownloadProgress {
   const _DownloadProgress(this.total, this.received);
 
-  factory _DownloadProgress.initial() =>
-      _DownloadProgress(double.maxFinite.toInt(), 0);
+  factory _DownloadProgress.initial() => const _DownloadProgress(100, 0);
 
   final int total;
   final int received;
