@@ -379,16 +379,11 @@ class AttachmentActionsModal extends StatelessWidget {
       final appDocDir = await getTemporaryDirectory();
       final url =
           attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl!;
-      await Dio().download(
-        url,
-        (Headers responseHeaders) {
-          final ext = Uri.parse(url).pathSegments.last;
-          filePath ??= '${appDocDir.path}/${attachment.id}.$ext';
-          return filePath!;
-        },
-        onReceiveProgress: progressCallback,
-      );
-      final result = await ImageGallerySaver.saveFile(filePath!);
+      final ext = Uri.parse(url).pathSegments.last;
+      filePath ??= '${appDocDir.path}/${attachment.id}.$ext';
+
+      await Dio().download(url, filePath, onReceiveProgress: progressCallback);
+      final result = await ImageGallerySaver.saveFile(filePath);
       downloadedPathCallback?.call((result as Map)['filePath']);
       return (result as Map)['filePath'];
     } catch (e) {
