@@ -139,11 +139,13 @@ class AttachmentActionsModal extends StatelessWidget {
                           void Function(int, int) progressCallback,
                           DownloadedPathCallback downloadedPathCallback,
                         }) saveFile = fileDownloader ?? _downloadAttachment;
+
                         final Future<String?> Function(
                           Attachment, {
                           void Function(int, int) progressCallback,
                           DownloadedPathCallback downloadedPathCallback,
                         }) saveImage = imageDownloader ?? _downloadAttachment;
+
                         final downloader = isImage ? saveImage : saveFile;
 
                         final progressNotifier =
@@ -375,20 +377,18 @@ class AttachmentActionsModal extends StatelessWidget {
     DownloadedPathCallback? downloadedPathCallback,
   }) async {
     String? filePath;
-    try {
-      final appDocDir = await getTemporaryDirectory();
-      final url =
-          attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl!;
-      final ext = Uri.parse(url).pathSegments.last;
-      filePath ??= '${appDocDir.path}/${attachment.id}.$ext';
+    final appDocDir = await getTemporaryDirectory();
+    final url =
+        attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl!;
+    final ext = Uri.parse(url).pathSegments.last;
+    filePath ??= '${appDocDir.path}/${attachment.id}.$ext';
 
-      await Dio().download(url, filePath, onReceiveProgress: progressCallback);
-      final result = await ImageGallerySaver.saveFile(filePath);
-      downloadedPathCallback?.call((result as Map)['filePath']);
-      return (result as Map)['filePath'];
-    } catch (e) {
-      return null;
-    }
+    await Dio().download(url, filePath, onReceiveProgress: progressCallback);
+    final result =
+        await ImageGallerySaver.saveFile(filePath, isReturnPathOfIOS: true);
+    final saveFilePath = result['filePath'] ?? filePath;
+    downloadedPathCallback?.call(saveFilePath);
+    return saveFilePath;
   }
 }
 
