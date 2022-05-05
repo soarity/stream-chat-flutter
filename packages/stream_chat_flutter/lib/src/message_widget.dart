@@ -904,7 +904,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           message: widget.message,
           editMessageInputBuilder: widget.editMessageInputBuilder,
           onReplyTap: widget.onReplyTap,
-          showThreadReplyMessage: false,
           showResendMessage:
               widget.showResendMessage && (isSendFailed || isUpdateFailed),
           showCopyMessage: widget.showCopyMessage &&

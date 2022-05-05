@@ -18,17 +18,14 @@ class StreamMessageActionsModal extends StatefulWidget {
     required this.message,
     required this.messageWidget,
     required this.messageTheme,
-    this.showReactions,
-    this.showDeleteMessage,
-    this.showEditMessage,
+    this.showReactions = true,
+    this.showDeleteMessage = true,
+    this.showEditMessage = true,
     this.onReplyTap,
-    this.onThreadReplyTap,
     this.showCopyMessage = true,
     this.showReplyMessage = true,
     this.showResendMessage = true,
-    this.showThreadReplyMessage,
-    this.showFlagButton,
-    this.showPinButton,
+    this.showFlagButton = true,
     this.editMessageInputBuilder,
     this.reverse = false,
     this.customActions = const [],
@@ -41,9 +38,6 @@ class StreamMessageActionsModal extends StatefulWidget {
   /// Builder for edit message
   final Widget Function(BuildContext, Message)? editMessageInputBuilder;
 
-  /// Callback for when thread reply is tapped
-  final OnMessageTap? onThreadReplyTap;
-
   /// Callback for when reply is tapped
   final OnMessageTap? onReplyTap;
 
@@ -54,34 +48,28 @@ class StreamMessageActionsModal extends StatefulWidget {
   final StreamMessageThemeData messageTheme;
 
   /// Flag for showing reactions
-  final bool? showReactions;
+  final bool showReactions;
 
   /// Callback when copy is tapped
   final OnMessageTap? onCopyTap;
 
   /// Callback when delete is tapped
-  final bool? showDeleteMessage;
+  final bool showDeleteMessage;
 
   /// Flag for showing copy action
   final bool showCopyMessage;
 
   /// Flag for showing edit action
-  final bool? showEditMessage;
+  final bool showEditMessage;
 
   /// Flag for showing resend action
   final bool showResendMessage;
 
   /// Flag for showing reply action
-  final bool? showReplyMessage;
-
-  /// Flag for showing thread reply action
-  final bool? showThreadReplyMessage;
+  final bool showReplyMessage;
 
   /// Flag for showing flag action
-  final bool? showFlagButton;
-
-  /// Flag for showing pin action
-  final bool? showPinButton;
+  final bool showFlagButton;
 
   /// Flag for reversing message
   final bool reverse;
@@ -96,8 +84,6 @@ class StreamMessageActionsModal extends StatefulWidget {
 
 class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
   bool _showActions = true;
-  late List<String> _userPermissions;
-  late bool _isMyMessage;
 
   @override
   Widget build(BuildContext context) => _showMessageOptionsModal();
@@ -132,19 +118,6 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
     final shiftFactor =
         numberOfReactions < 5 ? (5 - numberOfReactions) * 0.1 : 0.0;
 
-    final hasEditPermission = _userPermissions.contains(
-          PermissionType.updateAnyMessage,
-        ) ||
-        _userPermissions.contains(PermissionType.updateOwnMessage);
-
-    final hasDeletePermission = _userPermissions.contains(
-          PermissionType.deleteAnyMessage,
-        ) ||
-        _userPermissions.contains(PermissionType.deleteOwnMessage);
-
-    final hasReactionPermission =
-        _userPermissions.contains(PermissionType.sendReaction);
-
     final child = Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -154,7 +127,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
                 ? CrossAxisAlignment.end
                 : CrossAxisAlignment.start,
             children: <Widget>[
-              if ((widget.showReactions ?? hasReactionPermission) &&
+              if (widget.showReactions &&
                   (widget.message.status == MessageSendingStatus.sent))
                 Align(
                   alignment: Alignment(
@@ -191,28 +164,15 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (widget.showReplyMessage ??
-                            (_userPermissions
-                                    .contains(PermissionType.quoteMessage) &&
-                                widget.message.status ==
-                                    MessageSendingStatus.sent))
+                        if (widget.showReplyMessage &&
+                            widget.message.status == MessageSendingStatus.sent)
                           _buildReplyButton(context),
                         if (widget.showResendMessage)
                           _buildResendMessage(context),
-                        if (widget.showEditMessage ??
-                            _isMyMessage && hasEditPermission)
-                          _buildEditMessage(context),
+                        if (widget.showEditMessage) _buildEditMessage(context),
                         if (widget.showCopyMessage) _buildCopyButton(context),
-                        if (widget.showFlagButton ??
-                            _userPermissions
-                                .contains(PermissionType.flagMessage))
-                          _buildFlagButton(context),
-                        if (widget.showPinButton ??
-                            _userPermissions
-                                .contains(PermissionType.pinMessage))
-                          _buildPinButton(context),
-                        if (widget.showDeleteMessage ??
-                            (_isMyMessage && hasDeletePermission))
+                        if (widget.showFlagButton) _buildFlagButton(context),
+                        if (widget.showDeleteMessage)
                           _buildDeleteButton(context),
                         ...widget.customActions
                             .map((action) => _buildCustomAction(
@@ -337,21 +297,6 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
     }
   }
 
-  void _togglePin() async {
-    final channel = StreamChannel.of(context).channel;
-
-    Navigator.pop(context);
-    try {
-      if (!widget.message.pinned) {
-        await channel.pinMessage(widget.message);
-      } else {
-        await channel.unpinMessage(widget.message);
-      }
-    } catch (e) {
-      _showErrorAlert();
-    }
-  }
-
   void _showDeleteDialog() async {
     setState(() {
       _showActions = false;
@@ -438,31 +383,6 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
             SizedBox(width: 16.w),
             Text(
               context.translations.flagMessageLabel,
-              style: streamChatThemeData.textTheme.body,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPinButton(BuildContext context) {
-    final streamChatThemeData = StreamChatTheme.of(context);
-    return InkWell(
-      onTap: _togglePin,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
-        child: Row(
-          children: [
-            StreamSvgIcon.pin(
-              color: streamChatThemeData.primaryIconTheme.color,
-              size: 24.r,
-            ),
-            SizedBox(width: 16.w),
-            Text(
-              context.translations.togglePinUnpinText(
-                pinned: widget.message.pinned,
-              ),
               style: streamChatThemeData.textTheme.body,
             ),
           ],

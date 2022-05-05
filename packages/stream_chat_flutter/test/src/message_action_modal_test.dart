@@ -47,9 +47,6 @@ void main() {
                     key: Key('MessageWidget'),
                   ),
                   messageTheme: streamTheme.ownMessageTheme,
-                  showThreadReplyMessage: true,
-                  showEditMessage: true,
-                  showDeleteMessage: true,
                 ),
               ),
             ),
@@ -91,7 +88,6 @@ void main() {
                 child: StreamMessageActionsModal(
                   showCopyMessage: false,
                   showReplyMessage: false,
-                  showThreadReplyMessage: false,
                   message: Message(
                     text: 'test',
                     user: User(
@@ -243,8 +239,6 @@ void main() {
       final themeData = ThemeData();
       final streamTheme = StreamChatThemeData.fromTheme(themeData);
 
-      var tapped = false;
-
       await tester.pumpWidget(
         MaterialApp(
           theme: themeData,
@@ -256,9 +250,6 @@ void main() {
                 channel: channel,
                 child: StreamMessageActionsModal(
                   messageWidget: const Text('test'),
-                  onThreadReplyTap: (m) {
-                    tapped = true;
-                  },
                   message: Message(
                     text: 'test',
                     user: User(
@@ -267,7 +258,6 @@ void main() {
                     status: MessageSendingStatus.sent,
                   ),
                   messageTheme: streamTheme.ownMessageTheme,
-                  showThreadReplyMessage: true,
                 ),
               ),
             ),
@@ -277,8 +267,6 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Thread Reply'));
-
-      expect(tapped, true);
     },
   );
 
@@ -318,7 +306,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                showEditMessage: true,
               ),
             ),
           ),
@@ -369,7 +356,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                showEditMessage: true,
               ),
             ),
           ),
@@ -570,7 +556,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                showFlagButton: true,
               ),
             ),
           ),
@@ -627,7 +612,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                showFlagButton: true,
               ),
             ),
           ),
@@ -684,7 +668,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                showFlagButton: true,
               ),
             ),
           ),
@@ -739,7 +722,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                showDeleteMessage: true,
               ),
             ),
           ),
@@ -796,7 +778,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                showDeleteMessage: true,
               ),
             ),
           ),
