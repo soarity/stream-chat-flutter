@@ -1206,17 +1206,17 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
   @override
   void initState() {
+    super.initState();
     _scrollController = widget.scrollController ?? ItemScrollController();
     _itemPositionListener =
         widget.itemPositionListener ?? ItemPositionsListener.create();
     _itemPositionListener.itemPositions
         .addListener(_handleItemPositionsChanged);
-
-    super.initState();
   }
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     final newStreamChannel = StreamChannel.of(context);
     _streamTheme = StreamChatTheme.of(context);
     _userPermissions = newStreamChannel.channel.ownCapabilities;
@@ -1251,8 +1251,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         }
       });
     }
-
-    super.didChangeDependencies();
   }
 
   void _handleItemPositionsChanged() {
