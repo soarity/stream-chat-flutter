@@ -901,6 +901,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
               Clipboard.setData(ClipboardData(text: message.text)),
           messageTheme: widget.messageTheme,
           reverse: widget.reverse,
+          showDeleteMessage: widget.showDeleteMessage || isDeleteFailed,
           message: widget.message,
           editMessageInputBuilder: widget.editMessageInputBuilder,
           onReplyTap: widget.onReplyTap,
@@ -909,6 +910,11 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           showCopyMessage: widget.showCopyMessage &&
               !isFailedState &&
               widget.message.text?.trim().isNotEmpty == true,
+          showEditMessage: widget.showEditMessage &&
+              !isDeleteFailed &&
+              !widget.message.attachments
+                  .any((element) => element.type == 'giphy'),
+          showReactions: widget.showReactions,
           showReplyMessage: widget.showReplyMessage &&
               !isFailedState &&
               widget.onReplyTap != null,
