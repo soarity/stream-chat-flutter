@@ -84,31 +84,22 @@ class StreamAttachmentUploadStateBuilder extends StatelessWidget {
 }
 
 class _IconButton extends StatelessWidget {
-  const _IconButton({
-    Key? key,
-    this.icon,
-    this.iconSize = 24.0,
-    this.onPressed,
-    this.fillColor,
-  }) : super(key: key);
+  const _IconButton({Key? key, this.icon, this.onPressed}) : super(key: key);
 
   final Widget? icon;
-  final double iconSize;
   final VoidCallback? onPressed;
-  final Color? fillColor;
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: iconSize,
-        width: iconSize,
+        height: 24,
+        width: 24,
         child: RawMaterialButton(
           elevation: 0,
           highlightElevation: 0,
           focusElevation: 0,
           hoverElevation: 0,
           onPressed: onPressed,
-          fillColor:
-              fillColor ?? StreamChatTheme.of(context).colorTheme.overlayDark,
+          fillColor: StreamChatTheme.of(context).colorTheme.overlayDark,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

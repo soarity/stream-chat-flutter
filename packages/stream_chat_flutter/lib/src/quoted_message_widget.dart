@@ -248,13 +248,9 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 }
 
 class _VideoAttachmentThumbnail extends StatefulWidget {
-  const _VideoAttachmentThumbnail({
-    Key? key,
-    required this.attachment,
-    this.size = const Size(32, 32),
-  }) : super(key: key);
+  const _VideoAttachmentThumbnail({Key? key, required this.attachment})
+      : super(key: key);
 
-  final Size size;
   final Attachment attachment;
 
   @override
@@ -283,8 +279,8 @@ class _VideoAttachmentThumbnailState extends State<_VideoAttachmentThumbnail> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: widget.size.height,
-        width: widget.size.width,
+        height: 32,
+        width: 32,
         child: _controller.value.isInitialized
             ? VideoPlayer(_controller)
             : const CircularProgressIndicator(),
