@@ -1076,7 +1076,9 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   Widget _buildTextBubble() {
     if (widget.message.text?.trim().isEmpty ?? false) return const Offstage();
 
-    if (widget.message.user!.id == 'wer6bot' && widget.botBuilder != null) {
+    if (widget.message.user!.id == 'wer6bot' &&
+        widget.message.extraData['html'] != null &&
+        widget.botBuilder != null) {
       return widget.botBuilder!(context, widget.message);
     }
 
