@@ -10,12 +10,12 @@ class MentionTile extends StatelessWidget {
   /// Constructor for creating a [MentionTile] widget
   const MentionTile(
     this.member, {
-    Key? key,
+    super.key,
     this.title,
     this.subtitle,
     this.leading,
     this.trailing,
-  }) : super(key: key);
+  });
 
   /// Member to display in the tile
   final Member member;
