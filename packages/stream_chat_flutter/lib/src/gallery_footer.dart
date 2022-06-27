@@ -19,7 +19,7 @@ class StreamGalleryFooter extends StatefulWidget
     implements PreferredSizeWidget {
   /// Creates a StreamGalleryFooter
   const StreamGalleryFooter({
-    Key? key,
+    super.key,
     this.onBackPressed,
     this.onTitleTap,
     this.onImageTap,
@@ -28,8 +28,7 @@ class StreamGalleryFooter extends StatefulWidget
     required this.mediaAttachmentPackages,
     this.mediaSelectedCallBack,
     this.backgroundColor,
-  })  : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+  }) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   /// Callback to call when pressing the back button.
   /// By default it calls [Navigator.pop]
@@ -225,11 +224,12 @@ class _StreamGalleryFooterState extends State<StreamGalleryFooter> {
                       if (attachment.type == 'video') {
                         media = InkWell(
                           onTap: () => widget.mediaSelectedCallBack!(index),
-                          child: FittedBox(
-                            fit: BoxFit.cover,
+                          child: AspectRatio(
+                            aspectRatio: 1,
                             child: StreamVideoThumbnailImage(
                               video: (attachment.file?.path ??
                                   attachment.assetUrl)!,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         );

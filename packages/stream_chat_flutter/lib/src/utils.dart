@@ -7,9 +7,12 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Launch URL
 Future<void> launchURL(BuildContext context, String url) async {
-  if (await canLaunchUrl(Uri.parse(url).withScheme)) {
-    await launchUrl(Uri.parse(url).withScheme);
-  } else {
+  try {
+    await launchUrl(
+      Uri.parse(url).withScheme,
+      mode: LaunchMode.externalApplication,
+    );
+  } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.translations.launchUrlError)),
     );

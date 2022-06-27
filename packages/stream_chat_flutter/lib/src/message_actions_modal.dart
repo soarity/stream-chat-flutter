@@ -14,23 +14,23 @@ typedef MessageActionsModal = StreamMessageActionsModal;
 class StreamMessageActionsModal extends StatefulWidget {
   /// Constructor for creating a [StreamMessageActionsModal] widget
   const StreamMessageActionsModal({
-    Key? key,
+    super.key,
     required this.message,
     required this.messageWidget,
     required this.messageTheme,
-    this.showReactions = true,
-    this.showDeleteMessage = true,
-    this.showEditMessage = true,
+    this.showReactions,
+    this.showDeleteMessage,
+    this.showEditMessage,
     this.onReplyTap,
     this.showCopyMessage = true,
     this.showReplyMessage = true,
     this.showResendMessage = true,
-    this.showFlagButton = true,
+    this.showFlagButton,
     this.editMessageInputBuilder,
     this.reverse = false,
     this.customActions = const [],
     this.onCopyTap,
-  }) : super(key: key);
+  });
 
   /// Widget that shows the message
   final Widget messageWidget;
@@ -48,28 +48,28 @@ class StreamMessageActionsModal extends StatefulWidget {
   final StreamMessageThemeData messageTheme;
 
   /// Flag for showing reactions
-  final bool showReactions;
+  final bool? showReactions;
 
   /// Callback when copy is tapped
   final OnMessageTap? onCopyTap;
 
   /// Callback when delete is tapped
-  final bool showDeleteMessage;
+  final bool? showDeleteMessage;
 
   /// Flag for showing copy action
   final bool showCopyMessage;
 
   /// Flag for showing edit action
-  final bool showEditMessage;
+  final bool? showEditMessage;
 
   /// Flag for showing resend action
   final bool showResendMessage;
 
   /// Flag for showing reply action
-  final bool showReplyMessage;
+  final bool? showReplyMessage;
 
   /// Flag for showing flag action
-  final bool showFlagButton;
+  final bool? showFlagButton;
 
   /// Flag for reversing message
   final bool reverse;
@@ -84,6 +84,8 @@ class StreamMessageActionsModal extends StatefulWidget {
 
 class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
   bool _showActions = true;
+  late List<String> _userPermissions;
+  late bool _isMyMessage;
 
   @override
   Widget build(BuildContext context) => _showMessageOptionsModal();
@@ -118,6 +120,19 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
     final shiftFactor =
         numberOfReactions < 5 ? (5 - numberOfReactions) * 0.1 : 0.0;
 
+    final hasEditPermission = _userPermissions.contains(
+          PermissionType.updateAnyMessage,
+        ) ||
+        _userPermissions.contains(PermissionType.updateOwnMessage);
+
+    final hasDeletePermission = _userPermissions.contains(
+          PermissionType.deleteAnyMessage,
+        ) ||
+        _userPermissions.contains(PermissionType.deleteOwnMessage);
+
+    final hasReactionPermission =
+        _userPermissions.contains(PermissionType.sendReaction);
+
     final child = Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -127,7 +142,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
                 ? CrossAxisAlignment.end
                 : CrossAxisAlignment.start,
             children: <Widget>[
-              if (widget.showReactions &&
+              if ((widget.showReactions ?? hasReactionPermission) &&
                   (widget.message.status == MessageSendingStatus.sent))
                 Align(
                   alignment: Alignment(
@@ -164,15 +179,24 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (widget.showReplyMessage &&
-                            widget.message.status == MessageSendingStatus.sent)
+                        if (widget.showReplyMessage ??
+                            (_userPermissions
+                                    .contains(PermissionType.quoteMessage) &&
+                                widget.message.status ==
+                                    MessageSendingStatus.sent))
                           _buildReplyButton(context),
                         if (widget.showResendMessage)
                           _buildResendMessage(context),
-                        if (widget.showEditMessage) _buildEditMessage(context),
+                        if (widget.showEditMessage ??
+                            _isMyMessage && hasEditPermission)
+                          _buildEditMessage(context),
                         if (widget.showCopyMessage) _buildCopyButton(context),
-                        if (widget.showFlagButton) _buildFlagButton(context),
-                        if (widget.showDeleteMessage)
+                        if (widget.showFlagButton ??
+                            _userPermissions
+                                .contains(PermissionType.flagMessage))
+                          _buildFlagButton(context),
+                        if (widget.showDeleteMessage ??
+                            (_isMyMessage && hasDeletePermission))
                           _buildDeleteButton(context),
                         ...widget.customActions
                             .map((action) => _buildCustomAction(
@@ -206,7 +230,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
                 sigmaX: 10,
                 sigmaY: 10,
               ),
-              child: Container(
+              child: ColoredBox(
                 color: streamChatThemeData.colorTheme.overlay,
               ),
             ),
@@ -256,7 +280,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
       title: context.translations.flagMessageLabel,
       icon: StreamSvgIcon.flag(
         color: streamChatThemeData.colorTheme.accentError,
-        size: 24.r,
+        size: 24,
       ),
       question: context.translations.flagMessageQuestion,
       okText: context.translations.flagLabel,
@@ -271,7 +295,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
           context,
           icon: StreamSvgIcon.flag(
             color: theme.colorTheme.accentError,
-            size: 24.r,
+            size: 24,
           ),
           details: context.translations.flagMessageSuccessfulText,
           title: context.translations.flagMessageSuccessfulLabel,
@@ -284,7 +308,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
             context,
             icon: StreamSvgIcon.flag(
               color: theme.colorTheme.accentError,
-              size: 24.r,
+              size: 24,
             ),
             details: context.translations.flagMessageSuccessfulText,
             title: context.translations.flagMessageSuccessfulLabel,
@@ -306,7 +330,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
       title: context.translations.deleteMessageLabel,
       icon: StreamSvgIcon.flag(
         color: StreamChatTheme.of(context).colorTheme.accentError,
-        size: 24.r,
+        size: 24,
       ),
       question: context.translations.deleteMessageQuestion,
       okText: context.translations.deleteLabel,
@@ -332,7 +356,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
       context,
       icon: StreamSvgIcon.error(
         color: StreamChatTheme.of(context).colorTheme.accentError,
-        size: 24.r,
+        size: 24,
       ),
       details: context.translations.operationCouldNotBeCompletedText,
       title: context.translations.somethingWentWrongError,
@@ -345,9 +369,7 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
     return InkWell(
       onTap: () {
         Navigator.pop(context);
-        if (widget.onReplyTap != null) {
-          widget.onReplyTap!(widget.message);
-        }
+        widget.onReplyTap?.call(widget.message);
       },
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
@@ -454,13 +476,14 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
         _showEditBottomSheet(context);
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
         child: Row(
           children: [
             StreamSvgIcon.edit(
+              size: 24.r,
               color: streamChatThemeData.primaryIconTheme.color,
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Text(
               context.translations.editMessageLabel,
               style: streamChatThemeData.textTheme.body,
@@ -486,13 +509,14 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
         child: Row(
           children: [
             StreamSvgIcon.circleUp(
+              size: 24.r,
               color: streamChatThemeData.colorTheme.accentPrimary,
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Text(
               context.translations.toggleResendOrResendEditedMessage(
                 isUpdateFailed: isUpdateFailed,
@@ -570,5 +594,14 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
         ),
       ),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    final newStreamChannel = StreamChannel.of(context);
+    _userPermissions = newStreamChannel.channel.ownCapabilities;
+    _isMyMessage =
+        widget.message.user?.id == StreamChat.of(context).currentUser?.id;
+    super.didChangeDependencies();
   }
 }

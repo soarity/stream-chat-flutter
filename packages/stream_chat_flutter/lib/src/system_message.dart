@@ -12,10 +12,10 @@ typedef SystemMessage = StreamSystemMessage;
 class StreamSystemMessage extends StatelessWidget {
   /// Constructor for creating a [StreamSystemMessage]
   const StreamSystemMessage({
-    Key? key,
+    super.key,
     required this.message,
     this.onMessageTap,
-  }) : super(key: key);
+  });
 
   /// This message
   final Message message;
@@ -33,11 +33,7 @@ class StreamSystemMessage extends StatelessWidget {
         width: 240.w,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            if (onMessageTap != null) {
-              onMessageTap!(message);
-            }
-          },
+          onTap: onMessageTap == null ? null : () => onMessageTap!(message),
           child: Center(
             child: Material(
               shape: const StadiumBorder(),

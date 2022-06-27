@@ -13,7 +13,7 @@ typedef InfoTile = StreamInfoTile;
 class StreamInfoTile extends StatelessWidget {
   /// Constructor for creating an [StreamInfoTile] widget
   const StreamInfoTile({
-    Key? key,
+    super.key,
     required this.message,
     required this.child,
     required this.showMessage,
@@ -21,7 +21,7 @@ class StreamInfoTile extends StatelessWidget {
     this.childAnchor,
     this.textStyle,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   /// String to display
   final String message;

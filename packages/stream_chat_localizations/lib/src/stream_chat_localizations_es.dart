@@ -3,8 +3,7 @@ part of 'stream_chat_localizations.dart';
 /// The translations for Spanish (`es`).
 class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
   /// Create an instance of the translation bundle for Spanish.
-  const StreamChatLocalizationsEs({String localeName = 'es'})
-      : super(localeName: localeName);
+  const StreamChatLocalizationsEs({super.localeName = 'es'});
 
   @override
   String get launchUrlError => 'No se pudo abrir la url';
@@ -388,4 +387,12 @@ No es posible añadir más de $limit archivos adjuntos
 
   @override
   String get linkDisabledError => 'Los enlaces están deshabilitados';
+
+  @override
+  String unreadMessagesSeparatorText(int unreadCount) {
+    if (unreadCount == 1) {
+      return '1 mensaje no leído';
+    }
+    return '$unreadCount mensajes no leídos';
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// A widget that displays a sending button.
@@ -7,7 +8,7 @@ class StreamMessageSendButton extends StatelessWidget {
   /// [isCommandEnabled], [isEditEnabled], [idleSendButton], [activeSendButton],
   /// [onSendMessage].
   const StreamMessageSendButton({
-    Key? key,
+    super.key,
     this.timeOut = 0,
     this.isIdle = true,
     this.isCommandEnabled = false,
@@ -15,7 +16,7 @@ class StreamMessageSendButton extends StatelessWidget {
     this.idleSendButton,
     this.activeSendButton,
     required this.onSendMessage,
-  }) : super(key: key);
+  });
 
   /// Time out related to slow mode.
   final int timeOut;
@@ -66,9 +67,11 @@ class StreamMessageSendButton extends StatelessWidget {
     final _messageInputTheme = StreamMessageInputTheme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.symmetric(horizontal: 8.w),
       child: StreamSvgIcon(
         assetName: _getIdleSendIcon(),
+        width: 26.r,
+        height: 26.r,
         color: _messageInputTheme.sendButtonIdleColor,
       ),
     );
@@ -78,18 +81,21 @@ class StreamMessageSendButton extends StatelessWidget {
     final _messageInputTheme = StreamMessageInputTheme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.symmetric(horizontal: 8.w),
       child: IconButton(
         onPressed: onSendMessage,
-        padding: const EdgeInsets.all(0),
-        splashRadius: 24,
-        constraints: const BoxConstraints.tightFor(
-          height: 24,
-          width: 24,
+        padding: EdgeInsets.zero,
+        iconSize: 26.r,
+        splashRadius: 26.r,
+        constraints: BoxConstraints.tightFor(
+          height: 26.r,
+          width: 26.r,
         ),
         icon: StreamSvgIcon(
           assetName: _getSendIcon(),
           color: _messageInputTheme.sendButtonColor,
+          height: 26.r,
+          width: 26.r,
         ),
       ),
     );

@@ -98,7 +98,9 @@ class StreamChatClient {
           tokenManager: _tokenManager,
           handler: handleEvent,
           logger: detachedLogger('🔌'),
-          queryParameters: {'X-Stream-Client': defaultUserAgent},
+          queryParameters: {
+            'X-Stream-Client': '$defaultUserAgent-$packageVersion',
+          },
         );
 
     _retryPolicy = retryPolicy ??
@@ -124,12 +126,14 @@ class StreamChatClient {
   }
 
   /// Default user agent for all requests
-  static String defaultUserAgent = 'stream-chat-dart-client-'
-      '${CurrentPlatform.name}-'
-      '${PACKAGE_VERSION.split('+')[0]}';
+  static String defaultUserAgent =
+      'stream-chat-dart-client-${CurrentPlatform.name}';
 
   /// Additional headers for all requests
   static Map<String, Object?> additionalHeaders = {};
+
+  /// The current package version
+  static const packageVersion = PACKAGE_VERSION;
 
   ChatPersistenceClient? _originalChatPersistenceClient;
 
@@ -728,6 +732,7 @@ class StreamChatClient {
     String channelType, {
     ProgressCallback? onSendProgress,
     CancelToken? cancelToken,
+    Map<String, Object?>? extraData,
   }) =>
       _chatApi.fileUploader.sendFile(
         file,
@@ -735,6 +740,7 @@ class StreamChatClient {
         channelType,
         onSendProgress: onSendProgress,
         cancelToken: cancelToken,
+        extraData: extraData,
       );
 
   /// Send a [image] to the [channelId] of type [channelType]
@@ -744,6 +750,7 @@ class StreamChatClient {
     String channelType, {
     ProgressCallback? onSendProgress,
     CancelToken? cancelToken,
+    Map<String, Object?>? extraData,
   }) =>
       _chatApi.fileUploader.sendImage(
         image,
@@ -751,6 +758,7 @@ class StreamChatClient {
         channelType,
         onSendProgress: onSendProgress,
         cancelToken: cancelToken,
+        extraData: extraData,
       );
 
   /// Delete a file from this channel
@@ -759,12 +767,14 @@ class StreamChatClient {
     String channelId,
     String channelType, {
     CancelToken? cancelToken,
+    Map<String, Object?>? extraData,
   }) =>
       _chatApi.fileUploader.deleteFile(
         url,
         channelId,
         channelType,
         cancelToken: cancelToken,
+        extraData: extraData,
       );
 
   /// Delete an image from this channel
@@ -773,12 +783,14 @@ class StreamChatClient {
     String channelId,
     String channelType, {
     CancelToken? cancelToken,
+    Map<String, Object?>? extraData,
   }) =>
       _chatApi.fileUploader.deleteImage(
         url,
         channelId,
         channelType,
         cancelToken: cancelToken,
+        extraData: extraData,
       );
 
   /// Replaces the [channelId] of type [ChannelType] data with [data].
@@ -1481,13 +1493,12 @@ class ClientState {
   }
 
   void _listenChannelHidden() {
-    _subscriptions.add(_client.on(EventType.channelHidden).listen((event) {
-      final cid = event.cid;
-
-      if (cid != null) {
-        _client.chatPersistenceClient?.deleteChannels([cid]);
-      }
-      channels = channels..removeWhere((cid, ch) => cid == event.cid);
+    _subscriptions
+        .add(_client.on(EventType.channelHidden).listen((event) async {
+      final eventChannel = event.channel!;
+      await _client.chatPersistenceClient?.deleteChannels([eventChannel.cid]);
+      channels[eventChannel.cid]?.dispose();
+      channels = channels..remove(eventChannel.cid);
     }));
   }
 

@@ -15,7 +15,7 @@ typedef VideoThumbnailImage = StreamVideoThumbnailImage;
 class StreamVideoThumbnailImage extends StatefulWidget {
   /// Constructor for creating [StreamVideoThumbnailImage]
   const StreamVideoThumbnailImage({
-    Key? key,
+    super.key,
     required this.video,
     this.width,
     this.height,
@@ -23,7 +23,7 @@ class StreamVideoThumbnailImage extends StatefulWidget {
     this.format = ImageFormat.PNG,
     this.errorBuilder,
     this.placeholderBuilder,
-  }) : super(key: key);
+  });
 
   /// Video path
   final String video;
@@ -96,8 +96,9 @@ class _StreamVideoThumbnailImageState extends State<StreamVideoThumbnailImage> {
                     );
               }
               if (!snapshot.hasData) {
-                return Container(
-                  constraints: const BoxConstraints.expand(),
+                return SizedBox(
+                  height: double.maxFinite,
+                  width: double.maxFinite,
                   child: widget.placeholderBuilder?.call(context) ??
                       Shimmer.fromColors(
                         baseColor: _streamChatTheme.colorTheme.disabled,
@@ -105,16 +106,22 @@ class _StreamVideoThumbnailImageState extends State<StreamVideoThumbnailImage> {
                         child: Image.asset(
                           'images/placeholder.png',
                           fit: BoxFit.cover,
+                          height: widget.height,
+                          width: widget.width,
                           package: 'stream_chat_flutter',
                         ),
                       ),
                 );
               }
-              return Image.memory(
-                snapshot.data!,
-                fit: widget.fit,
-                height: widget.height,
-                width: widget.width,
+              return SizedBox(
+                height: double.maxFinite,
+                width: double.maxFinite,
+                child: Image.memory(
+                  snapshot.data!,
+                  fit: widget.fit,
+                  height: widget.height,
+                  width: widget.width,
+                ),
               );
             },
           ),

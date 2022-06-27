@@ -53,7 +53,7 @@ typedef MessageWidget = StreamMessageWidget;
 class StreamMessageWidget extends StatefulWidget {
   /// Creates a new instance of the message widget.
   StreamMessageWidget({
-    Key? key,
+    super.key,
     required this.message,
     required this.messageTheme,
     this.botBuilder,
@@ -105,7 +105,7 @@ class StreamMessageWidget extends StatefulWidget {
     this.customActions = const [],
     this.onAttachmentTap,
     this.usernameBuilder,
-  })  : attachmentBuilders = {
+  }) : attachmentBuilders = {
           'image': (context, message, attachments) {
             final border = RoundedRectangleBorder(
               borderRadius: attachmentBorderRadiusGeometry ?? BorderRadius.zero,
@@ -261,8 +261,7 @@ class StreamMessageWidget extends StatefulWidget {
                   .toList(),
             );
           },
-        }..addAll(customAttachmentBuilders ?? {}),
-        super(key: key);
+        }..addAll(customAttachmentBuilders ?? {});
 
   /// Function called on mention tap
   final void Function(User)? onMentionTap;
@@ -576,13 +575,14 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
 
     final showReactions = _shouldShowReactions;
 
+    final onMessageTap = widget.onMessageTap;
+
     return Material(
       type: MaterialType.transparency,
       child: Portal(
         child: GestureDetector(
-          onTap: () {
-            widget.onMessageTap!(widget.message);
-          },
+          onTap:
+              onMessageTap == null ? null : () => onMessageTap(widget.message),
           onLongPress: widget.message.isDeleted && !isFailedState
               ? null
               : () => onLongPress(context),
@@ -638,7 +638,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                               child: Card(
                                 clipBehavior: Clip.hardEdge,
                                 elevation: 0.5,
-                                margin: const EdgeInsets.all(0),
+                                margin: EdgeInsets.zero,
                                 shape: widget.shape ??
                                     RoundedRectangleBorder(
                                       side: widget.borderSide ??
@@ -651,7 +651,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                           widget.borderRadiusGeometry ??
                                               BorderRadius.zero,
                                     ),
-                                color: _getBackgroundColor(),
+                                color: _getBackgroundColor,
                                 child: Padding(
                                   padding: EdgeInsets.only(bottom: 5.h),
                                   child: Wrap(
@@ -887,7 +887,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             showTimestamp: false,
             translateUserAvatar: false,
             showSendingIndicator: false,
-            padding: const EdgeInsets.all(0),
+            padding: EdgeInsets.zero,
             showReactionPickerIndicator: widget.showReactions &&
                 (widget.message.status == MessageSendingStatus.sent) &&
                 channel.ownCapabilities.contains(PermissionType.sendReaction),
@@ -946,7 +946,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             showTimestamp: false,
             translateUserAvatar: false,
             showSendingIndicator: false,
-            padding: const EdgeInsets.all(0),
+            padding: EdgeInsets.zero,
             showReactionPickerIndicator: widget.showReactions &&
                 (widget.message.status == MessageSendingStatus.sent) &&
                 channel.ownCapabilities.contains(PermissionType.sendReaction),
@@ -1110,7 +1110,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
 
   bool get isPinned => widget.message.pinned;
 
-  Color? _getBackgroundColor() {
+  Color? get _getBackgroundColor {
     if (hasQuotedMessage) {
       return widget.messageTheme.messageBackgroundColor;
     }

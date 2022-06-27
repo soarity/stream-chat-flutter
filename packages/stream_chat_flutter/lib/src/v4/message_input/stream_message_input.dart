@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:async';
 import 'dart:math';
 
@@ -6,6 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/commands_overlay.dart';
 import 'package:stream_chat_flutter/src/emoji/emoji.dart';
 import 'package:stream_chat_flutter/src/emoji_overlay.dart';
@@ -65,7 +68,7 @@ typedef UserMentionTileBuilder = Widget Function(
 /// Widget builder for action button.
 ///
 /// [defaultActionButton] is the default [IconButton] configuration,
-/// use [defaultActionButton.copyWith] to easily customize it.
+/// use .copyWith to easily customize it.
 typedef ActionButtonBuilder = Widget Function(
   BuildContext context,
   IconButton defaultActionButton,
@@ -170,7 +173,7 @@ const _kDefaultMaxAttachmentSize = 20971520; // 20MB in Bytes
 class StreamMessageInput extends StatefulWidget {
   /// Instantiate a new MessageInput
   const StreamMessageInput({
-    Key? key,
+    super.key,
     this.onMessageSent,
     this.preMessageSending,
     this.maxHeight = 150,
@@ -204,9 +207,12 @@ class StreamMessageInput extends StatefulWidget {
     this.enableSafeArea,
     this.elevation,
     this.shadow,
-    this.autoCorrect,
-    this.disableEmojiSuggestionsOverlay,
-  }) : super(key: key);
+    this.autoCorrect = true,
+    @Deprecated('Please use enableEmojiSuggestionsOverlay')
+        this.disableEmojiSuggestionsOverlay = false,
+    this.enableEmojiSuggestionsOverlay = true,
+    this.enableMentionsOverlay = true,
+  });
 
   /// List of options for showing overlays.
   final List<OverlayOptions> customOverlays;
@@ -324,11 +330,20 @@ class StreamMessageInput extends StatefulWidget {
 
   /// Disable autoCorrect by passing false
   /// autoCorrect is enabled by default
-  final bool? autoCorrect;
+  final bool autoCorrect;
 
   /// Disable the default emoji suggestions
   /// Enabled by default
-  final bool? disableEmojiSuggestionsOverlay;
+  @Deprecated('Please use enableEmojiSuggestionsOverlay')
+  final bool disableEmojiSuggestionsOverlay;
+
+  /// Disable the default emoji suggestions by passing `false`
+  /// Enabled by default
+  final bool enableEmojiSuggestionsOverlay;
+
+  /// Disable the mentions overlay by passing false
+  /// Enabled by default
+  final bool enableMentionsOverlay;
 
   static bool _defaultValidator(Message message) =>
       message.text?.isNotEmpty == true || message.attachments.isNotEmpty;
@@ -360,11 +375,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   bool get _isEditing =>
       _effectiveController.value.status != MessageSendingStatus.sending;
-
-  bool get _autoCorrect => widget.autoCorrect ?? true;
-
-  bool get _disableEmojiSuggestionsOverlay =>
-      widget.disableEmojiSuggestionsOverlay ?? false;
 
   StreamRestorableMessageInputController? _controller;
 
@@ -482,9 +492,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
         !channel.ownCapabilities.contains(PermissionType.sendMessage)) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 15,
+          padding: EdgeInsets.symmetric(
+            horizontal: 24.w,
+            vertical: 15.h,
           ),
           child: Text(
             context.translations.sendMessagePermissionError,
@@ -525,23 +535,28 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 children: [
                   if (_hasQuotedMessage)
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      padding: EdgeInsets.fromLTRB(8.w, 4.h, 8.w, 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(8),
+                            padding: EdgeInsets.all(8.r),
                             child: StreamSvgIcon.reply(
+                              size: 24.r,
                               color: _streamChatTheme.colorTheme.disabled,
                             ),
                           ),
                           Text(
                             context.translations.replyToMessageLabel,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.fzs,
+                            ),
                           ),
                           IconButton(
                             visualDensity: VisualDensity.compact,
-                            icon: StreamSvgIcon.closeSmall(),
+                            iconSize: 24.r,
+                            icon: StreamSvgIcon.closeSmall(size: 24.r),
                             onPressed: () {
                               _effectiveController.clearQuotedMessage();
                               _focusNode.unfocus();
@@ -559,16 +574,16 @@ class StreamMessageInputState extends State<StreamMessageInput>
                       },
                     ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
                     child: _buildTextField(context),
                   ),
                   if (_effectiveController.value.parentId != null &&
                       !widget.hideSendAsDm)
                     Padding(
-                      padding: const EdgeInsets.only(
-                        right: 12,
-                        left: 12,
-                        bottom: 12,
+                      padding: EdgeInsets.only(
+                        right: 12.w,
+                        left: 12.w,
+                        bottom: 10.h,
                       ),
                       child: _buildDmCheckbox(),
                     ),
@@ -595,7 +610,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
               visible: _showCommandsOverlay,
               widget: _buildCommandsOverlayEntry(),
             ),
-            if (!_disableEmojiSuggestionsOverlay)
+            if (widget.enableEmojiSuggestionsOverlay &&
+                !widget.disableEmojiSuggestionsOverlay)
               OverlayOptions(
                 visible: _focusNode.hasFocus &&
                     _effectiveController.text.isNotEmpty &&
@@ -608,10 +624,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
                         .contains(':'),
                 widget: _buildEmojiOverlay(),
               ),
-            OverlayOptions(
-              visible: _showMentionsOverlay,
-              widget: _buildMentionsOverlayEntry(),
-            ),
+            if (widget.enableMentionsOverlay)
+              OverlayOptions(
+                visible: _showMentionsOverlay,
+                widget: _buildMentionsOverlayEntry(),
+              ),
             ...widget.customOverlays,
           ],
           child: child,
@@ -638,8 +655,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
   Widget _buildDmCheckbox() => Row(
         children: [
           Container(
-            height: 16,
-            width: 16,
+            height: 16.h,
+            width: 16.w,
             foregroundDecoration: BoxDecoration(
               border: _effectiveController.showInChannel
                   ? null
@@ -652,7 +669,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             ),
             child: Center(
               child: Material(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(3.r),
                 color: _effectiveController.showInChannel
                     ? _streamChatTheme.colorTheme.accentPrimary
                     : _streamChatTheme.colorTheme.barsBg,
@@ -668,12 +685,12 @@ class StreamMessageInputState extends State<StreamMessageInput>
                         ? CrossFadeState.showFirst
                         : CrossFadeState.showSecond,
                     firstChild: StreamSvgIcon.check(
-                      size: 16,
+                      size: 16.r,
                       color: _streamChatTheme.colorTheme.barsBg,
                     ),
-                    secondChild: const SizedBox(
-                      height: 16,
-                      width: 16,
+                    secondChild: SizedBox(
+                      height: 16.w,
+                      width: 16.h,
                     ),
                   ),
                 ),
@@ -681,7 +698,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: Text(
               context.translations.alsoSendAsDirectMessageLabel,
               style: _streamChatTheme.textTheme.footnote.copyWith(
@@ -711,7 +728,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
   Widget _buildExpandActionsButton(BuildContext context) {
     final channel = StreamChannel.of(context).channel;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8.w),
       child: AnimatedCrossFade(
         crossFadeState: _actionsShrunk
             ? CrossFadeState.showFirst
@@ -719,6 +736,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
         firstCurve: Curves.easeOut,
         secondCurve: Curves.easeIn,
         firstChild: IconButton(
+          iconSize: 24.r,
           onPressed: () {
             if (_actionsShrunk) {
               setState(() => _actionsShrunk = false);
@@ -730,15 +748,16 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 ? pi
                 : 0,
             child: StreamSvgIcon.emptyCircleLeft(
+              size: 24.r,
               color: _messageInputTheme.expandButtonColor,
             ),
           ),
-          padding: const EdgeInsets.all(0),
-          constraints: const BoxConstraints.tightFor(
-            height: 24,
-            width: 24,
+          padding: EdgeInsets.zero,
+          constraints: BoxConstraints.tightFor(
+            height: 24.r,
+            width: 24.r,
           ),
-          splashRadius: 24,
+          splashRadius: 24.r,
         ),
         secondChild: widget.disableAttachments &&
                 !widget.showCommandsButton &&
@@ -810,7 +829,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                     textAlignVertical: TextAlignVertical.center,
                     decoration: _getInputDecoration(context),
                     textCapitalization: TextCapitalization.sentences,
-                    autocorrect: _autoCorrect,
+                    autocorrect: widget.autoCorrect,
                   ),
                 ),
               ],
@@ -854,7 +873,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
           color: Colors.transparent,
         ),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(16, 12, 13, 11),
+      contentPadding: EdgeInsets.fromLTRB(12.w, 7.h, 8.w, 7.h),
       prefixIcon: _commandEnabled
           ? Row(
               mainAxisSize: MainAxisSize.min,
@@ -873,7 +892,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                       children: [
                         StreamSvgIcon.lightning(
                           color: Colors.white,
-                          size: 16,
+                          size: 16.r,
                         ),
                         Text(
                           _effectiveController.value.command!.toUpperCase(),
@@ -901,14 +920,15 @@ class StreamMessageInputState extends State<StreamMessageInput>
         children: [
           if (_commandEnabled)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: EdgeInsets.only(right: 8.w),
               child: IconButton(
-                icon: StreamSvgIcon.closeSmall(),
-                splashRadius: 24,
-                padding: const EdgeInsets.all(0),
-                constraints: const BoxConstraints.tightFor(
-                  height: 24,
-                  width: 24,
+                iconSize: 24.r,
+                icon: StreamSvgIcon.closeSmall(size: 24.r),
+                splashRadius: 24.r,
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints.tightFor(
+                  height: 24.r,
+                  width: 24.r,
                 ),
                 onPressed: _effectiveController.clear,
               ),
@@ -984,7 +1004,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
     _lastSearchedContainsUrlText = value;
 
     final matchedUrls = _urlRegex.allMatches(value).toList()
-      ..removeWhere((it) => it.group(0)?.split('.').last.isValidTLD() == false);
+      ..removeWhere((it) {
+        final _parsedMatch = Uri.tryParse(it.group(0) ?? '')?.withScheme;
+        return _parsedMatch?.host.split('.').last.isValidTLD() == false;
+      });
 
     // Reset the og attachment if the text doesn't contain any url
     if (matchedUrls.isEmpty ||
@@ -1207,7 +1230,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   void _setCommand(Command c) {
     _effectiveController
-      ..clear()
+      ..reset()
       ..command = c;
     setState(() {
       _showCommandsOverlay = false;
@@ -1223,7 +1246,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       showBorder: !containsUrl,
       message: _effectiveController.value.quotedMessage!,
       messageTheme: _streamChatTheme.otherMessageTheme,
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
     );
   }
 
@@ -1242,37 +1265,37 @@ class StreamMessageInputState extends State<StreamMessageInput>
       children: [
         if (fileAttachments.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
             child: LimitedBox(
-              maxHeight: 136,
+              maxHeight: 136.h,
               child: ListView(
                 reverse: true,
                 shrinkWrap: true,
                 children: fileAttachments.reversed
                     .map<Widget>(
                       (e) => ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         child: StreamFileAttachment(
                           message: Message(), // dummy message
                           attachment: e,
                           size: Size(
                             MediaQuery.of(context).size.width * 0.65,
-                            56,
+                            56.h,
                           ),
                           trailing: Padding(
-                            padding: const EdgeInsets.all(8),
+                            padding: EdgeInsets.all(8.r),
                             child: _buildRemoveButton(e),
                           ),
                         ),
                       ),
                     )
-                    .insertBetween(const SizedBox(height: 8)),
+                    .insertBetween(SizedBox(height: 8.h)),
               ),
             ),
           ),
         if (remainingAttachments.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
             child: LimitedBox(
               maxHeight: 104,
               child: ListView(
@@ -1280,14 +1303,14 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 children: remainingAttachments
                     .map<Widget>(
                       (attachment) => ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         child: Stack(
                           children: <Widget>[
                             AspectRatio(
                               aspectRatio: 1,
                               child: SizedBox(
-                                height: 104,
-                                width: 104,
+                                height: 104.h,
+                                width: 104.w,
                                 child: _buildAttachment(attachment),
                               ),
                             ),
@@ -1300,7 +1323,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                         ),
                       ),
                     )
-                    .insertBetween(const SizedBox(width: 8)),
+                    .insertBetween(SizedBox(width: 8.w)),
               ),
             ),
           ),
@@ -1309,11 +1332,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Widget _buildRemoveButton(Attachment attachment) => SizedBox(
-        height: 24,
-        width: 24,
+        height: 24.h,
+        width: 24.w,
         child: RawMaterialButton(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
           ),
           elevation: 0,
           highlightElevation: 0,
@@ -1326,7 +1349,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
               _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.5),
           child: Center(
             child: StreamSvgIcon.close(
-              size: 24,
+              size: 24.r,
               color: _streamChatTheme.colorTheme.barsBg,
             ),
           ),
@@ -1375,8 +1398,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
         return Stack(
           children: [
             StreamVideoThumbnailImage(
-              height: 104,
-              width: 104,
+              height: 104.h,
+              width: 104.w,
               video: (attachment.file?.path ?? attachment.assetUrl)!,
               fit: BoxFit.cover,
             ),
@@ -1391,9 +1414,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
           ],
         );
       default:
-        return Container(
+        return ColoredBox(
           color: Colors.black26,
-          child: const Icon(Icons.insert_drive_file),
+          child: Icon(Icons.insert_drive_file, size: 24.r),
         );
     }
   }
@@ -1401,19 +1424,21 @@ class StreamMessageInputState extends State<StreamMessageInput>
   Widget _buildCommandButton(BuildContext context) {
     final s = _effectiveController.text.trim();
     final defaultButton = IconButton(
+      iconSize: 24.r,
       icon: StreamSvgIcon.lightning(
+        size: 24.r,
         color: s.isNotEmpty
             ? _streamChatTheme.colorTheme.disabled
             : (_showCommandsOverlay
                 ? _messageInputTheme.actionButtonColor
                 : _messageInputTheme.actionButtonIdleColor),
       ),
-      padding: const EdgeInsets.all(0),
-      constraints: const BoxConstraints.tightFor(
-        height: 24,
-        width: 24,
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints.tightFor(
+        height: 24.r,
+        width: 24.r,
       ),
-      splashRadius: 24,
+      splashRadius: 24.r,
       onPressed: () async {
         if (_openFilePickerSection) {
           setState(() => _openFilePickerSection = false);
@@ -1432,17 +1457,19 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   Widget _buildAttachmentButton(BuildContext context) {
     final defaultButton = IconButton(
+      iconSize: 24.r,
       icon: StreamSvgIcon.attach(
+        size: 24.r,
         color: _openFilePickerSection
             ? _messageInputTheme.actionButtonColor
             : _messageInputTheme.actionButtonIdleColor,
       ),
-      padding: const EdgeInsets.all(0),
-      constraints: const BoxConstraints.tightFor(
-        height: 24,
-        width: 24,
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints.tightFor(
+        height: 24.r,
+        width: 24.r,
       ),
-      splashRadius: 24,
+      splashRadius: 24.r,
       onPressed: () async {
         _showCommandsOverlay = false;
         _showMentionsOverlay = false;
@@ -1473,10 +1500,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
     } else {
       showModalBottomSheet(
         clipBehavior: Clip.hardEdge,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(32),
-            topRight: Radius.circular(32),
+            topLeft: Radius.circular(32.r),
+            topRight: Radius.circular(32.r),
           ),
         ),
         context: context,
@@ -1487,30 +1514,37 @@ class StreamMessageInputState extends State<StreamMessageInput>
             ListTile(
               title: Text(
                 context.translations.addAFileLabel,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.fzs),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.image),
-              title: Text(context.translations.uploadAPhotoLabel),
+              leading: Icon(Icons.image, size: 24.r),
+              title: Text(
+                context.translations.uploadAPhotoLabel,
+                style: TextStyle(fontSize: 14.fzs),
+              ),
               onTap: () {
                 pickFile(DefaultAttachmentTypes.image);
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.video_library),
-              title: Text(context.translations.uploadAVideoLabel),
+              leading: Icon(Icons.video_library, size: 24.r),
+              title: Text(
+                context.translations.uploadAVideoLabel,
+                style: TextStyle(fontSize: 14.fzs),
+              ),
               onTap: () {
                 pickFile(DefaultAttachmentTypes.video);
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.insert_drive_file),
-              title: Text(context.translations.uploadAFileLabel),
+              leading: Icon(Icons.insert_drive_file, size: 24.r),
+              title: Text(
+                context.translations.uploadAFileLabel,
+                style: TextStyle(fontSize: 14.fzs),
+              ),
               onTap: () {
                 pickFile(DefaultAttachmentTypes.file);
                 Navigator.pop(context);
@@ -1720,33 +1754,29 @@ class StreamMessageInputState extends State<StreamMessageInput>
       builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            height: 26,
+          SizedBox(
+            height: 26.h,
           ),
           StreamSvgIcon.error(
             color: _streamChatTheme.colorTheme.accentError,
-            size: 24,
+            size: 24.r,
           ),
-          const SizedBox(
-            height: 26,
+          SizedBox(
+            height: 26.h,
           ),
           Text(
             context.translations.somethingWentWrongError,
             style: _streamChatTheme.textTheme.headlineBold,
           ),
-          const SizedBox(
-            height: 7,
-          ),
+          SizedBox(height: 7.h),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Text(
               description,
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(
-            height: 36,
-          ),
+          SizedBox(height: 36.h),
           Container(
             color:
                 _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.08),
@@ -1798,10 +1828,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
 class OGAttachmentPreview extends StatelessWidget {
   /// Returns a new instance of [OGAttachmentPreview]
   const OGAttachmentPreview({
-    Key? key,
+    super.key,
     required this.attachment,
     this.onDismissPreviewPressed,
-  }) : super(key: key);
+  });
 
   /// The attachment to be rendered.
   final Attachment attachment;
@@ -1821,7 +1851,7 @@ class OGAttachmentPreview extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8.r),
           child: Icon(
             Icons.link,
             color: colorTheme.accentPrimary,
@@ -1860,8 +1890,9 @@ class OGAttachmentPreview extends StatelessWidget {
           ),
         ),
         IconButton(
+          iconSize: 24.r,
           visualDensity: VisualDensity.compact,
-          icon: StreamSvgIcon.closeSmall(),
+          icon: StreamSvgIcon.closeSmall(size: 24.r),
           onPressed: onDismissPreviewPressed,
         ),
       ],

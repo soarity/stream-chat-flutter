@@ -3,8 +3,7 @@ part of 'stream_chat_localizations.dart';
 /// The translations for Hindi (`hi`).
 class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
   /// Create an instance of the translation bundle for Hindi.
-  const StreamChatLocalizationsHi({String localeName = 'hi'})
-      : super(localeName: localeName);
+  const StreamChatLocalizationsHi({super.localeName = 'hi'});
 
   @override
   String get launchUrlError => 'यूआरएल लॉन्च नहीं कर सकते';
@@ -381,4 +380,12 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
 
   @override
   String get linkDisabledError => 'लिंक भेजना प्रतिबंधित';
+
+  @override
+  String unreadMessagesSeparatorText(int unreadCount) {
+    if (unreadCount == 1) {
+      return '1 अपठित संदेश';
+    }
+    return '$unreadCount अपठित संदेश';
+  }
 }

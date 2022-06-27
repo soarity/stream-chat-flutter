@@ -8,10 +8,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CustomProgressIndicator extends StatelessWidget {
   /// The Constructor
   const CustomProgressIndicator({
-    Key? key,
+    super.key,
     this.defaultColor = false,
     this.size,
-  }) : super(key: key);
+  });
 
   /// color of the indicator
   final bool defaultColor;

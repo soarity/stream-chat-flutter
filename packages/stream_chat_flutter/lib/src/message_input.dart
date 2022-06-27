@@ -64,7 +64,7 @@ typedef UserMentionTileBuilder = Widget Function(
 /// Widget builder for action button.
 ///
 /// [defaultActionButton] is the default [IconButton] configuration,
-/// use [defaultActionButton.copyWith] to easily customize it.
+/// use .copyWith to easily customize it.
 typedef ActionButtonBuilder = Widget Function(
   BuildContext context,
   IconButton defaultActionButton,
@@ -161,7 +161,7 @@ const _kDefaultMaxAttachmentSize = 20971520; // 20MB in Bytes
 class MessageInput extends StatefulWidget {
   /// Instantiate a new MessageInput
   const MessageInput({
-    Key? key,
+    super.key,
     this.onMessageSent,
     this.preMessageSending,
     this.parentMessage,
@@ -194,11 +194,10 @@ class MessageInput extends StatefulWidget {
     this.customOverlays = const [],
     this.mentionAllAppUsers = false,
     this.shouldKeepFocusAfterMessage,
-  })  : assert(
+  }) : assert(
           initialMessage == null || editMessage == null,
           "Can't provide both `initialMessage` and `editMessage`",
-        ),
-        super(key: key);
+        );
 
   /// List of options for showing overlays
   final List<OverlayOptions> customOverlays;
@@ -560,7 +559,7 @@ class MessageInputState extends State<MessageInput> {
               color: _messageInputTheme.expandButtonColor,
             ),
           ),
-          padding: const EdgeInsets.all(0),
+          padding: EdgeInsets.zero,
           constraints: BoxConstraints.tightFor(
             height: 24.r,
             width: 24.r,
@@ -677,6 +676,73 @@ class MessageInputState extends State<MessageInput> {
         ),
       ),
       contentPadding: EdgeInsets.fromLTRB(12.w, 7.h, 8.w, 7.h),
+      prefixIcon: _commandEnabled
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Container(
+                    constraints: BoxConstraints.tight(const Size(64, 24)),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: _streamChatTheme.colorTheme.accentPrimary,
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        StreamSvgIcon.lightning(
+                          color: Colors.white,
+                          size: 16.r,
+                        ),
+                        Text(
+                          _chosenCommand?.name.toUpperCase() ?? '',
+                          style:
+                              _streamChatTheme.textTheme.footnoteBold.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : (widget.actionsLocation == ActionsLocation.leftInside
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [_buildExpandActionsButton(context)],
+                )
+              : null),
+      suffixIconConstraints: const BoxConstraints.tightFor(height: 40),
+      prefixIconConstraints: const BoxConstraints.tightFor(height: 40),
+      suffixIcon: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_commandEnabled)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: IconButton(
+                icon: StreamSvgIcon.closeSmall(),
+                splashRadius: 24,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints.tightFor(
+                  height: 24,
+                  width: 24,
+                ),
+                onPressed: () {
+                  setState(() => _commandEnabled = false);
+                },
+              ),
+            ),
+          if (!_commandEnabled &&
+              widget.actionsLocation == ActionsLocation.rightInside)
+            _buildExpandActionsButton(context),
+          if (widget.sendButtonLocation == SendButtonLocation.inside)
+            _animateSendButton(context),
+        ],
+      ),
     ).merge(passedDecoration);
   }
 
@@ -843,7 +909,7 @@ class MessageInputState extends State<MessageInput> {
     return AnimatedContainer(
       duration: _openFilePickerSection
           ? const Duration(milliseconds: 300)
-          : const Duration(),
+          : Duration.zero,
       curve: Curves.easeOut,
       height: _openFilePickerSection ? _kMinMediaPickerSize : 0,
       child: SingleChildScrollView(
@@ -903,7 +969,7 @@ class MessageInputState extends State<MessageInput> {
                     ),
                     IconButton(
                       iconSize: 24.r,
-                      padding: const EdgeInsets.all(0),
+                      padding: EdgeInsets.zero,
                       icon: StreamSvgIcon.record(
                         size: 24.r,
                         color: _getIconColor(3),
@@ -1306,7 +1372,7 @@ class MessageInputState extends State<MessageInput> {
           ],
         );
       default:
-        return Container(
+        return ColoredBox(
           color: Colors.black26,
           child: Icon(Icons.insert_drive_file, size: 24.r),
         );
@@ -1325,7 +1391,7 @@ class MessageInputState extends State<MessageInput> {
                 ? _messageInputTheme.actionButtonColor
                 : _messageInputTheme.actionButtonIdleColor),
       ),
-      padding: const EdgeInsets.all(0),
+      padding: EdgeInsets.zero,
       constraints: BoxConstraints.tightFor(
         height: 24.r,
         width: 24.r,
@@ -1356,7 +1422,7 @@ class MessageInputState extends State<MessageInput> {
             ? _messageInputTheme.actionButtonColor
             : _messageInputTheme.actionButtonIdleColor,
       ),
-      padding: const EdgeInsets.all(0),
+      padding: EdgeInsets.zero,
       constraints: BoxConstraints.tightFor(
         height: 24.r,
         width: 24.r,
@@ -1796,7 +1862,6 @@ class MessageInputState extends State<MessageInput> {
 
 class _PickerWidget extends StatefulWidget {
   const _PickerWidget({
-    Key? key,
     required this.filePickerIndex,
     required this.containsFile,
     required this.selectedMedias,
@@ -1804,7 +1869,7 @@ class _PickerWidget extends StatefulWidget {
     required this.onMediaSelected,
     required this.streamChatTheme,
     required this.mediaListViewController,
-  }) : super(key: key);
+  });
 
   final int filePickerIndex;
   final bool containsFile;
@@ -1872,7 +1937,7 @@ class _PickerWidgetState extends State<_PickerWidget> {
           onTap: () async {
             PhotoManager.openSetting();
           },
-          child: Container(
+          child: ColoredBox(
             color: widget.streamChatTheme.colorTheme.inputBg,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1910,10 +1975,7 @@ class _PickerWidgetState extends State<_PickerWidget> {
 }
 
 class _CountdownButton extends StatelessWidget {
-  const _CountdownButton({
-    Key? key,
-    required this.count,
-  }) : super(key: key);
+  const _CountdownButton({required this.count});
 
   final int count;
 
