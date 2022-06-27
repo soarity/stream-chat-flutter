@@ -635,22 +635,24 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                       widget.message.reactionCounts!.isNotEmpty
                                   ? EdgeInsets.only(top: 10.h)
                                   : EdgeInsets.zero,
-                              child: Card(
-                                clipBehavior: Clip.hardEdge,
-                                elevation: 0.5,
-                                margin: EdgeInsets.zero,
-                                shape: widget.shape ??
-                                    RoundedRectangleBorder(
-                                      side: widget.borderSide ??
-                                          BorderSide(
-                                            color: widget.messageTheme
-                                                    .messageBorderColor ??
-                                                Colors.grey,
-                                          ),
-                                      borderRadius:
-                                          widget.borderRadiusGeometry ??
-                                              BorderRadius.zero,
-                                    ),
+                              child: Material(
+                                clipBehavior:
+                                    isGiphy ? Clip.none : Clip.hardEdge,
+                                elevation: isGiphy ? 0.0 : 0.5,
+                                shape: isGiphy
+                                    ? null
+                                    : widget.shape ??
+                                        RoundedRectangleBorder(
+                                          side: widget.borderSide ??
+                                              BorderSide(
+                                                color: widget.messageTheme
+                                                        .messageBorderColor ??
+                                                    Colors.grey,
+                                              ),
+                                          borderRadius:
+                                              widget.borderRadiusGeometry ??
+                                                  BorderRadius.zero,
+                                        ),
                                 color: isGiphy
                                     ? Colors.transparent
                                     : _getBackgroundColor,
