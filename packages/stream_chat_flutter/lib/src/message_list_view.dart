@@ -604,7 +604,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       } else {
                         separator = widget.spacingWidgetBuilder
                                 ?.call(context, [SpacingType.defaultSpacing]) ??
-                            SizedBox(height: 2.h);
+                            SizedBox(height: 3.h);
                       }
                     }
 
@@ -638,9 +638,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                                           .toUpperCase(),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontSize: 12.fzs,
+                                        fontSize: 14.fzs,
                                         fontWeight: FontWeight.w500,
-                                        color: Colors.grey.shade700,
+                                        color: Colors.grey.shade800,
                                       ),
                                     ),
                                   ),
