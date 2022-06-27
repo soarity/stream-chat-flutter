@@ -775,7 +775,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                       channel.config?.commands.isNotEmpty == true)
                     _buildCommandButton(context),
                   ...widget.actions,
-                ].insertBetween(const SizedBox(width: 8)),
+                ].insertBetween(const SizedBox(width: 4)),
               ),
         duration: const Duration(milliseconds: 300),
         alignment: Alignment.center,
@@ -1457,19 +1457,19 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   Widget _buildAttachmentButton(BuildContext context) {
     final defaultButton = IconButton(
-      iconSize: 24.r,
+      iconSize: 26.r,
       icon: StreamSvgIcon.attach(
-        size: 24.r,
+        size: 26.r,
         color: _openFilePickerSection
             ? _messageInputTheme.actionButtonColor
             : _messageInputTheme.actionButtonIdleColor,
       ),
       padding: EdgeInsets.zero,
       constraints: BoxConstraints.tightFor(
-        height: 24.r,
-        width: 24.r,
+        height: 26.r,
+        width: 26.r,
       ),
-      splashRadius: 24.r,
+      splashRadius: 26.r,
       onPressed: () async {
         _showCommandsOverlay = false;
         _showMentionsOverlay = false;

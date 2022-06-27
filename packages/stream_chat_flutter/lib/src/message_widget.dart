@@ -651,7 +651,9 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                           widget.borderRadiusGeometry ??
                                               BorderRadius.zero,
                                     ),
-                                color: _getBackgroundColor,
+                                color: isGiphy
+                                    ? Colors.transparent
+                                    : _getBackgroundColor,
                                 child: Padding(
                                   padding: EdgeInsets.only(bottom: 5.h),
                                   child: Wrap(
