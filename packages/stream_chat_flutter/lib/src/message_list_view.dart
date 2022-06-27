@@ -587,25 +587,26 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       Units.DAY,
                     )) {
                       separator = _buildDateDivider(nextMessage);
-                    }
+                    } else {
+                      final spacingRules = <SpacingType>[];
 
-                    final spacingRules = <SpacingType>[];
+                      if (message.isDeleted) {
+                        spacingRules.add(SpacingType.deleted);
+                      }
+                      if (message.user!.id != nextMessage.user?.id) {
+                        spacingRules.add(SpacingType.otherUser);
+                      }
 
-                    if (message.isDeleted) {
-                      spacingRules.add(SpacingType.deleted);
+                      if (spacingRules.isNotEmpty) {
+                        separator = widget.spacingWidgetBuilder
+                                ?.call(context, spacingRules) ??
+                            SizedBox(height: 8.h);
+                      } else {
+                        separator = widget.spacingWidgetBuilder
+                                ?.call(context, [SpacingType.defaultSpacing]) ??
+                            SizedBox(height: 2.h);
+                      }
                     }
-                    if (message.user!.id != nextMessage.user?.id) {
-                      spacingRules.add(SpacingType.otherUser);
-                    }
-
-                    if (spacingRules.isNotEmpty) {
-                      separator = widget.spacingWidgetBuilder
-                              ?.call(context, spacingRules) ??
-                          SizedBox(height: 8.h);
-                    }
-                    separator = widget.spacingWidgetBuilder
-                            ?.call(context, [SpacingType.defaultSpacing]) ??
-                        SizedBox(height: 2.h);
 
                     if (unreadCount > 0 && unreadCount == i - 1) {
                       final unreadMessagesSeparator = widget
@@ -625,16 +626,22 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                                         _streamTheme.colorTheme.bgGradient,
                                   ),
                                   child: Padding(
-                                    padding: EdgeInsets.all(8.r),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w,
+                                      vertical: 4.h,
+                                    ),
                                     child: Text(
                                       context.translations
                                           .unreadMessagesSeparatorText(
-                                        unreadCount,
-                                      ),
+                                            unreadCount,
+                                          )
+                                          .toUpperCase(),
                                       textAlign: TextAlign.center,
-                                      style:
-                                          StreamChannelHeaderTheme.of(context)
-                                              .subtitleStyle,
+                                      style: TextStyle(
+                                        fontSize: 12.fzs,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade700,
+                                      ),
                                     ),
                                   ),
                                 ),
