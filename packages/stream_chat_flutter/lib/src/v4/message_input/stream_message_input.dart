@@ -769,11 +769,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
                       channel.ownCapabilities
                           .contains(PermissionType.uploadFile))
                     _buildAttachmentButton(context),
-                  if (widget.showCommandsButton &&
-                      !_isEditing &&
-                      channel.state != null &&
-                      channel.config?.commands.isNotEmpty == true)
-                    _buildCommandButton(context),
+                  // if (widget.showCommandsButton &&
+                  //     !_isEditing &&
+                  //     channel.state != null &&
+                  //     channel.config?.commands.isNotEmpty == true)
+                  _buildCommandButton(context),
                   ...widget.actions,
                 ].insertBetween(const SizedBox(width: 8)),
               ),
