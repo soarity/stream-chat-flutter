@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@macro system_message}
@@ -22,11 +23,17 @@ class StreamSystemMessage extends StatelessWidget {
 
   /// The function called when tapping on the message
   /// when the message is not failed
+  // TODO: Convert it to a simple OnTap instead.
   final void Function(Message)? onMessageTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = StreamChatTheme.of(context);
+    final message = this.message.replaceMentions();
+
+    final messageText = message.text;
+    if (messageText == null) return const SizedBox.shrink();
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
       child: SizedBox(

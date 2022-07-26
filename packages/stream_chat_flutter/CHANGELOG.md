@@ -1,3 +1,25 @@
+## Upcoming
+
+🐞 Fixed
+
+- [[#1247]](https://github.com/GetStream/stream-chat-flutter/issues/1247) Fix Jiffy initialization.
+- [[#1232]](https://github.com/getstream/stream-chat-flutter/issues/1232) Fix DateDivider not
+  showing up in the chat.
+- [[#1240]](https://github.com/getstream/stream-chat-flutter/issues/1240) Substitute mentioned user
+  ids with user names in system message.
+- [[#1228]](https://github.com/GetStream/stream-chat-flutter/issues/1228) Fix image download on iOS.
+
+🔄 Changed
+
+- Changed default maximum attachment size from 20MB to 100MB.
+
+## 4.4.0
+
+🐞 Fixed
+
+- [[#1234]](https://github.com/GetStream/stream-chat-flutter/issues/1234) Fix `ChannelListTile`
+  sendingIndicator `isMessageRead` calculation.
+
 ## 4.3.0
 
 - Updated `photo_view` dependency to [`0.14.0`](https://pub.dev/packages/photo_view/changelog).
@@ -9,7 +31,8 @@
 - [[#996]](https://github.com/GetStream/stream-chat-flutter/issues/996) Videos break bottom photo
   carousal.
 - Fix: URLs with path and/or query params are not enriched.
-- [[#1194]](https://github.com/GetStream/stream-chat-flutter/issues/1194) Request permission to access gallery when opening the file picker.
+- [[#1194]](https://github.com/GetStream/stream-chat-flutter/issues/1194) Request permission to
+  access gallery when opening the file picker.
 
 ✅ Added
 

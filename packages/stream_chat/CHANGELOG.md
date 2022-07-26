@@ -1,3 +1,18 @@
+## 4.4.0
+
+🐞 Fixed
+
+- Fix WebSocket contemporary connection calls while disconnecting
+
+✅ Added
+
+- Export `StreamAttachmentFileUploader`.
+
+🔄 Changed
+
+- Deprecated `StreamChatClient.attachmentFileUploader`,
+  Use `StreamChatClient.attachmentFileUploaderProvider` instead.
+
 ## 4.3.0
 
 🐞 Fixed
