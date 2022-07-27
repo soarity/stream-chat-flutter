@@ -580,6 +580,9 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       type: MaterialType.transparency,
       child: AnimatedContainer(
         duration: const Duration(seconds: 1),
+        padding: widget.message.pinned && widget.showPinHighlight
+            ? EdgeInsets.symmetric(vertical: 10.h)
+            : EdgeInsets.zero,
         color: widget.message.pinned && widget.showPinHighlight
             ? _streamChatTheme.colorTheme.highlight
             : Colors.transparent,
@@ -1131,12 +1134,12 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
     final currentUser = _streamChat.currentUser!;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(8.w, 2.h, 8.w, 4.h),
+      padding: EdgeInsets.fromLTRB(8.w, 0, 8.w, 4.h),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          StreamSvgIcon.pin(size: 16.r),
-          SizedBox(width: 2.w),
+          StreamSvgIcon.pin(size: 18.r),
+          SizedBox(width: 4.w),
           Text(
             context.translations.pinnedByUserText(
               pinnedBy: pinnedBy,
@@ -1144,7 +1147,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             ),
             style: TextStyle(
               color: _streamChatTheme.colorTheme.textLowEmphasis,
-              fontSize: 13.fzs,
+              fontSize: 14.fzs,
               fontWeight: FontWeight.w400,
             ),
           ),

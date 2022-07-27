@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stream_chat_flutter/src/attachment/attachment_widget.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
+import 'package:stream_chat_flutter/src/stream_chat.dart';
 import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/stream_svg_icon.dart';
 import 'package:stream_chat_flutter/src/upload_progress_indicator.dart';
@@ -51,11 +53,11 @@ class StreamFileAttachment extends StreamAttachmentWidget {
       child: GestureDetector(
         onTap: onAttachmentTap,
         child: Container(
-          width: size?.width ?? 100,
-          height: 56,
+          width: size?.width ?? 100.w,
+          height: 56.h,
           decoration: BoxDecoration(
             color: colorTheme.barsBg,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
               color: colorTheme.borders,
             ),
@@ -64,9 +66,9 @@ class StreamFileAttachment extends StreamAttachmentWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 40,
-                width: 33.33,
-                margin: const EdgeInsets.all(8),
+                height: 40.h,
+                width: 30.w,
+                margin: EdgeInsets.all(8.r),
                 child: _getFileTypeImage(context),
               ),
               const SizedBox(width: 8),
@@ -77,16 +79,22 @@ class StreamFileAttachment extends StreamAttachmentWidget {
                   children: [
                     Text(
                       attachment.title ?? context.translations.fileText,
-                      style: StreamChatTheme.of(context).textTheme.bodyBold,
-                      maxLines: 1,
+                      style: StreamChatTheme.of(context)
+                          .textTheme
+                          .bodyBold
+                          .copyWith(
+                            fontSize: 15.fzs,
+                            fontWeight: FontWeight.w600,
+                          ),
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3.h),
                     _buildSubtitle(context),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 10.w),
               _buildTrailing(context),
             ],
           ),
@@ -215,33 +223,42 @@ class StreamFileAttachment extends StreamAttachmentWidget {
     var trailingWidget = trailing;
     trailingWidget ??= attachment.uploadState.when(
       preparing: () => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         child: _buildButton(
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg),
+          iconSize: 24.r,
+          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg, size: 24.r),
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.cancelAttachmentUpload(attachmentId),
         ),
       ),
       inProgress: (_, __) => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         child: _buildButton(
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg),
+          iconSize: 24.r,
+          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg, size: 24.r),
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.cancelAttachmentUpload(attachmentId),
         ),
       ),
       success: () => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         child: CircleAvatar(
           backgroundColor: theme.colorTheme.accentPrimary,
-          maxRadius: 12,
-          child: StreamSvgIcon.check(color: theme.colorTheme.barsBg),
+          maxRadius: 12.r,
+          child: StreamSvgIcon.check(
+            color: theme.colorTheme.barsBg,
+            size: 24.r,
+          ),
         ),
       ),
       failed: (_) => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         child: _buildButton(
-          icon: StreamSvgIcon.retry(color: theme.colorTheme.barsBg),
+          iconSize: 24.r,
+          icon: StreamSvgIcon.retry(
+            color: theme.colorTheme.barsBg,
+            size: 24.r,
+          ),
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.retryAttachmentUpload(
             message.id,
@@ -255,9 +272,10 @@ class StreamFileAttachment extends StreamAttachmentWidget {
       trailingWidget = IconButton(
         icon: StreamSvgIcon.cloudDownload(
           color: theme.colorTheme.textHighEmphasis,
+          size: 24.r,
         ),
         visualDensity: VisualDensity.compact,
-        splashRadius: 16,
+        splashRadius: 16.r,
         onPressed: () {
           final assetUrl = attachment.assetUrl;
           if (assetUrl != null) launchURL(context, assetUrl);
@@ -276,6 +294,7 @@ class StreamFileAttachment extends StreamAttachmentWidget {
     final size = attachment.file?.size ?? attachment.extraData['file_size'];
     final textStyle = theme.textTheme.footnote.copyWith(
       color: theme.colorTheme.textLowEmphasis,
+      fontSize: 12.fzs,
     );
     return attachment.uploadState.when(
       preparing: () => Text(fileSize(size), style: textStyle),
