@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@macro url_attachment}
@@ -56,7 +57,7 @@ class StreamUrlAttachment extends StatelessWidget {
           if (urlAttachment.imageUrl != null)
             Container(
               clipBehavior: Clip.hardEdge,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
+              margin: EdgeInsets.symmetric(horizontal: 8.w),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -78,10 +79,10 @@ class StreamUrlAttachment extends StatelessWidget {
                         color: messageTheme.linkBackgroundColor,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 8,
-                          left: 8,
-                          right: 8,
+                        padding: EdgeInsets.only(
+                          top: 6.h,
+                          left: 8.w,
+                          right: 8.w,
                         ),
                         child: Text(
                           hostDisplayName,
@@ -105,8 +106,9 @@ class StreamUrlAttachment extends StatelessWidget {
                     urlAttachment.title!.trim(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: chatThemeData.textTheme.body
-                        .copyWith(fontWeight: FontWeight.w700),
+                    style: chatThemeData.textTheme.body.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 if (urlAttachment.text != null)
                   Text(

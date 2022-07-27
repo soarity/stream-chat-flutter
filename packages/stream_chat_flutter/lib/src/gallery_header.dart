@@ -37,6 +37,8 @@ class StreamGalleryHeader extends StatelessWidget
     this.userName = '',
     this.sentAt = '',
     this.backgroundColor,
+    this.showReply = true,
+    this.showDelete = true,
     this.attachmentActionsModalBuilder,
   }) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
@@ -70,6 +72,12 @@ class StreamGalleryHeader extends StatelessWidget
 
   /// The background color of this [StreamGalleryHeader].
   final Color? backgroundColor;
+
+  /// Show reply option
+  final bool showReply;
+
+  /// Show delete option
+  final bool showDelete;
 
   /// Widget builder for attachment actions modal
   /// [defaultActionsModal] is the default [AttachmentActionsModal] config
@@ -148,6 +156,8 @@ class StreamGalleryHeader extends StatelessWidget
       attachment: attachment,
       message: message,
       onShowMessage: onShowMessage,
+      showDelete: showDelete,
+      showReply: showReply,
     );
 
     final effectiveModal = attachmentActionsModalBuilder?.call(

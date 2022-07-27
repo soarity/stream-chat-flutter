@@ -22,6 +22,7 @@ class StreamMessageActionsModal extends StatefulWidget {
     this.showDeleteMessage,
     this.showEditMessage,
     this.onReplyTap,
+    this.showPinButton,
     this.showCopyMessage = true,
     this.showReplyMessage = true,
     this.showResendMessage = true,
@@ -70,6 +71,9 @@ class StreamMessageActionsModal extends StatefulWidget {
 
   /// Flag for showing flag action
   final bool? showFlagButton;
+
+  /// Flag for showing pin action
+  final bool? showPinButton;
 
   /// Flag for reversing message
   final bool reverse;
@@ -195,6 +199,10 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
                             _userPermissions
                                 .contains(PermissionType.flagMessage))
                           _buildFlagButton(context),
+                        if (widget.showPinButton ??
+                            _userPermissions
+                                .contains(PermissionType.pinMessage))
+                          _buildPinButton(context),
                         if (widget.showDeleteMessage ??
                             (_isMyMessage && hasDeletePermission))
                           _buildDeleteButton(context),
@@ -321,6 +329,21 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
     }
   }
 
+  void _togglePin() async {
+    final channel = StreamChannel.of(context).channel;
+
+    Navigator.pop(context);
+    try {
+      if (!widget.message.pinned) {
+        await channel.pinMessage(widget.message);
+      } else {
+        await channel.unpinMessage(widget.message);
+      }
+    } catch (e) {
+      _showErrorAlert();
+    }
+  }
+
   void _showDeleteDialog() async {
     setState(() {
       _showActions = false;
@@ -405,6 +428,31 @@ class _StreamMessageActionsModalState extends State<StreamMessageActionsModal> {
             SizedBox(width: 16.w),
             Text(
               context.translations.flagMessageLabel,
+              style: streamChatThemeData.textTheme.body,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPinButton(BuildContext context) {
+    final streamChatThemeData = StreamChatTheme.of(context);
+    return InkWell(
+      onTap: _togglePin,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
+        child: Row(
+          children: [
+            StreamSvgIcon.pin(
+              color: streamChatThemeData.primaryIconTheme.color,
+              size: 24.r,
+            ),
+            SizedBox(width: 16.w),
+            Text(
+              context.translations.togglePinUnpinText(
+                pinned: widget.message.pinned,
+              ),
               style: streamChatThemeData.textTheme.body,
             ),
           ],

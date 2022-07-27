@@ -22,6 +22,8 @@ class StreamImageAttachment extends StreamAttachmentWidget {
     this.showTitle = false,
     this.onShowMessage,
     this.onReturnAction,
+    this.showReply = true,
+    this.showDelete = true,
     this.onAttachmentTap,
   });
 
@@ -39,6 +41,12 @@ class StreamImageAttachment extends StreamAttachmentWidget {
 
   /// Callback when attachment is tapped
   final VoidCallback? onAttachmentTap;
+
+  /// Show reply option
+  final bool showReply;
+
+  /// Show delete option
+  final bool showDelete;
 
   @override
   Widget build(BuildContext context) => source.when(
@@ -138,6 +146,8 @@ class StreamImageAttachment extends StreamAttachmentWidget {
                                 return StreamChannel(
                                   channel: channel,
                                   child: StreamFullScreenMedia(
+                                    showDelete: showDelete,
+                                    showReply: showReply,
                                     mediaAttachmentPackages:
                                         message.getAttachmentPackageList(),
                                     startIndex:
