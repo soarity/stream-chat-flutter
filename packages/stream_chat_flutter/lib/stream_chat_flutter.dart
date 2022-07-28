@@ -64,4 +64,6 @@ export 'src/v4/scroll_view/user_scroll_view/stream_user_grid_view.dart';
 export 'src/v4/scroll_view/user_scroll_view/stream_user_list_tile.dart';
 export 'src/v4/scroll_view/user_scroll_view/stream_user_list_view.dart';
 export 'src/v4/stream_message_preview_text.dart';
+export 'src/v4/stream_message_preview_text.dart';
+export 'src/visible_footnote.dart';
 export 'src/visible_footnote.dart';
