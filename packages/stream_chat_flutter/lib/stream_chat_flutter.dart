@@ -1,4 +1,5 @@
 export 'package:dio/dio.dart';
+export 'package:flutter_slidable/flutter_slidable.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:jiffy/jiffy.dart';
@@ -54,6 +55,7 @@ export 'src/v4/message_input/stream_attachment_picker.dart';
 export 'src/v4/message_input/stream_message_input.dart';
 export 'src/v4/message_input/stream_message_send_button.dart';
 export 'src/v4/message_input/stream_message_text_field.dart';
+export 'src/v4/scroll_view/channel_scroll_view/stream_channel_list_view.dart';
 export 'src/v4/scroll_view/message_search_scroll_view/stream_message_search_grid_view.dart';
 export 'src/v4/scroll_view/message_search_scroll_view/stream_message_search_list_tile.dart';
 export 'src/v4/scroll_view/message_search_scroll_view/stream_message_search_list_view.dart';
