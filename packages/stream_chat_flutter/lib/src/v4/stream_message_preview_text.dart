@@ -29,6 +29,10 @@ class StreamMessagePreviewText extends StatelessWidget {
         .text;
     final messageAttachments = message.attachments;
     final messageMentionedUsers = message.mentionedUsers;
+    final user = message.user!;
+    final sender = user.id == StreamChat.of(context).currentUser?.id
+        ? context.translations.youText
+        : user.name;
 
     final mentionedUsersRegex = RegExp(
       messageMentionedUsers.map((it) => '@${it.name}').join('|'),
@@ -67,6 +71,10 @@ class StreamMessagePreviewText extends StatelessWidget {
     );
 
     final spans = [
+      TextSpan(
+        text: '$sender: ',
+        style: regularTextStyle,
+      ),
       for (final part in messageTextParts)
         if (messageMentionedUsers.isNotEmpty &&
             messageMentionedUsers.any((it) => '@${it.name}' == part))
@@ -93,7 +101,7 @@ class StreamMessagePreviewText extends StatelessWidget {
 
     return Text.rich(
       TextSpan(children: spans),
-      maxLines: 1,
+      maxLines: 2,
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.start,
     );
