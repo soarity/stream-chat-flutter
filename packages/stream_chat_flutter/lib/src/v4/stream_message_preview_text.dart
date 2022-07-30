@@ -73,7 +73,7 @@ class StreamMessagePreviewText extends StatelessWidget {
     final spans = [
       TextSpan(
         text: '$sender: ',
-        style: regularTextStyle,
+        style: regularTextStyle?.copyWith(fontWeight: FontWeight.w600),
       ),
       for (final part in messageTextParts)
         if (messageMentionedUsers.isNotEmpty &&
@@ -101,7 +101,7 @@ class StreamMessagePreviewText extends StatelessWidget {
 
     return Text.rich(
       TextSpan(children: spans),
-      maxLines: 2,
+      maxLines: 1,
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.start,
     );
