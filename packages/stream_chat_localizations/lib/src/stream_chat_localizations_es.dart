@@ -210,8 +210,8 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
 
   @override
   String togglePinUnpinText({required bool pinned}) {
-    if (pinned) return 'Desfijar a la conversación';
-    return 'Fijar a la conversación';
+    if (pinned) return 'No destacar';
+    return 'Destacar mensaje';
   }
 
   @override
