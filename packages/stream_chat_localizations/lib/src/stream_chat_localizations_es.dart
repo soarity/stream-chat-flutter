@@ -355,7 +355,7 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
   String get inText => 'en';
 
   @override
-  String get youText => 'Usted';
+  String get youText => 'Tú';
 
   @override
   String galleryPaginationText({
