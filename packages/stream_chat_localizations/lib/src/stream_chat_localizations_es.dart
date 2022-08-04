@@ -56,8 +56,8 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
     required User currentUser,
   }) {
     final pinnedByCurrentUser = currentUser.id == pinnedBy.id;
-    if (pinnedByCurrentUser) return 'Fijado por ti';
-    return 'Fijado por ${pinnedBy.name}';
+    if (pinnedByCurrentUser) return 'Destacado por mi';
+    return 'Destacado por ${pinnedBy.name}';
   }
 
   @override
