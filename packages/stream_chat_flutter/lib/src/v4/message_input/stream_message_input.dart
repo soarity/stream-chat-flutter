@@ -10,8 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/commands_overlay.dart';
-import 'package:stream_chat_flutter/src/emoji/emoji.dart';
-import 'package:stream_chat_flutter/src/emoji_overlay.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/src/user_mentions_overlay.dart';
@@ -190,14 +188,12 @@ class StreamMessageInput extends StatefulWidget {
     this.hideSendAsDm = false,
     this.idleSendButton,
     this.activeSendButton,
-    this.showCommandsButton = true,
     this.userMentionsTileBuilder,
     this.maxAttachmentSize = kDefaultMaxAttachmentSize,
     this.onError,
     this.attachmentLimit = 10,
     this.onAttachmentLimitExceed,
     this.attachmentButtonBuilder,
-    this.commandButtonBuilder,
     this.customOverlays = const [],
     this.mentionAllAppUsers = false,
     this.attachmentsPickerBuilder,
@@ -209,9 +205,6 @@ class StreamMessageInput extends StatefulWidget {
     this.elevation,
     this.shadow,
     this.autoCorrect = true,
-    @Deprecated('Please use enableEmojiSuggestionsOverlay')
-        this.disableEmojiSuggestionsOverlay = false,
-    this.enableEmojiSuggestionsOverlay = true,
     this.enableMentionsOverlay = true,
   });
 
@@ -239,9 +232,6 @@ class StreamMessageInput extends StatefulWidget {
 
   /// If true the attachments button will not be displayed.
   final bool disableAttachments;
-
-  /// Use this property to hide/show the commands button.
-  final bool showCommandsButton;
 
   /// Hide send as dm checkbox.
   final bool hideSendAsDm;
@@ -293,12 +283,6 @@ class StreamMessageInput extends StatefulWidget {
   /// calling `.copyWith`.
   final ActionButtonBuilder? attachmentButtonBuilder;
 
-  /// Builder for customizing the command button.
-  ///
-  /// The builder contains the default [IconButton] that can be customized by
-  /// calling `.copyWith`.
-  final ActionButtonBuilder? commandButtonBuilder;
-
   /// When enabled mentions search users across the entire app.
   ///
   /// Defaults to false.
@@ -332,15 +316,6 @@ class StreamMessageInput extends StatefulWidget {
   /// Disable autoCorrect by passing false
   /// autoCorrect is enabled by default
   final bool autoCorrect;
-
-  /// Disable the default emoji suggestions
-  /// Enabled by default
-  @Deprecated('Please use enableEmojiSuggestionsOverlay')
-  final bool disableEmojiSuggestionsOverlay;
-
-  /// Disable the default emoji suggestions by passing `false`
-  /// Enabled by default
-  final bool enableEmojiSuggestionsOverlay;
 
   /// Disable the mentions overlay by passing false
   /// Enabled by default
@@ -611,20 +586,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
               visible: _showCommandsOverlay,
               widget: _buildCommandsOverlayEntry(),
             ),
-            if (widget.enableEmojiSuggestionsOverlay &&
-                !widget.disableEmojiSuggestionsOverlay)
-              OverlayOptions(
-                visible: _focusNode.hasFocus &&
-                    _effectiveController.text.isNotEmpty &&
-                    _effectiveController.baseOffset > 0 &&
-                    _effectiveController.text
-                        .substring(
-                          0,
-                          _effectiveController.baseOffset,
-                        )
-                        .contains(':'),
-                widget: _buildEmojiOverlay(),
-              ),
             if (widget.enableMentionsOverlay)
               OverlayOptions(
                 visible: _showMentionsOverlay,
@@ -760,9 +721,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
           ),
           splashRadius: 24.r,
         ),
-        secondChild: widget.disableAttachments &&
-                !widget.showCommandsButton &&
-                !widget.actions.isNotEmpty
+        secondChild: widget.disableAttachments && !widget.actions.isNotEmpty
             ? const Offstage()
             : Wrap(
                 children: <Widget>[
@@ -770,11 +729,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
                       channel.ownCapabilities
                           .contains(PermissionType.uploadFile))
                     _buildAttachmentButton(context),
-                  if (widget.showCommandsButton &&
-                      !_isEditing &&
-                      channel.state != null &&
-                      channel.config?.commands.isNotEmpty == true)
-                    _buildCommandButton(context),
                   ...widget.actions,
                 ].insertBetween(const SizedBox(width: 6)),
               ),
@@ -960,7 +914,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
       }
 
       var actionsLength = widget.actions.length;
-      if (widget.showCommandsButton) actionsLength += 1;
       if (!widget.disableAttachments) actionsLength += 1;
 
       setState(() {
@@ -970,7 +923,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
       _checkContainsUrl(value, context);
       _checkCommands(value, context);
       _checkMentions(value, context);
-      _checkEmoji(value, context);
     },
     const Duration(milliseconds: 350),
     leading: true,
@@ -1057,26 +1009,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
       _ogAttachmentCache[url] = response;
     }
     return response;
-  }
-
-  void _checkEmoji(String value, BuildContext context) {
-    if (value.isNotEmpty &&
-        _effectiveController.baseOffset > 0 &&
-        _effectiveController.text
-            .substring(0, _effectiveController.baseOffset)
-            .contains(':')) {
-      final textToSelection = _effectiveController.text.substring(
-        0,
-        _effectiveController.selectionStart,
-      );
-      final splits = textToSelection.split(':');
-      final query = splits[splits.length - 2].toLowerCase();
-      final emoji = Emoji.byName(query);
-
-      if (textToSelection.endsWith(':') && emoji != null) {
-        _chooseEmoji(splits.sublist(0, splits.length - 1), emoji);
-      }
-    }
   }
 
   void _checkMentions(String value, BuildContext context) {
@@ -1196,37 +1128,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
         },
       ),
     );
-  }
-
-  Widget _buildEmojiOverlay() {
-    if (_effectiveController.baseOffset < 0) {
-      return const Offstage();
-    }
-
-    final splits = _effectiveController.text
-        .substring(0, _effectiveController.baseOffset)
-        .split(':');
-
-    final query = splits.last.toLowerCase();
-    // ignore: cast_nullable_to_non_nullable
-    final renderObject = context.findRenderObject() as RenderBox;
-
-    return StreamEmojiOverlay(
-      size: Size(renderObject.size.width - 16, 200),
-      query: query,
-      onEmojiResult: (emoji) {
-        _chooseEmoji(splits, emoji);
-      },
-    );
-  }
-
-  void _chooseEmoji(List<String> splits, Emoji emoji) {
-    final rejoin = splits.sublist(0, splits.length - 1).join(':') + emoji.char!;
-
-    _effectiveController.text = rejoin +
-        _effectiveController.text.substring(
-          _effectiveController.selectionStart,
-        );
   }
 
   void _setCommand(Command c) {
@@ -1420,40 +1321,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
           child: Icon(Icons.insert_drive_file, size: 24.r),
         );
     }
-  }
-
-  Widget _buildCommandButton(BuildContext context) {
-    final s = _effectiveController.text.trim();
-    final defaultButton = IconButton(
-      iconSize: 24.r,
-      icon: StreamSvgIcon.lightning(
-        size: 24.r,
-        color: s.isNotEmpty
-            ? _streamChatTheme.colorTheme.disabled
-            : (_showCommandsOverlay
-                ? _messageInputTheme.actionButtonColor
-                : _messageInputTheme.actionButtonIdleColor),
-      ),
-      padding: EdgeInsets.zero,
-      constraints: BoxConstraints.tightFor(
-        height: 24.r,
-        width: 24.r,
-      ),
-      splashRadius: 24.r,
-      onPressed: () async {
-        if (_openFilePickerSection) {
-          setState(() => _openFilePickerSection = false);
-          await Future.delayed(const Duration(milliseconds: 300));
-        }
-
-        setState(() {
-          _showCommandsOverlay = !_showCommandsOverlay;
-        });
-      },
-    );
-
-    return widget.commandButtonBuilder?.call(context, defaultButton) ??
-        defaultButton;
   }
 
   Widget _buildAttachmentButton(BuildContext context) {

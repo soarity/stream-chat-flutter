@@ -12,7 +12,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/src/commands_overlay.dart';
 import 'package:stream_chat_flutter/src/emoji/emoji.dart';
-import 'package:stream_chat_flutter/src/emoji_overlay.dart';
 import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/media_list_view.dart';
 import 'package:stream_chat_flutter/src/media_list_view_controller.dart';
@@ -474,18 +473,6 @@ class MessageInputState extends State<MessageInput> {
         OverlayOptions(
           visible: _showCommandsOverlay,
           widget: _buildCommandsOverlayEntry(),
-        ),
-        OverlayOptions(
-          visible: _focusNode.hasFocus &&
-              textEditingController.text.isNotEmpty &&
-              textEditingController.selection.baseOffset > 0 &&
-              textEditingController.text
-                  .substring(
-                    0,
-                    textEditingController.selection.baseOffset,
-                  )
-                  .contains(':'),
-          widget: _buildEmojiOverlay(),
         ),
         OverlayOptions(
           visible: _showMentionsOverlay,
@@ -1152,28 +1139,6 @@ class MessageInputState extends State<MessageInput> {
           setState(() => _showMentionsOverlay = false);
         },
       ),
-    );
-  }
-
-  Widget _buildEmojiOverlay() {
-    if (textEditingController.value.selection.baseOffset < 0) {
-      return const Offstage();
-    }
-
-    final splits = textEditingController.text
-        .substring(0, textEditingController.value.selection.baseOffset)
-        .split(':');
-
-    final query = splits.last.toLowerCase();
-    // ignore: cast_nullable_to_non_nullable
-    final renderObject = context.findRenderObject() as RenderBox;
-
-    return StreamEmojiOverlay(
-      size: Size(renderObject.size.width - 16, 200.h),
-      query: query,
-      onEmojiResult: (emoji) {
-        _chooseEmoji(splits, emoji);
-      },
     );
   }
 
