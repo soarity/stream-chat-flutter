@@ -24,7 +24,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     required this.messageTheme,
     this.reverse = false,
     this.showBorder = false,
-    this.textLimit = 170,
+    this.textLimit = 150,
     this.attachmentThumbnailBuilders,
     this.padding = const EdgeInsets.all(8),
     this.onTap,
@@ -76,7 +76,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
             key: const Key('usernameKey'),
             style: messageTheme.messageAuthorStyle!.copyWith(
               color: const Color(0xFFF28B82),
-              fontSize: 13.5.fzs,
+              fontSize: 13.fzs,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -95,7 +95,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withOpacity(0.09),
               border: Border(
                 left: BorderSide(color: const Color(0xFFF28B82), width: 4.w),
               ),
