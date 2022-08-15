@@ -765,7 +765,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildReplyToMessage(),
                 _buildAttachments(),

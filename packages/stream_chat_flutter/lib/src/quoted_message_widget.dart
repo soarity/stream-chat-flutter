@@ -67,15 +67,16 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     final children = [
       if (message.user != null)
         Padding(
-          padding: EdgeInsets.only(bottom: 2.h),
+          padding: EdgeInsets.only(bottom: 3.h),
           child: Text(
             message.user!.id == StreamChat.of(context).currentUser!.id
-                ? 'You'
+                ? context.translations.youText
                 : message.user?.name ?? '',
             maxLines: 1,
             key: const Key('usernameKey'),
             style: messageTheme.messageAuthorStyle!.copyWith(
               color: const Color(0xFFF28B82),
+              fontSize: 13.5.fzs,
             ),
             overflow: TextOverflow.ellipsis,
           ),
