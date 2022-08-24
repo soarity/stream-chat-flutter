@@ -1,3 +1,13 @@
+## 4.5.0
+
+🐞 Fixed
+
+- Fix `Channel.removeMessage` not able to remove thread message.
+
+✅ Added
+
+- Added `hide_history` flag in `client.addChannelMembers`, `channel.addMembers`.
+
 ## 4.4.1
 
 🐞 Fixed

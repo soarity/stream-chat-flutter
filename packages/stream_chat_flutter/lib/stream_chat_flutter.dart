@@ -3,6 +3,8 @@ export 'package:flutter_slidable/flutter_slidable.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:jiffy/jiffy.dart';
+export 'package:photo_manager/photo_manager.dart'
+    show ThumbnailSize, ThumbnailFormat;
 export 'package:share_plus/share_plus.dart';
 export 'package:shimmer/shimmer.dart';
 export 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
