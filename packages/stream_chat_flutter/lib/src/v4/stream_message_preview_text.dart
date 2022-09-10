@@ -8,9 +8,16 @@ class StreamMessagePreviewText extends StatelessWidget {
   const StreamMessagePreviewText({
     super.key,
     required this.message,
+    this.isDm = false,
+    this.maxLines = 1,
     this.language,
     this.textStyle,
   });
+
+  ///  Whether the widget is to be used for Direct Message or Group Message
+  ///
+  /// Defaults to false
+  final bool isDm;
 
   /// The message to display.
   final Message message;
@@ -20,6 +27,9 @@ class StreamMessagePreviewText extends StatelessWidget {
 
   /// The style to use for the text.
   final TextStyle? textStyle;
+
+  /// maximum line to use for the text
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +81,11 @@ class StreamMessagePreviewText extends StatelessWidget {
     );
 
     final spans = [
-      TextSpan(
-        text: '$sender: ',
-        style: regularTextStyle?.copyWith(fontWeight: FontWeight.w600),
-      ),
+      if (!isDm)
+        TextSpan(
+          text: '$sender: ',
+          style: regularTextStyle?.copyWith(fontWeight: FontWeight.w600),
+        ),
       for (final part in messageTextParts)
         if (messageMentionedUsers.isNotEmpty &&
             messageMentionedUsers.any((it) => '@${it.name}' == part))
@@ -101,7 +112,7 @@ class StreamMessagePreviewText extends StatelessWidget {
 
     return Text.rich(
       TextSpan(children: spans),
-      maxLines: 1,
+      maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.start,
     );

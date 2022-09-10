@@ -56,6 +56,7 @@ class StreamMessageWidget extends StatefulWidget {
     required this.message,
     required this.messageTheme,
     this.botBuilder,
+    this.isDm = false,
     this.reverse = false,
     this.translateUserAvatar = true,
     this.shape,
@@ -271,6 +272,11 @@ class StreamMessageWidget extends StatefulWidget {
             );
           },
         }..addAll(customAttachmentBuilders ?? {});
+
+  ///  Whether the widget is to be used for Direct Message or Group Message
+  ///
+  /// Defaults to false
+  final bool isDm;
 
   /// Function called on mention tap
   final void Function(User)? onMentionTap;
@@ -645,7 +651,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                         widget.message.pinnedBy != null &&
                         widget.showPinHighlight)
                       _buildPinnedMessage(widget.message),
-                    if (!widget.reverse &&
+                    if (!widget.isDm &&
+                        !widget.reverse &&
                         widget.showUserAvatar == DisplayWidget.show &&
                         widget.message.user != null &&
                         !widget.hideUsername)

@@ -150,6 +150,7 @@ class StreamMessageListView extends StatefulWidget {
   /// Instantiate a new StreamMessageListView.
   const StreamMessageListView({
     super.key,
+    this.isDm = false,
     this.showScrollToBottom = true,
     this.scrollToBottomBuilder,
     this.messageBuilder,
@@ -194,6 +195,11 @@ class StreamMessageListView extends StatefulWidget {
 
   /// Function used to build a custom message widget
   final MessageBuilder? messageBuilder;
+
+  ///  Whether the widget is to be used for Direct Message or Group Message
+  ///
+  /// Defaults to false
+  final bool isDm;
 
   /// Whether the view scrolls in the reading direction.
   ///
@@ -725,8 +731,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     final backgroundColor =
         StreamMessageListViewTheme.of(context).backgroundColor;
-    final backgroundImage =
-        StreamMessageListViewTheme.of(context).backgroundImage;
+    final backgroundImage = widget.isDm
+        ? null
+        : StreamMessageListViewTheme.of(context).backgroundImage;
 
     if (backgroundColor != null || backgroundImage != null) {
       return DecoratedBox(
@@ -992,6 +999,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         members.firstWhereOrNull((e) => e.user!.id == currentUser!.id);
 
     final defaultMessageWidget = StreamMessageWidget(
+      isDm: widget.isDm,
       showReplyMessage: false,
       showResendMessage: false,
       showCopyMessage: false,
@@ -1128,6 +1136,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         members.firstWhereOrNull((e) => e.user!.id == currentUser!.id);
 
     Widget messageWidget = StreamMessageWidget(
+      isDm: widget.isDm,
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
