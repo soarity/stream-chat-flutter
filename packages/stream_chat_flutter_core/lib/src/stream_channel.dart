@@ -27,6 +27,7 @@ class StreamChannel extends StatefulWidget {
     required this.channel,
     this.showLoading = true,
     this.loadingWidget,
+    this.errorWidget,
     this.initialMessageId,
   });
 
@@ -41,6 +42,9 @@ class StreamChannel extends StatefulWidget {
 
   /// Shows a loading indicator
   final Widget? loadingWidget;
+
+  /// shows an error widget
+  final Widget? errorWidget;
 
   /// If passed the channel will load from this particular message.
   final String? initialMessageId;
@@ -400,14 +404,18 @@ class StreamChannelState extends State<StreamChannel> {
               message = 'Check your connection and retry';
             }
           }
-          return Center(child: Text(message));
+          return Material(
+            child: widget.errorWidget ?? Center(child: Text(message)),
+          );
         }
         final initialized = snapshot.data![0];
         // ignore: avoid_bool_literals_in_conditional_expressions
         final dataLoaded = initialMessageId == null ? true : snapshot.data![1];
         if (widget.showLoading && (!initialized || !dataLoaded)) {
-          return widget.loadingWidget ??
-              const Center(child: CircularProgressIndicator());
+          return Material(
+            child: widget.loadingWidget ??
+                const Center(child: CircularProgressIndicator()),
+          );
         }
         return widget.child;
       },
