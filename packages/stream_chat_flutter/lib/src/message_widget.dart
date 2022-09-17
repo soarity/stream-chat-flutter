@@ -681,7 +681,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                             target: Alignment(widget.reverse ? -1 : 1, -1),
                           ),
                           child: Stack(
-                            clipBehavior: Clip.none,
                             children: [
                               Padding(
                                 padding: widget.showReactions &&
@@ -691,8 +690,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                     ? EdgeInsets.only(top: 10.h)
                                     : EdgeInsets.zero,
                                 child: Material(
-                                  clipBehavior:
-                                      isGiphy ? Clip.none : Clip.hardEdge,
                                   elevation: isGiphy ? 0.0 : 0.5,
                                   shape: isGiphy
                                       ? null
