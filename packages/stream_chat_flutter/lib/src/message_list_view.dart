@@ -731,9 +731,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     final backgroundColor =
         StreamMessageListViewTheme.of(context).backgroundColor;
-    final backgroundImage = widget.isDm
-        ? null
-        : StreamMessageListViewTheme.of(context).backgroundImage;
+    final backgroundImage = StreamMessageListViewTheme.of(context).backgroundImage;
 
     if (backgroundColor != null || backgroundImage != null) {
       return DecoratedBox(
