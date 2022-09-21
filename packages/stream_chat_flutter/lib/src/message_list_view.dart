@@ -10,6 +10,7 @@ import 'package:stream_chat_flutter/src/extension.dart';
 import 'package:stream_chat_flutter/src/progress_indicator.dart';
 import 'package:stream_chat_flutter/src/swipeable.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 /// Widget builder for message
 /// [defaultMessageWidget] is the default [StreamMessageWidget] configuration
@@ -1243,7 +1244,13 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       child = Container(
         decoration: const BoxDecoration(),
         clipBehavior: Clip.hardEdge,
-        child: child,
+        child: SwipeTo(
+          onLeftSwipe: () {
+            FocusScope.of(context).unfocus();
+            widget.onMessageSwiped?.call(message);
+          },
+          child: child,
+        ),
         // child: Swipeable(
         //   onSwipeEnd: () {
         //     FocusScope.of(context).unfocus();

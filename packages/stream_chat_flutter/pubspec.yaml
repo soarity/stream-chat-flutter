@@ -39,6 +39,7 @@ dependencies:
   rxdart: ^0.27.0
   share_plus: ^4.0.5
   shimmer: ^2.0.0
+  swipe_to: ^1.0.2
   stream_chat_flutter_core:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
