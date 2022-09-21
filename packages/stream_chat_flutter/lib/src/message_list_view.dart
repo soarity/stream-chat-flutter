@@ -1245,7 +1245,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         decoration: const BoxDecoration(),
         clipBehavior: Clip.hardEdge,
         child: SwipeTo(
-          onLeftSwipe: () {
+          onRightSwipe: () {
             FocusScope.of(context).unfocus();
             widget.onMessageSwiped?.call(message);
           },
