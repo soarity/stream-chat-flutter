@@ -39,15 +39,11 @@ dependencies:
   rxdart: ^0.27.0
   share_plus: ^4.0.5
   shimmer: ^2.0.0
-<<<<<<< HEAD
   stream_chat_flutter_core:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: wer6/release/4.5.1
+      ref: wer6/release/4.6.0
       path: packages/stream_chat_flutter_core
-=======
-  stream_chat_flutter_core: ^4.6.0
->>>>>>> 3e1d6e91c705c28fd75d84fcd45ff4f186a05ee9
   substring_highlight: ^1.0.26
   url_launcher: ^6.1.4
   video_player: ^2.4.2
