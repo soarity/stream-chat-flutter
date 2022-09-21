@@ -1243,16 +1243,17 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       child = Container(
         decoration: const BoxDecoration(),
         clipBehavior: Clip.hardEdge,
-        child: Swipeable(
-          onSwipeEnd: () {
-            FocusScope.of(context).unfocus();
-            widget.onMessageSwiped?.call(message);
-          },
-          backgroundIcon: StreamSvgIcon.reply(
-            color: _streamTheme.colorTheme.accentPrimary,
-          ),
-          child: child,
-        ),
+        child: child,
+        // child: Swipeable(
+        //   onSwipeEnd: () {
+        //     FocusScope.of(context).unfocus();
+        //     widget.onMessageSwiped?.call(message);
+        //   },
+        //   backgroundIcon: StreamSvgIcon.reply(
+        //     color: _streamTheme.colorTheme.accentPrimary,
+        //   ),
+        //   child: child,
+        // ),
       );
     }
 
