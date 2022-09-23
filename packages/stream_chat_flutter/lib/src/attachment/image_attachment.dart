@@ -86,17 +86,17 @@ class StreamImageAttachment extends StreamAttachmentWidget {
           );
         },
         network: () {
-          var imageUrl =
+          final imageUrl =
               attachment.thumbUrl ?? attachment.imageUrl ?? attachment.assetUrl;
 
           if (imageUrl == null) return AttachmentError(size: size);
 
-          imageUrl = imageUrl.getResizedImageUrl(
-            width: imageThumbnailSize.width,
-            height: imageThumbnailSize.height,
-            resize: imageThumbnailResizeType,
-            crop: imageThumbnailCropType,
-          );
+          // imageUrl = imageUrl.getResizedImageUrl(
+          //   width: imageThumbnailSize.width,
+          //   height: imageThumbnailSize.height,
+          //   resize: imageThumbnailResizeType,
+          //   crop: imageThumbnailCropType,
+          // );
 
           return _buildImageAttachment(
             context,
