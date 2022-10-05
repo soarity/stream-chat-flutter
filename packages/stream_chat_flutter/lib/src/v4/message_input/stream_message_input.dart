@@ -730,7 +730,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                           .contains(PermissionType.uploadFile))
                     _buildAttachmentButton(context),
                   ...widget.actions,
-                ],
+                ].insertBetween(const SizedBox(width: 6)),
               ),
         duration: const Duration(milliseconds: 300),
         alignment: Alignment.center,
