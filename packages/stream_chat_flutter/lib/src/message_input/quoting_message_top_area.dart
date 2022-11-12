@@ -1,0 +1,65 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+
+/// {@template quotingMessageTopArea}
+/// The area that appears above [MessageInput] when the user is quoting a
+/// message.
+///
+/// Should only be used on mobile platforms.
+/// {@endtemplate}
+class QuotingMessageTopArea extends StatelessWidget {
+  /// {@macro quotingMessageTopArea}
+  const QuotingMessageTopArea({
+    super.key,
+    required this.hasQuotedMessage,
+    this.onQuotedMessageCleared,
+  });
+
+  ///
+  final bool hasQuotedMessage;
+
+  /// The callback to perform when the "close" button is tapped.
+  ///
+  /// Should be [MessageInput.onQuotedMessageCleared].
+  final VoidCallback? onQuotedMessageCleared;
+
+  @override
+  Widget build(BuildContext context) {
+    final _streamChatTheme = StreamChatTheme.of(context);
+    if (hasQuotedMessage) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(8.w, 4.h, 8.w, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(8.r),
+              child: StreamSvgIcon.reply(
+                size: 24.r,
+                color: _streamChatTheme.colorTheme.disabled,
+              ),
+            ),
+            Text(
+              context.translations.replyToMessageLabel,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14.fzs,
+              ),
+            ),
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              iconSize: 24.r,
+              icon: StreamSvgIcon.closeSmall(size: 24.r),
+              onPressed: onQuotedMessageCleared?.call,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+}

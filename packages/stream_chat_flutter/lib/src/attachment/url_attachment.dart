@@ -3,15 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-/// {@macro url_attachment}
-@Deprecated("Use 'StreamUrlAttachment' instead")
-typedef UrlAttachment = StreamUrlAttachment;
-
-/// {@template url_attachment}
-/// Widget to display URL attachment
+/// {@template streamUrlAttachment}
+/// Displays a URL attachment in a [StreamMessageWidget].
 /// {@endtemplate}
 class StreamUrlAttachment extends StatelessWidget {
-  /// Constructor for creating a [StreamUrlAttachment]
+  /// {@macro streamUrlAttachment}
   const StreamUrlAttachment({
     super.key,
     required this.urlAttachment,
@@ -33,7 +29,7 @@ class StreamUrlAttachment extends StatelessWidget {
   /// Padding for text
   final EdgeInsets textPadding;
 
-  /// [StreamMessageThemeData] for showing image title
+  /// The [StreamMessageThemeData] to use for the image title
   final StreamMessageThemeData messageTheme;
 
   /// The function called when tapping on a link
@@ -42,6 +38,7 @@ class StreamUrlAttachment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chatThemeData = StreamChatTheme.of(context);
+<<<<<<< HEAD
     return GestureDetector(
       onTap: () {
         final ogScrapeUrl = urlAttachment.ogScrapeUrl;
@@ -67,17 +64,43 @@ class StreamUrlAttachment extends StatelessWidget {
                     width: double.infinity,
                     imageUrl: urlAttachment.imageUrl!,
                     fit: BoxFit.cover,
+=======
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        maxWidth: 400,
+        minWidth: 400,
+      ),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () {
+            final ogScrapeUrl = urlAttachment.ogScrapeUrl;
+            if (ogScrapeUrl != null) {
+              onLinkTap != null
+                  ? onLinkTap!(ogScrapeUrl)
+                  : launchURL(context, ogScrapeUrl);
+            }
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (urlAttachment.imageUrl != null)
+                Container(
+                  clipBehavior: Clip.hardEdge,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+>>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
                   ),
-                  Positioned(
-                    left: 0,
-                    bottom: -1,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(16),
-                        ),
-                        color: messageTheme.linkBackgroundColor,
+                  child: Stack(
+                    children: [
+                      CachedNetworkImage(
+                        width: double.infinity,
+                        imageUrl: urlAttachment.imageUrl!,
+                        fit: BoxFit.cover,
                       ),
+<<<<<<< HEAD
                       child: Padding(
                         padding: EdgeInsets.only(
                           top: 6.h,
@@ -88,13 +111,59 @@ class StreamUrlAttachment extends StatelessWidget {
                           hostDisplayName,
                           style: chatThemeData.textTheme.bodyBold.copyWith(
                             color: chatThemeData.colorTheme.accentPrimary,
+=======
+                      Positioned(
+                        left: 0,
+                        bottom: -1,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(16),
+                            ),
+                            color: messageTheme.linkBackgroundColor,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              left: 8,
+                              right: 8,
+                            ),
+                            child: Text(
+                              hostDisplayName,
+                              style: chatThemeData.textTheme.bodyBold.copyWith(
+                                color: chatThemeData.colorTheme.accentPrimary,
+                              ),
+                            ),
+>>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
+              Padding(
+                padding: textPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (urlAttachment.title != null)
+                      Text(
+                        urlAttachment.title!.trim(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: chatThemeData.textTheme.body
+                            .copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    if (urlAttachment.text != null)
+                      Text(
+                        urlAttachment.text!,
+                        style: chatThemeData.textTheme.body
+                            .copyWith(fontWeight: FontWeight.w400),
+                      ),
+                  ],
+                ),
               ),
+<<<<<<< HEAD
             ),
           Padding(
             padding: textPadding,
@@ -118,8 +187,11 @@ class StreamUrlAttachment extends StatelessWidget {
                   ),
               ],
             ),
+=======
+            ],
+>>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
           ),
-        ],
+        ),
       ),
     );
   }

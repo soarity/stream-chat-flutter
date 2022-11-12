@@ -70,15 +70,9 @@ class StreamChatClient {
     Duration receiveTimeout = const Duration(seconds: 6),
     StreamChatApi? chatApi,
     WebSocket? ws,
-    @Deprecated('Use [attachmentFileUploaderProvider] instead')
-        AttachmentFileUploader? attachmentFileUploader,
-    AttachmentFileUploaderProvider? attachmentFileUploaderProvider,
-  }) : assert(
-          attachmentFileUploader == null ||
-              attachmentFileUploaderProvider == null,
-          'You can only use one of [attachmentFileUploader] '
-          'or [attachmentFileUploaderProvider]',
-        ) {
+    AttachmentFileUploaderProvider attachmentFileUploaderProvider =
+        StreamAttachmentFileUploader.new,
+  }) {
     logger.info('Initiating new StreamChatClient');
 
     final options = StreamHttpClientOptions(
@@ -88,23 +82,13 @@ class StreamChatClient {
       headers: {'X-Stream-Client': defaultUserAgent},
     );
 
-    // TODO: simplify this once we remove the deprecated field.
-    final AttachmentFileUploaderProvider fileUploaderProvider;
-    if (attachmentFileUploaderProvider != null) {
-      fileUploaderProvider = attachmentFileUploaderProvider;
-    } else if (attachmentFileUploader != null) {
-      fileUploaderProvider = (httpClient) => attachmentFileUploader;
-    } else {
-      fileUploaderProvider = StreamAttachmentFileUploader.new;
-    }
-
     _chatApi = chatApi ??
         StreamChatApi(
           apiKey,
           options: options,
           tokenManager: _tokenManager,
           connectionIdManager: _connectionIdManager,
-          attachmentFileUploaderProvider: fileUploaderProvider,
+          attachmentFileUploaderProvider: attachmentFileUploaderProvider,
           logger: detachedLogger('🕸️'),
         );
 
@@ -533,7 +517,10 @@ class StreamChatClient {
   /// Requests channels with a given query.
   Stream<List<Channel>> queryChannels({
     Filter? filter,
-    List<SortOption<ChannelModel>>? sort,
+    @Deprecated('''
+    sort has been deprecated. 
+    Please use channelStateSort instead.''') List<SortOption<ChannelModel>>? sort,
+    List<SortOption<ChannelState>>? channelStateSort,
     bool state = true,
     bool watch = true,
     bool presence = false,
@@ -563,7 +550,9 @@ class StreamChatClient {
     } else {
       final channels = await queryChannelsOffline(
         filter: filter,
+        // ignore: deprecated_member_use_from_same_package
         sort: sort,
+        channelStateSort: channelStateSort,
         paginationParams: paginationParams,
       );
       if (channels.isNotEmpty) yield channels;
@@ -571,7 +560,7 @@ class StreamChatClient {
       try {
         final newQueryChannelsFuture = queryChannelsOnline(
           filter: filter,
-          sort: sort,
+          sort: channelStateSort ?? sort,
           state: state,
           watch: watch,
           presence: presence,
@@ -614,7 +603,7 @@ class StreamChatClient {
   /// Requests channels with a given query from the API.
   Future<List<Channel>> queryChannelsOnline({
     Filter? filter,
-    List<SortOption<ChannelModel>>? sort,
+    List<SortOption>? sort,
     bool state = true,
     bool watch = true,
     bool presence = false,
@@ -681,24 +670,29 @@ class StreamChatClient {
       clearQueryCache: paginationParams.offset == 0,
     );
 
-    this.state.channels = updateData.key;
+    this.state.addChannels(updateData.key);
     return updateData.value;
   }
 
   /// Requests channels with a given query from the Persistence client.
   Future<List<Channel>> queryChannelsOffline({
     Filter? filter,
-    List<SortOption<ChannelModel>>? sort,
+    @Deprecated('''
+    sort has been deprecated. 
+    Please use channelStateSort instead.''') List<SortOption<ChannelModel>>? sort,
+    List<SortOption<ChannelState>>? channelStateSort,
     PaginationParams paginationParams = const PaginationParams(),
   }) async {
     final offlineChannels = (await _chatPersistenceClient?.getChannelStates(
           filter: filter,
+          // ignore: deprecated_member_use_from_same_package
           sort: sort,
+          channelStateSort: channelStateSort,
           paginationParams: paginationParams,
         )) ??
         [];
     final updatedData = _mapChannelStateToChannel(offlineChannels);
-    state.channels = updatedData.key;
+    state.addChannels(updatedData.key);
     return updatedData.value;
   }
 
@@ -1565,7 +1559,6 @@ class ClientState {
         final eventChannel = event.channel!;
         await _client.chatPersistenceClient?.deleteChannels([eventChannel.cid]);
         channels[eventChannel.cid]?.dispose();
-        channels = channels..remove(eventChannel.cid);
       }),
     );
   }
@@ -1605,7 +1598,6 @@ class ClientState {
         final eventChannel = event.channel!;
         await _client.chatPersistenceClient?.deleteChannels([eventChannel.cid]);
         channels[eventChannel.cid]?.dispose();
-        channels = channels..remove(eventChannel.cid);
       }),
     );
   }
@@ -1664,9 +1656,22 @@ class ClientState {
   /// The current list of channels in memory
   Map<String, Channel> get channels => _channelsController.value;
 
-  set channels(Map<String, Channel> channelMap) {
-    final newChannels = {...channels, ...channelMap};
+  set channels(Map<String, Channel> newChannels) {
     _channelsController.add(newChannels);
+  }
+
+  /// Adds a list of channels to the current list of cached channels
+  void addChannels(Map<String, Channel> channelMap) {
+    final newChannels = {
+      ...channels,
+      ...channelMap,
+    };
+    channels = newChannels;
+  }
+
+  /// Removes the channel from the cached list of [channels]
+  void removeChannel(String channelCid) {
+    channels = channels..remove(channelCid);
   }
 
   /// Used internally for optimistic update of unread count
@@ -1698,7 +1703,11 @@ class ClientState {
     _currentUserController.close();
     _unreadChannelsController.close();
     _totalUnreadCountController.close();
-    channels.values.forEach((c) => c.dispose());
+
+    final channels = this.channels.values.toList();
+    for (final channel in channels) {
+      channel.dispose();
+    }
     _channelsController.close();
   }
 }
