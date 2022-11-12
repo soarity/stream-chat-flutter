@@ -4,11 +4,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/utils.dart
-=======
 import 'package:synchronized/synchronized.dart';
 import 'package:url_launcher/url_launcher.dart';
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/utils/helpers.dart
 
 final _permissionRequestLock = Lock();
 

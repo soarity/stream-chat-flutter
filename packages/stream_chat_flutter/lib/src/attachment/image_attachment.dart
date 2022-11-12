@@ -1,10 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:stream_chat_flutter/src/attachment/attachment_title.dart';
-=======
 import 'package:shimmer/shimmer.dart';
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
 import 'package:stream_chat_flutter/src/attachment/attachment_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -21,13 +17,7 @@ class StreamImageAttachment extends StreamAttachmentWidget {
     super.constraints,
     this.showTitle = false,
     this.onShowMessage,
-<<<<<<< HEAD
-    this.onReturnAction,
-    this.showReply = true,
-    this.showDelete = true,
-=======
     this.onReplyMessage,
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
     this.onAttachmentTap,
     this.imageThumbnailSize = const Size(400, 400),
     this.imageThumbnailResizeType = 'clip',
@@ -48,12 +38,6 @@ class StreamImageAttachment extends StreamAttachmentWidget {
 
   /// {@macro onAttachmentTap}
   final OnAttachmentTap? onAttachmentTap;
-
-  /// Show reply option
-  final bool showReply;
-
-  /// Show delete option
-  final bool showDelete;
 
   /// Size of the attachment image thumbnail.
   final Size imageThumbnailSize;
@@ -116,60 +100,6 @@ class StreamImageAttachment extends StreamAttachmentWidget {
                 'images/placeholder.png',
                 fit: BoxFit.cover,
                 package: 'stream_chat_flutter',
-<<<<<<< HEAD
-              ),
-            ),
-          );
-        },
-        network: () {
-          final imageUrl =
-              attachment.thumbUrl ?? attachment.imageUrl ?? attachment.assetUrl;
-
-          if (imageUrl == null) return AttachmentError(size: size);
-
-          // imageUrl = imageUrl.getResizedImageUrl(
-          //   width: imageThumbnailSize.width,
-          //   height: imageThumbnailSize.height,
-          //   resize: imageThumbnailResizeType,
-          //   crop: imageThumbnailCropType,
-          // );
-
-          return _buildImageAttachment(
-            context,
-            CachedNetworkImage(
-              imageUrl: imageUrl,
-              height: size?.height,
-              width: size?.width,
-              fit: BoxFit.cover,
-              placeholder: (context, __) {
-                final image = Image.asset(
-                  'images/placeholder.png',
-                  fit: BoxFit.cover,
-                  package: 'stream_chat_flutter',
-                );
-                final colorTheme = StreamChatTheme.of(context).colorTheme;
-                return Shimmer.fromColors(
-                  baseColor: colorTheme.disabled,
-                  highlightColor: colorTheme.inputBg,
-                  child: image,
-                );
-              },
-              errorWidget: (context, url, error) => AttachmentError(size: size),
-            ),
-          );
-        },
-      );
-
-  Widget _buildImageAttachment(BuildContext context, Widget imageWidget) =>
-      ConstrainedBox(
-        constraints: BoxConstraints.loose(size!),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Stack(
-                children: [
-                  GestureDetector(
-=======
               );
               final colorTheme = StreamChatTheme.of(context).colorTheme;
               return Shimmer.fromColors(
@@ -197,7 +127,6 @@ class StreamImageAttachment extends StreamAttachmentWidget {
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
                     onTap: onAttachmentTap ??
                         () {
                           Navigator.of(context).push(
@@ -207,13 +136,7 @@ class StreamImageAttachment extends StreamAttachmentWidget {
                                     StreamChannel.of(context).channel;
                                 return StreamChannel(
                                   channel: channel,
-<<<<<<< HEAD
-                                  child: StreamFullScreenMedia(
-                                    showDelete: showDelete,
-                                    showReply: showReply,
-=======
                                   child: StreamFullScreenMediaBuilder(
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
                                     mediaAttachmentPackages:
                                         message.getAttachmentPackageList(),
                                     startIndex:

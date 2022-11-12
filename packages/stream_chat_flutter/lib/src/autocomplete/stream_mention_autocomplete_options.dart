@@ -1,25 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/user_mentions_overlay.dart
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_chat_flutter/src/extension.dart';
-import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
-import 'package:stream_chat_flutter/src/user_mention_tile.dart';
-import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-
-/// Builder function for building a mention tile.
-///
-/// Use [StreamUserMentionTile] for the default implementation.
-typedef MentionTileBuilder = Widget Function(
-  BuildContext context,
-  User user,
-);
-
-/// {@macro user_mention_tile}
-@Deprecated("Use 'StreamUserMentionsOverlay' instead")
-typedef UserMentionsOverlay = StreamUserMentionsOverlay;
-=======
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/autocomplete/stream_mention_autocomplete_options.dart
 
 /// {@template user_mentions_overlay}
 /// Overlay for displaying users that can be mentioned.
@@ -95,41 +75,6 @@ class _StreamMentionAutocompleteOptionsState
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/user_mentions_overlay.dart
-    final theme = StreamChatTheme.of(context);
-    return Card(
-      margin: EdgeInsets.all(8.r),
-      elevation: 2,
-      color: theme.colorTheme.barsBg,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Container(
-        constraints: BoxConstraints.loose(widget.size),
-        decoration: BoxDecoration(color: theme.colorTheme.barsBg),
-        child: FutureBuilder<List<User>>(
-          future: userMentionsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return const Offstage();
-            if (!snapshot.hasData) return const Offstage();
-            final users = snapshot.data!;
-            return ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                final user = users[index];
-                return Material(
-                  color: theme.colorTheme.barsBg,
-                  child: InkWell(
-                    onTap: () => widget.onMentionUserTap?.call(user),
-                    child: widget.mentionsTileBuilder?.call(context, user) ??
-                        StreamUserMentionTile(user),
-                  ),
-                );
-              },
-=======
     return FutureBuilder<List<User>>(
       future: userMentionsFuture,
       builder: (context, snapshot) {
@@ -150,7 +95,6 @@ class _StreamMentionAutocompleteOptionsState
                 child: widget.mentionsTileBuilder?.call(context, user) ??
                     StreamUserMentionTile(user),
               ),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/autocomplete/stream_mention_autocomplete_options.dart
             );
           },
         );

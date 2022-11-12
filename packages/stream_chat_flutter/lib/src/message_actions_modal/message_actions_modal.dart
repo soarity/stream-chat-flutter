@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide ButtonStyle;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_actions_modal/mam_widgets.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 

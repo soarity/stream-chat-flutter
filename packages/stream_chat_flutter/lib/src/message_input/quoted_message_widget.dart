@@ -177,7 +177,7 @@ class _QuotedMessage extends StatelessWidget {
                   ),
           ),
         ),
-    ].insertBetween( SizedBox(width: 8.w));
+    ].insertBetween(SizedBox(width: 8.w));
 
     return Container(
       decoration: BoxDecoration(
@@ -271,16 +271,16 @@ class _ParseAttachments extends StatelessWidget {
           attachment: attachment,
           message: message,
           messageTheme: messageTheme,
-          constraints: BoxConstraints.loose( Size(32.r, 32.r)),
+          constraints: BoxConstraints.loose(Size(32.r, 32.r)),
         );
       },
       'video': (_, attachment) {
         return StreamVideoThumbnailImage(
           key: ValueKey(attachment.assetUrl),
           video: attachment.file?.path ?? attachment.assetUrl!,
-          constraints: BoxConstraints.loose(const Size(32.r, 32.r)),
+          constraints: BoxConstraints.loose(Size(32.r, 32.r)),
           errorBuilder: (_, __) => AttachmentError(
-            constraints: BoxConstraints.loose(const Size(32.r, 32.r)),
+            constraints: BoxConstraints.loose(Size(32.r, 32.r)),
           ),
         );
       },

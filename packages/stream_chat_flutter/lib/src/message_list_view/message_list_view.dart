@@ -8,7 +8,6 @@ import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positi
 import 'package:stream_chat_flutter/src/message_list_view/floating_date_divider.dart';
 import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart';
 import 'package:stream_chat_flutter/src/message_list_view/mlv_utils.dart';
-import 'package:stream_chat_flutter/src/message_list_view/thread_separator.dart';
 import 'package:stream_chat_flutter/src/message_list_view/unread_messages_separator.dart';
 import 'package:stream_chat_flutter/src/misc/swipeable.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -106,7 +105,6 @@ class StreamMessageListView extends StatefulWidget {
     this.onMessageTap,
     this.onSystemMessageTap,
     this.showFloatingDateDivider = true,
-    this.threadSeparatorBuilder,
     this.unreadMessagesSeparatorBuilder,
     this.messageListController,
     this.reverse = true,

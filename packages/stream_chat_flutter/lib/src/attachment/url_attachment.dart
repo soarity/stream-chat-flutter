@@ -38,33 +38,6 @@ class StreamUrlAttachment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chatThemeData = StreamChatTheme.of(context);
-<<<<<<< HEAD
-    return GestureDetector(
-      onTap: () {
-        final ogScrapeUrl = urlAttachment.ogScrapeUrl;
-        if (ogScrapeUrl != null) {
-          onLinkTap != null
-              ? onLinkTap!(ogScrapeUrl)
-              : launchURL(context, ogScrapeUrl);
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (urlAttachment.imageUrl != null)
-            Container(
-              clipBehavior: Clip.hardEdge,
-              margin: EdgeInsets.symmetric(horizontal: 8.w),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Stack(
-                children: [
-                  CachedNetworkImage(
-                    width: double.infinity,
-                    imageUrl: urlAttachment.imageUrl!,
-                    fit: BoxFit.cover,
-=======
 
     return ConstrainedBox(
       constraints: const BoxConstraints(
@@ -88,10 +61,9 @@ class StreamUrlAttachment extends StatelessWidget {
               if (urlAttachment.imageUrl != null)
                 Container(
                   clipBehavior: Clip.hardEdge,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 8.w),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
                   ),
                   child: Stack(
                     children: [
@@ -100,18 +72,6 @@ class StreamUrlAttachment extends StatelessWidget {
                         imageUrl: urlAttachment.imageUrl!,
                         fit: BoxFit.cover,
                       ),
-<<<<<<< HEAD
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: 6.h,
-                          left: 8.w,
-                          right: 8.w,
-                        ),
-                        child: Text(
-                          hostDisplayName,
-                          style: chatThemeData.textTheme.bodyBold.copyWith(
-                            color: chatThemeData.colorTheme.accentPrimary,
-=======
                       Positioned(
                         left: 0,
                         bottom: -1,
@@ -123,10 +83,10 @@ class StreamUrlAttachment extends StatelessWidget {
                             color: messageTheme.linkBackgroundColor,
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8,
-                              left: 8,
-                              right: 8,
+                            padding: EdgeInsets.only(
+                              top: 6.h,
+                              left: 8.w,
+                              right: 8.w,
                             ),
                             child: Text(
                               hostDisplayName,
@@ -134,7 +94,6 @@ class StreamUrlAttachment extends StatelessWidget {
                                 color: chatThemeData.colorTheme.accentPrimary,
                               ),
                             ),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
                           ),
                         ),
                       ),
@@ -163,33 +122,7 @@ class StreamUrlAttachment extends StatelessWidget {
                   ],
                 ),
               ),
-<<<<<<< HEAD
-            ),
-          Padding(
-            padding: textPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (urlAttachment.title != null)
-                  Text(
-                    urlAttachment.title!.trim(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: chatThemeData.textTheme.body.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                if (urlAttachment.text != null)
-                  Text(
-                    urlAttachment.text!,
-                    style: chatThemeData.textTheme.body
-                        .copyWith(fontWeight: FontWeight.w400),
-                  ),
-              ],
-            ),
-=======
             ],
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
           ),
         ),
       ),

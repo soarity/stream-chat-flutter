@@ -3,22 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stream_chat_flutter/src/attachment/attachment_widget.dart';
-<<<<<<< HEAD
-import 'package:stream_chat_flutter/src/extension.dart';
-import 'package:stream_chat_flutter/src/stream_chat.dart';
-import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
-import 'package:stream_chat_flutter/src/stream_svg_icon.dart';
-import 'package:stream_chat_flutter/src/upload_progress_indicator.dart';
-import 'package:stream_chat_flutter/src/utils.dart';
-import 'package:stream_chat_flutter/src/video_thumbnail_image.dart';
-=======
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler.dart';
 import 'package:stream_chat_flutter/src/indicators/upload_progress_indicator.dart';
 import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
+import 'package:stream_chat_flutter/src/stream_chat.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/utils/utils.dart';
 import 'package:stream_chat_flutter/src/video/video_thumbnail_image.dart';
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 /// {@template streamFileAttachment}
@@ -61,13 +52,8 @@ class StreamFileAttachment extends StreamAttachmentWidget {
       child: GestureDetector(
         onTap: onAttachmentTap,
         child: Container(
-<<<<<<< HEAD
-          width: size?.width ?? 100.w,
+          constraints: constraints ?? BoxConstraints.tightFor(width: 100.w),
           height: 56.h,
-=======
-          constraints: constraints ?? const BoxConstraints.tightFor(width: 100),
-          height: 56,
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
           decoration: BoxDecoration(
             color: colorTheme.barsBg,
             borderRadius: BorderRadius.circular(12.r),
@@ -79,22 +65,15 @@ class StreamFileAttachment extends StreamAttachmentWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-<<<<<<< HEAD
                 height: 40.h,
-                width: 30.w,
+                width: 33.33.w,
                 margin: EdgeInsets.all(8.r),
-                child: _getFileTypeImage(context),
-=======
-                height: 40,
-                width: 33.33,
-                margin: const EdgeInsets.all(8),
                 child: _FileTypeImage(
                   isImageAttachment: isImageAttachment,
                   isVideoAttachment: isVideoAttachment,
                   source: source,
                   attachment: attachment,
                 ),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -114,21 +93,12 @@ class StreamFileAttachment extends StreamAttachmentWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-<<<<<<< HEAD
                     SizedBox(height: 3.h),
-                    _buildSubtitle(context),
-                  ],
-                ),
-              ),
-              SizedBox(width: 10.w),
-              _buildTrailing(context),
-=======
-                    const SizedBox(height: 3),
                     _FileAttachmentSubtitle(attachment: attachment),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.w),
               Material(
                 type: MaterialType.transparency,
                 child: trailing ??
@@ -137,7 +107,6 @@ class StreamFileAttachment extends StreamAttachmentWidget {
                       message: message,
                     ),
               ),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
             ],
           ),
         ),
@@ -297,31 +266,20 @@ class _Trailing extends StatelessWidget {
 
     return attachment.uploadState.when(
       preparing: () => Padding(
-<<<<<<< HEAD
         padding: EdgeInsets.all(8.r),
-        child: _buildButton(
-          iconSize: 24.r,
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg, size: 24.r),
-=======
-        padding: const EdgeInsets.all(8),
         child: _TrailingButton(
           icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.cancelAttachmentUpload(attachmentId),
         ),
       ),
       inProgress: (_, __) => Padding(
-<<<<<<< HEAD
         padding: EdgeInsets.all(8.r),
-        child: _buildButton(
-          iconSize: 24.r,
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg, size: 24.r),
-=======
-        padding: const EdgeInsets.all(8),
         child: _TrailingButton(
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
+          icon: StreamSvgIcon.close(
+            color: theme.colorTheme.barsBg,
+            size: 24.r,
+          ),
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.cancelAttachmentUpload(attachmentId),
         ),
@@ -338,19 +296,12 @@ class _Trailing extends StatelessWidget {
         ),
       ),
       failed: (_) => Padding(
-<<<<<<< HEAD
-        padding: EdgeInsets.all(8.r),
-        child: _buildButton(
-          iconSize: 24.r,
+        padding: const EdgeInsets.all(8),
+        child: _TrailingButton(
           icon: StreamSvgIcon.retry(
             color: theme.colorTheme.barsBg,
             size: 24.r,
           ),
-=======
-        padding: const EdgeInsets.all(8),
-        child: _TrailingButton(
-          icon: StreamSvgIcon.retry(color: theme.colorTheme.barsBg),
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.retryAttachmentUpload(
             message.id,
@@ -362,29 +313,12 @@ class _Trailing extends StatelessWidget {
   }
 }
 
-<<<<<<< HEAD
-    if (message.status == MessageSendingStatus.sent) {
-      trailingWidget = IconButton(
-        icon: StreamSvgIcon.cloudDownload(
-          color: theme.colorTheme.textHighEmphasis,
-          size: 24.r,
-        ),
-        visualDensity: VisualDensity.compact,
-        splashRadius: 16.r,
-        onPressed: () {
-          final assetUrl = attachment.assetUrl;
-          if (assetUrl != null) launchURL(context, assetUrl);
-        },
-      );
-    }
-=======
 class _TrailingButton extends StatelessWidget {
   const _TrailingButton({
     this.onPressed,
     this.fillColor,
     this.icon,
   });
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
 
   final VoidCallback? onPressed;
   final Color? fillColor;

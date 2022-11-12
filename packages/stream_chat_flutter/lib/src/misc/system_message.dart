@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/system_message.dart
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_chat_flutter/src/extension.dart';
-=======
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/misc/system_message.dart
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamSystemMessage}

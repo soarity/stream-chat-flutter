@@ -26,8 +26,6 @@ class StreamGalleryHeader extends StatelessWidget
     this.userName = '',
     this.sentAt = '',
     this.backgroundColor,
-    this.showReply = true,
-    this.showDelete = true,
     this.attachmentActionsModalBuilder,
     this.elevation = 1.0,
   }) : preferredSize = const Size.fromHeight(kToolbarHeight);
@@ -68,19 +66,7 @@ class StreamGalleryHeader extends StatelessWidget
   /// The background color of this [StreamGalleryHeader].
   final Color? backgroundColor;
 
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/gallery_header.dart
-  /// Show reply option
-  final bool showReply;
-
-  /// Show delete option
-  final bool showDelete;
-
-  /// Widget builder for attachment actions modal
-  /// [defaultActionsModal] is the default [AttachmentActionsModal] config
-  /// Use [defaultActionsModal.copyWith] to easily customize it
-=======
   /// {@macro attachmentActionsBuilder}
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/gallery/gallery_header.dart
   final AttachmentActionsBuilder? attachmentActionsModalBuilder;
 
   /// The elevation of this [StreamGalleryHeader].
@@ -159,12 +145,7 @@ class StreamGalleryHeader extends StatelessWidget
       attachment: attachment,
       message: message,
       onShowMessage: onShowMessage,
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/gallery_header.dart
-      showDelete: showDelete,
-      showReply: showReply,
-=======
       onReply: onReplyMessage,
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/gallery/gallery_header.dart
     );
 
     final effectiveModal = attachmentActionsModalBuilder?.call(

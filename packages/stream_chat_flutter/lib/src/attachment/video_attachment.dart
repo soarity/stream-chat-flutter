@@ -15,13 +15,7 @@ class StreamVideoAttachment extends StreamAttachmentWidget {
     required this.messageTheme,
     super.constraints,
     this.onShowMessage,
-<<<<<<< HEAD
-    this.onReturnAction,
-    this.showReply = true,
-    this.showDelete = true,
-=======
     this.onReplyMessage,
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
     this.onAttachmentTap,
   });
 
@@ -36,12 +30,6 @@ class StreamVideoAttachment extends StreamAttachmentWidget {
 
   /// {@macro onAttachmentTap}
   final OnAttachmentTap? onAttachmentTap;
-
-  /// Show reply option
-  final bool showReply;
-
-  /// Show delete option
-  final bool showDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +78,7 @@ class StreamVideoAttachment extends StreamAttachmentWidget {
                         MaterialPageRoute(
                           builder: (_) => StreamChannel(
                             channel: channel,
-<<<<<<< HEAD
-                            child: StreamFullScreenMedia(
-                              showDelete: showDelete,
-                              showReply: showReply,
-=======
                             child: StreamFullScreenMediaBuilder(
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0
                               mediaAttachmentPackages:
                                   message.getAttachmentPackageList(),
                               startIndex:

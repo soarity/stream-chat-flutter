@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/info_tile.dart
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
-=======
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/misc/info_tile.dart
 
 /// {@template streamInfoTile}
 /// Displays a message. Often used to display connection status.

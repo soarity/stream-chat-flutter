@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/date_divider.dart
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:stream_chat_flutter/src/extension.dart';
-import 'package:stream_chat_flutter/src/stream_chat_theme.dart';
-=======
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
->>>>>>> 5669841a3268d0bd71a4011b95456492b4562bf0:packages/stream_chat_flutter/lib/src/misc/date_divider.dart
 
 /// {@template streamDateDivider}
 /// Shows a date divider depending on the date difference
