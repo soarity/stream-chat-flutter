@@ -2,7 +2,6 @@ import 'package:diacritic/diacritic.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:stream_chat_flutter/src/localization/translations.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 

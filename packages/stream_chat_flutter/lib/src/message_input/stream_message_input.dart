@@ -8,9 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart'
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/src/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_button.dart';
 import 'package:stream_chat_flutter/src/message_input/command_button.dart';
@@ -1201,35 +1199,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
           child: Icon(Icons.insert_drive_file),
         );
     }
-  }
-
-  Widget _buildCommandButton(BuildContext context) {
-    final s = _effectiveController.text.trim();
-    final isCommandOptionsVisible = s.startsWith(_kCommandTrigger);
-    final defaultButton = CommandButton(
-      color: s.isNotEmpty
-          ? _streamChatTheme.colorTheme.disabled
-          : (isCommandOptionsVisible
-              ? _messageInputTheme.actionButtonColor!
-              : _messageInputTheme.actionButtonIdleColor!),
-      onPressed: () async {
-        // Clear the text if the commands options are already visible.
-        if (isCommandOptionsVisible) {
-          _effectiveController.clear();
-          _effectiveFocusNode.unfocus();
-        } else {
-          // This triggers the [StreamAutocomplete] to show the command trigger.
-          _effectiveController.textEditingValue = const TextEditingValue(
-            text: _kCommandTrigger,
-            selection: TextSelection.collapsed(offset: _kCommandTrigger.length),
-          );
-          _effectiveFocusNode.requestFocus();
-        }
-      },
-    );
-
-    return widget.commandButtonBuilder?.call(context, defaultButton) ??
-        defaultButton;
   }
 
   /// Adds an attachment to the [messageInputController.attachments] map

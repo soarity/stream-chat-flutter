@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/fullscreen_media/fsm_stub.dart'
+    // ignore: conditional_uri_does_not_exist
     if (dart.library.io) 'full_screen_media_desktop.dart' as desktop_fsm;
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 

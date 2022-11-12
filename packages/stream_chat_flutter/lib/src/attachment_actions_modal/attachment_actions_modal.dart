@@ -68,7 +68,7 @@ class AttachmentActionsModal extends StatelessWidget {
       onShowMessage: onShowMessage ?? this.onShowMessage,
       attachmentDownloader: attachmentDownloader ?? this.attachmentDownloader,
       showReply: showReply ?? this.showReply,
-      showShowInChat: showShowInChat ?? this.showShowInChat,
+      showShowInChat: showShowInChat,
       showSave: showSave ?? this.showSave,
       showDelete: showDelete ?? this.showDelete,
       customActions: customActions ?? this.customActions,
