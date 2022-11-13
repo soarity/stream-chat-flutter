@@ -93,7 +93,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(bottom: 3.h),
                     child: Username(
-                      key: const Key('usernameKey'),
                       messageTheme: messageTheme,
                       message: message,
                     ),
