@@ -68,46 +68,48 @@ class StreamQuotedMessageWidget extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: padding,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.09),
-              border: Border(
-                left: BorderSide(
-                  color: color == null
-                      ? const Color(0XFF0001f6)
-                      : Color(int.parse('0x$color')),
-                  width: 4.w,
+          child: ClipRRect(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(12.r),
+              bottom: Radius.circular(6.r),
+            ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.09),
+                border: Border(
+                  left: BorderSide(
+                    color: color == null
+                        ? const Color(0XFF0001f6)
+                        : Color(int.parse('0x$color')),
+                    width: 4.w,
+                  ),
                 ),
               ),
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(12.r),
-                bottom: Radius.circular(6.r),
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(8.r),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 3.h),
-                    child: Username(
-                      messageTheme: messageTheme,
-                      message: message,
+              child: Padding(
+                padding: EdgeInsets.all(8.r),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 3.h),
+                      child: Username(
+                        messageTheme: messageTheme,
+                        message: message,
+                      ),
                     ),
-                  ),
-                  _QuotedMessage(
-                    message: message,
-                    textLimit: textLimit,
-                    composing: composing,
-                    onQuotedMessageClear: onQuotedMessageClear,
-                    messageTheme: messageTheme,
-                    showBorder: showBorder,
-                    reverse: reverse,
-                    attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-                  ),
-                ],
+                    _QuotedMessage(
+                      message: message,
+                      textLimit: textLimit,
+                      composing: composing,
+                      onQuotedMessageClear: onQuotedMessageClear,
+                      messageTheme: messageTheme,
+                      showBorder: showBorder,
+                      reverse: reverse,
+                      attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
