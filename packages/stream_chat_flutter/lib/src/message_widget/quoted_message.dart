@@ -14,6 +14,7 @@ class QuotedMessage extends StatefulWidget {
     super.key,
     required this.message,
     required this.reverse,
+    this.isDm = false,
     required this.hasNonUrlAttachments,
     this.onQuotedMessageTap,
   });
@@ -26,6 +27,9 @@ class QuotedMessage extends StatefulWidget {
 
   /// {@macro reverse}
   final bool reverse;
+
+  ///
+  final bool isDm;
 
   /// {@macro hasNonUrlAttachments}
   final bool hasNonUrlAttachments;
@@ -55,6 +59,7 @@ class _QuotedMessageState extends State<QuotedMessage> {
     final chatThemeData = _streamChatTheme;
     return StreamQuotedMessageWidget(
       onTap: onTap,
+      isDm: widget.isDm,
       message: widget.message.quotedMessage!,
       messageTheme: isMyMessage
           ? chatThemeData.otherMessageTheme

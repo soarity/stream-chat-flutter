@@ -85,6 +85,7 @@ class StreamMessageInput extends StatefulWidget {
     this.focusNode,
     this.sendButtonLocation = SendButtonLocation.outside,
     this.autofocus = false,
+    this.isDm = false,
     this.hideSendAsDm = false,
     this.idleSendButton,
     this.activeSendButton,
@@ -120,6 +121,9 @@ class StreamMessageInput extends StatefulWidget {
   /// - Defaults to 20 MB
   /// - Do not set it if you're using our default CDN
   final int maxAttachmentSize;
+
+  ///
+  final bool isDm;
 
   /// Function called after sending the message.
   final void Function(Message)? onMessageSent;
@@ -1011,6 +1015,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
         .any((element) => element.titleLink != null);
     return StreamQuotedMessageWidget(
       reverse: true,
+      isDm: widget.isDm,
       showBorder: !containsUrl,
       message: _effectiveController.message.quotedMessage!,
       messageTheme: _streamChatTheme.otherMessageTheme,

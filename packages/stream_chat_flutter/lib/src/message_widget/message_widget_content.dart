@@ -246,6 +246,7 @@ class MessageWidgetContent extends StatelessWidget {
                       : EdgeInsets.zero,
                   child: MessageCard(
                     message: message,
+                    isDm: isDm,
                     botBuilder: botBuilder,
                     isFailedState: isFailedState,
                     showSendingIndicator: showSendingIndicator,

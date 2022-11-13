@@ -14,6 +14,7 @@ class MessageCard extends StatefulWidget {
   /// {@macro messageCard}
   const MessageCard({
     super.key,
+    this.isDm = false,
     required this.botBuilder,
     required this.message,
     required this.isFailedState,
@@ -45,6 +46,9 @@ class MessageCard extends StatefulWidget {
 
   ///
   final bool showSendingIndicator;
+
+  ///
+  final bool isDm;
 
   /// {@macro streamChatThemeData}
   final StreamChatThemeData streamChatTheme;
@@ -182,6 +186,7 @@ class _MessageCardState extends State<MessageCard> {
                 children: [
                   if (widget.hasQuotedMessage)
                     QuotedMessage(
+                      isDm: widget.isDm,
                       reverse: widget.reverse,
                       message: widget.message,
                       hasNonUrlAttachments: widget.hasNonUrlAttachments,

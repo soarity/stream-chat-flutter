@@ -18,6 +18,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     required this.message,
     required this.messageTheme,
     this.reverse = false,
+    this.isDm = false,
     this.showBorder = false,
     this.textLimit = 170,
     this.attachmentThumbnailBuilders,
@@ -35,6 +36,9 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 
   /// If true the widget will be mirrored
   final bool reverse;
+
+  /// If true the widget will be mirrored
+  final bool isDm;
 
   /// If true the message will show a grey border
   final bool showBorder;
@@ -89,15 +93,16 @@ class StreamQuotedMessageWidget extends StatelessWidget {
                 padding: EdgeInsets.all(8.r),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 3.h),
-                      child: Username(
-                        messageTheme: messageTheme,
-                        message: message,
+                    if (!isDm)
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 3.h),
+                        child: Username(
+                          messageTheme: messageTheme,
+                          message: message,
+                        ),
                       ),
-                    ),
                     _QuotedMessage(
                       message: message,
                       textLimit: textLimit,
@@ -195,7 +200,6 @@ class _QuotedMessage extends StatelessWidget {
     ].insertBetween(SizedBox(width: 8.w));
 
     return Row(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment:
           reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
