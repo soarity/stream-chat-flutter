@@ -36,10 +36,8 @@ class MessageWidgetContent extends StatelessWidget {
     required this.showReactionPickerIndicator,
     required this.translateUserAvatar,
     required this.bottomRowPadding,
-    required this.showInChannel,
     required this.streamChat,
     required this.showSendingIndicator,
-    required this.showThreadReplyIndicator,
     required this.showTimeStamp,
     required this.showUsername,
     required this.messageWidget,
@@ -52,7 +50,6 @@ class MessageWidgetContent extends StatelessWidget {
     this.onLinkTap,
     this.textBuilder,
     this.bottomRowBuilder,
-    this.onThreadTap,
     this.deletedBottomRowBuilder,
     this.userAvatarBuilder,
     this.usernameBuilder,
@@ -154,26 +151,17 @@ class MessageWidgetContent extends StatelessWidget {
   /// {@macro bottomRowBuilder}
   final Widget Function(BuildContext, Message)? bottomRowBuilder;
 
-  /// {@macro showInChannelIndicator}
-  final bool showInChannel;
-
   /// {@macro streamChat}
   final StreamChatState streamChat;
 
   /// {@macro showSendingIndicator}
   final bool showSendingIndicator;
 
-  /// {@macro showThreadReplyIndicator}
-  final bool showThreadReplyIndicator;
-
   /// {@macro showTimestamp}
   final bool showTimeStamp;
 
   /// {@macro showUsername}
   final bool showUsername;
-
-  /// {@macro onThreadTap}
-  final void Function(Message)? onThreadTap;
 
   /// {@macro deletedBottomRowBuilder}
   final Widget Function(BuildContext, Message)? deletedBottomRowBuilder;
@@ -219,13 +207,10 @@ class MessageWidgetContent extends StatelessWidget {
                       isOnlyEmoji: isOnlyEmoji,
                       isDeleted: message.isDeleted,
                       isGiphy: isGiphy,
-                      showInChannel: showInChannel,
                       showSendingIndicator: showSendingIndicator,
-                      showThreadReplyIndicator: showThreadReplyIndicator,
                       showTimeStamp: showTimeStamp,
                       showUsername: showUsername,
                       streamChatTheme: streamChatTheme,
-                      onThreadTap: onThreadTap,
                       deletedBottomRowBuilder: deletedBottomRowBuilder,
                       streamChat: streamChat,
                       hasNonUrlAttachments: hasNonUrlAttachments,

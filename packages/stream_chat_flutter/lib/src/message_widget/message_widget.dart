@@ -43,6 +43,8 @@ class StreamMessageWidget extends StatefulWidget {
     super.key,
     required this.message,
     required this.messageTheme,
+    this.botBuilder,
+    this.isDm = false,
     this.reverse = false,
     this.translateUserAvatar = true,
     this.shape,
@@ -56,22 +58,19 @@ class StreamMessageWidget extends StatefulWidget {
     this.showReactionPickerIndicator = false,
     this.showUserAvatar = DisplayWidget.show,
     this.showSendingIndicator = true,
-    this.showThreadReplyIndicator = false,
-    this.showInChannelIndicator = false,
     this.onReplyTap,
-    this.onThreadTap,
     this.showUsername = true,
     this.showTimestamp = true,
     this.showReactions = true,
     this.showDeleteMessage = true,
     this.showEditMessage = true,
     this.showReplyMessage = true,
-    this.showThreadReplyMessage = true,
     this.showResendMessage = true,
     this.showCopyMessage = true,
     this.showFlagButton = true,
     this.showPinButton = true,
     this.showPinHighlight = true,
+    this.hideUsername = false,
     this.onUserAvatarTap,
     this.onLinkTap,
     this.onMessageActions,
@@ -88,7 +87,7 @@ class StreamMessageWidget extends StatefulWidget {
       vertical: 8,
     ),
     this.attachmentPadding = EdgeInsets.zero,
-    this.widthFactor = 0.78,
+    this.widthFactor = 0.85,
     this.onQuotedMessageTap,
     this.customActions = const [],
     this.onAttachmentTap,
@@ -273,10 +272,13 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@endtemplate}
   final void Function(User)? onMentionTap;
 
-  /// {@template onThreadTap}
-  /// The function called when tapping on threads
-  /// {@endtemplate}
-  final void Function(Message)? onThreadTap;
+  ///  Whether the widget is to be used for Direct Message or Group Message
+  ///
+  /// Defaults to false
+  final bool isDm;
+
+  /// Widget builder for building bot message
+  final Widget Function(BuildContext, Message)? botBuilder;
 
   /// {@template onReplyTap}
   /// The function called when tapping on replies
@@ -398,16 +400,7 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@endtemplate}
   final bool showReactions;
 
-  /// {@template showThreadReplyIndicator}
-  /// If true the widget will show the thread reply indicator
-  /// {@endtemplate}
-  final bool showThreadReplyIndicator;
-
-  /// {@template showInChannelIndicator}
-  /// If true the widget will show the show in channel indicator
-  /// {@endtemplate}
-  final bool showInChannelIndicator;
-
+ 
   /// {@template onUserAvatarTap}
   /// The function called when tapping on UserAvatar
   /// {@endtemplate}
@@ -443,11 +436,6 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@endtemplate}
   final bool showReplyMessage;
 
-  /// {@template showThreadReplyMessage}
-  /// Show thread reply action
-  /// {@endtemplate}
-  final bool showThreadReplyMessage;
-
   /// {@template showEditMessage}
   /// Show edit action
   /// {@endtemplate}
@@ -482,6 +470,9 @@ class StreamMessageWidget extends StatefulWidget {
   /// Display Pin Highlight
   /// {@endtemplate}
   final bool showPinHighlight;
+
+  /// checks if the username should be hidden
+  final bool hideUsername;
 
   /// {@template attachmentBuilders}
   /// Builder for respective attachment types
@@ -533,16 +524,18 @@ class StreamMessageWidget extends StatefulWidget {
   StreamMessageWidget copyWith({
     Key? key,
     void Function(User)? onMentionTap,
-    void Function(Message)? onThreadTap,
     void Function(Message)? onReplyTap,
     Widget Function(BuildContext, Message)? editMessageInputBuilder,
     Widget Function(BuildContext, Message)? textBuilder,
     Widget Function(BuildContext, Message)? usernameBuilder,
     Widget Function(BuildContext, Message)? bottomRowBuilder,
     Widget Function(BuildContext, Message)? deletedBottomRowBuilder,
+    Widget Function(BuildContext, Message)? botBuilder,
     void Function(BuildContext, Message)? onMessageActions,
     Message? message,
     StreamMessageThemeData? messageTheme,
+    bool? isDm,
+    bool? hideUsername,
     bool? reverse,
     ShapeBorder? shape,
     ShapeBorder? attachmentShape,
@@ -558,8 +551,6 @@ class StreamMessageWidget extends StatefulWidget {
     bool? showSendingIndicator,
     bool? showReactions,
     bool? allRead,
-    bool? showThreadReplyIndicator,
-    bool? showInChannelIndicator,
     void Function(User)? onUserAvatarTap,
     void Function(String)? onLinkTap,
     bool? showReactionPickerIndicator,
@@ -568,7 +559,6 @@ class StreamMessageWidget extends StatefulWidget {
     bool? showUsername,
     bool? showTimestamp,
     bool? showReplyMessage,
-    bool? showThreadReplyMessage,
     bool? showEditMessage,
     bool? showCopyMessage,
     bool? showDeleteMessage,
@@ -589,11 +579,13 @@ class StreamMessageWidget extends StatefulWidget {
   }) {
     return StreamMessageWidget(
       key: key ?? this.key,
+      isDm: isDm ?? this.isDm,
+      hideUsername: hideUsername ?? this.hideUsername,
       onMentionTap: onMentionTap ?? this.onMentionTap,
-      onThreadTap: onThreadTap ?? this.onThreadTap,
       onReplyTap: onReplyTap ?? this.onReplyTap,
       editMessageInputBuilder:
           editMessageInputBuilder ?? this.editMessageInputBuilder,
+      botBuilder: botBuilder ?? this.botBuilder,
       textBuilder: textBuilder ?? this.textBuilder,
       usernameBuilder: usernameBuilder ?? this.usernameBuilder,
       bottomRowBuilder: bottomRowBuilder ?? this.bottomRowBuilder,
@@ -617,10 +609,7 @@ class StreamMessageWidget extends StatefulWidget {
       showUserAvatar: showUserAvatar ?? this.showUserAvatar,
       showSendingIndicator: showSendingIndicator ?? this.showSendingIndicator,
       showReactions: showReactions ?? this.showReactions,
-      showThreadReplyIndicator:
-          showThreadReplyIndicator ?? this.showThreadReplyIndicator,
-      showInChannelIndicator:
-          showInChannelIndicator ?? this.showInChannelIndicator,
+     
       onUserAvatarTap: onUserAvatarTap ?? this.onUserAvatarTap,
       onLinkTap: onLinkTap ?? this.onLinkTap,
       showReactionPickerIndicator:
@@ -629,8 +618,6 @@ class StreamMessageWidget extends StatefulWidget {
       showUsername: showUsername ?? this.showUsername,
       showTimestamp: showTimestamp ?? this.showTimestamp,
       showReplyMessage: showReplyMessage ?? this.showReplyMessage,
-      showThreadReplyMessage:
-          showThreadReplyMessage ?? this.showThreadReplyMessage,
       showEditMessage: showEditMessage ?? this.showEditMessage,
       showCopyMessage: showCopyMessage ?? this.showCopyMessage,
       showDeleteMessage: showDeleteMessage ?? this.showDeleteMessage,
@@ -661,8 +648,7 @@ class StreamMessageWidget extends StatefulWidget {
 
 class _StreamMessageWidgetState extends State<StreamMessageWidget>
     with AutomaticKeepAliveClientMixin<StreamMessageWidget> {
-  bool get showThreadReplyIndicator => widget.showThreadReplyIndicator;
-
+  final usernameColor = const Color(0XFF0001f6);
   bool get showSendingIndicator => widget.showSendingIndicator;
 
   bool get isDeleted => widget.message.isDeleted;
@@ -670,8 +656,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   bool get showUsername => widget.showUsername;
 
   bool get showTimeStamp => widget.showTimestamp;
-
-  bool get showInChannel => widget.showInChannelIndicator;
 
   /// {@template hasQuotedMessage}
   /// `true` if [StreamMessageWidget.quotedMessage] is not null.
@@ -722,15 +706,12 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   /// * [StreamMessageWidget.showThreadReplyIndicator]
   /// * [StreamMessageWidget.showUsername]
   /// * [StreamMessageWidget.showTimestamp]
-  /// * [StreamMessageWidget.showInChannelIndicator]
   /// * [StreamMessageWidget.showSendingIndicator]
   /// * [StreamMessageWidget.message.isDeleted]
   /// {@endtemplate}
   bool get showBottomRow =>
-      showThreadReplyIndicator ||
       showUsername ||
       showTimeStamp ||
-      showInChannel ||
       showSendingIndicator ||
       isDeleted;
 
@@ -768,11 +749,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       widget.showEditMessage &&
       !isDeleteFailed &&
       !widget.message.attachments.any((element) => element.type == 'giphy');
-
-  bool get shouldShowThreadReplyAction =>
-      widget.showThreadReplyMessage &&
-      !isFailedState &&
-      widget.onThreadTap != null;
 
   bool get shouldShowDeleteAction => widget.showDeleteMessage || isDeleteFailed;
 
@@ -842,9 +818,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                     streamChatTheme: _streamChatTheme,
                     showUsername: showUsername,
                     showTimeStamp: showTimeStamp,
-                    showThreadReplyIndicator: showThreadReplyIndicator,
                     showSendingIndicator: showSendingIndicator,
-                    showInChannel: showInChannel,
+                  
                     isGiphy: isGiphy,
                     isOnlyEmoji: isOnlyEmoji,
                     hasUrlAttachments: hasUrlAttachments,
@@ -871,7 +846,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                     streamChat: _streamChat,
                     translateUserAvatar: widget.translateUserAvatar,
                     deletedBottomRowBuilder: widget.deletedBottomRowBuilder,
-                    onThreadTap: widget.onThreadTap,
                     shape: widget.shape,
                     borderSide: widget.borderSide,
                     borderRadiusGeometry: widget.borderRadiusGeometry,
@@ -915,15 +889,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           },
         ),
       ],
-      if (shouldShowThreadReplyAction)
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.thread(),
-          title: Text(context.translations.threadReplyLabel),
-          onClick: () {
-            Navigator.of(context, rootNavigator: true).pop();
-            widget.onThreadTap!(widget.message);
-          },
-        ),
       if (shouldShowCopyAction)
         StreamChatContextMenuItem(
           leading: StreamSvgIcon.copy(),

@@ -274,7 +274,6 @@ class StreamMessageListView extends StatefulWidget {
 
 class _StreamMessageListViewState extends State<StreamMessageListView> {
   ItemScrollController? _scrollController;
-  void Function(Message)? _onThreadTap;
   final ValueNotifier<bool> _showScrollToBottom = ValueNotifier(false);
   late final ItemPositionsListener _itemPositionListener;
   int? _messageListLength;
@@ -859,7 +858,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final defaultMessageWidget = StreamMessageWidget(
       showReplyMessage: false,
       showResendMessage: false,
-      showThreadReplyMessage: false,
       showCopyMessage: false,
       showDeleteMessage: false,
       showEditMessage: false,
@@ -1027,19 +1025,15 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final hasFileAttachment =
         message.attachments.any((it) => it.type == 'file');
 
-    final isThreadMessage =
-        message.parentId != null && message.showInChannel == true;
-
     final hasReplies = message.replyCount! > 0;
 
     final attachmentBorderRadius = hasFileAttachment ? 12.0 : 14.0;
 
-    final showTimeStamp = (!isThreadMessage || _isThreadConversation) &&
-        !hasReplies &&
+    final showTimeStamp = !hasReplies &&
         (timeDiff >= 1 || !isNextUserSame);
 
     final showUsername = !isMyMessage &&
-        (!isThreadMessage || _isThreadConversation) &&
+     
         !hasReplies &&
         (timeDiff >= 1 || !isNextUserSame);
 
@@ -1052,8 +1046,8 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final showSendingIndicator =
         isMyMessage && (index == 0 || timeDiff >= 1 || !isNextUserSame);
 
-    final showInChannelIndicator = !_isThreadConversation && isThreadMessage;
-    final showThreadReplyIndicator = !_isThreadConversation && hasReplies;
+   
+ 
     final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
 
     final hasUrlAttachment =
@@ -1074,8 +1068,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      showInChannelIndicator: showInChannelIndicator,
-      showThreadReplyIndicator: showThreadReplyIndicator,
       showUsername: showUsername,
       showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,
@@ -1100,20 +1092,15 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       },
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
-      showThreadReplyMessage: !isThreadMessage &&
-          streamChannel?.channel.ownCapabilities
-                  .contains(PermissionType.sendReply) ==
-              true,
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
-      onThreadTap: _onThreadTap,
       attachmentBorderRadiusGeometry: BorderRadius.only(
         topLeft: Radius.circular(attachmentBorderRadius),
         bottomLeft: isMyMessage
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage || hasFileAttachment)
+                        !(hasReplies || hasFileAttachment)
                     ? 0
                     : attachmentBorderRadius,
               ),
@@ -1121,7 +1108,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         bottomRight: isMyMessage
             ? Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage || hasFileAttachment)
+                        !(hasReplies  || hasFileAttachment)
                     ? 0
                     : attachmentBorderRadius,
               )
@@ -1134,7 +1121,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             ? const Radius.circular(16)
             : Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage)
+                        !hasReplies
                     ? 0
                     : 16,
               ),
@@ -1142,7 +1129,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         bottomRight: isMyMessage
             ? Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || isThreadMessage)
+                        !hasReplies
                     ? 0
                     : 16,
               )
