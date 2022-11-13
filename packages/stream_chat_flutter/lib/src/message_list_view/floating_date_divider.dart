@@ -14,12 +14,8 @@ class FloatingDateDivider extends StatelessWidget {
     required this.reverse,
     required this.messages,
     required this.itemCount,
-    this.isThreadConversation = false,
     this.dateDividerBuilder,
   });
-
-  /// true if this is a thread conversation
-  final bool isThreadConversation;
 
   // ignore: public_member_api_docs
   final ItemPositionsListener itemPositionListener;
@@ -73,9 +69,7 @@ class FloatingDateDivider extends StatelessWidget {
             index = getBottomElementIndex(values);
           }
 
-          if ((index == null) ||
-              (!isThreadConversation && index == itemCount - 2) ||
-              (isThreadConversation && index == itemCount - 1)) {
+          if (index == null) {
             return const Offstage();
           }
 

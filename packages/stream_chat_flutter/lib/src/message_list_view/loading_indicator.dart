@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_chat_flutter/src/progress_indicator.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template loadingIndicatorMLV}
@@ -10,7 +12,6 @@ class LoadingIndicator extends StatelessWidget {
   const LoadingIndicator({
     super.key,
     required this.streamTheme,
-    required this.isThreadConversation,
     required this.direction,
     required this.streamChannelState,
     this.indicatorBuilder,
@@ -18,9 +19,6 @@ class LoadingIndicator extends StatelessWidget {
 
   // ignore: public_member_api_docs
   final StreamChatThemeData streamTheme;
-
-  // ignore: public_member_api_docs
-  final bool isThreadConversation;
 
   // ignore: public_member_api_docs
   final QueryDirection direction;
@@ -49,10 +47,10 @@ class LoadingIndicator extends StatelessWidget {
       builder: (context, data) {
         if (!data) return const Offstage();
         return indicatorBuilder?.call(context) ??
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(8),
-                child: CircularProgressIndicator(),
+                padding: EdgeInsets.all(8.r),
+                child: CustomProgressIndicator(size: 20.r),
               ),
             );
       },

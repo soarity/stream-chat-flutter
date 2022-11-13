@@ -4,12 +4,14 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stream_chat_flutter/src/message_list_view/floating_date_divider.dart';
 import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart';
 import 'package:stream_chat_flutter/src/message_list_view/mlv_utils.dart';
 import 'package:stream_chat_flutter/src/message_list_view/unread_messages_separator.dart';
 import 'package:stream_chat_flutter/src/misc/swipeable.dart';
+import 'package:stream_chat_flutter/src/progress_indicator.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Spacing Types (These are properties of a message to help inform the decision
@@ -76,13 +78,14 @@ class StreamMessageListView extends StatefulWidget {
   /// {@macro streamMessageListView}
   const StreamMessageListView({
     super.key,
+    this.isDm = false,
     this.showScrollToBottom = true,
     this.scrollToBottomBuilder,
     this.messageBuilder,
     this.parentMessageBuilder,
     this.parentMessage,
-    this.threadBuilder,
-    this.onThreadTap,
+    this.botBuilder,
+    this.videoMessageBuilder,
     this.dateDividerBuilder,
     this.scrollPhysics =
         const ClampingScrollPhysics(), // we need to use ClampingScrollPhysics to avoid the list view to animate and break while loading
@@ -118,8 +121,19 @@ class StreamMessageListView extends StatefulWidget {
   /// dismiss the keyboard automatically.
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
 
+  ///  Whether the widget is to be used for Direct Message or Group Message
+  ///
+  /// Defaults to false
+  final bool isDm;
+
   /// {@macro messageBuilder}
   final MessageBuilder? messageBuilder;
+
+  /// Widget builder for building bot message
+  final Widget Function(BuildContext, Message)? botBuilder;
+
+  /// Function used to build a custom video message widget
+  final SystemMessageBuilder? videoMessageBuilder;
 
   /// Whether the view scrolls in the reading direction.
   ///
@@ -136,15 +150,6 @@ class StreamMessageListView extends StatefulWidget {
 
   /// {@macro parentMessageBuilder}
   final ParentMessageBuilder? parentMessageBuilder;
-
-  /// {@macro threadBuilder}
-  final ThreadBuilder? threadBuilder;
-
-  /// {@macro threadTapCallback}
-  ///
-  /// By default it calls [Navigator.push] using the widget
-  /// built using [threadBuilder]
-  final ThreadTapCallback? onThreadTap;
 
   /// If true will show a scroll to bottom message when there are new
   /// messages and the scroll offset is not zero
@@ -263,9 +268,9 @@ class StreamMessageListView extends StatefulWidget {
     List<SpacingType> spacingTypes,
   ) {
     if (!spacingTypes.contains(SpacingType.defaultSpacing)) {
-      return const SizedBox(height: 8);
+      return SizedBox(height: 8.h);
     }
-    return const SizedBox(height: 2);
+    return SizedBox(height: 3.h);
   }
 
   @override
@@ -289,8 +294,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   }
 
   bool get _upToDate => streamChannel!.channel.state!.isUpToDate;
-
-  bool get _isThreadConversation => widget.parentMessage != null;
 
   bool _bottomPaginationActive = false;
 
@@ -376,10 +379,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         }
       });
 
-      if (_isThreadConversation) {
-        streamChannel!.getReplies(widget.parentMessage!.id);
-      }
-
       unreadCount = streamChannel?.channel.state?.unreadCount ?? 0;
     }
   }
@@ -403,8 +402,8 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         paginationLimit: widget.paginationLimit,
         messageFilter: widget.messageFilter,
         loadingBuilder: widget.loadingBuilder ??
-            (context) => const Center(
-                  child: CircularProgressIndicator(),
+            (context) => Center(
+                  child: CustomProgressIndicator(size: 20.r),
                 ),
         emptyBuilder: widget.emptyBuilder ??
             (context) => Center(
@@ -580,7 +579,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         if (messages.isNotEmpty) {
                           return _buildDateDivider(messages.last);
                         }
-                        if (_isThreadConversation) return const Offstage();
+
                         return const SizedBox(height: 52);
                       }
                       return const SizedBox(height: 8);
@@ -589,9 +588,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       if (widget.reverse
                           ? widget.footerBuilder == null
                           : widget.headerBuilder == null) {
-                        return const SizedBox(height: 30);
+                        return SizedBox(height: 30.h);
                       }
-                      return const SizedBox(height: 8);
+                      return SizedBox(height: 8.h);
                     }
 
                     if (i == 1 || i == itemCount - 4) return const Offstage();
@@ -607,27 +606,17 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
                     Widget separator;
 
-                    final isThread = message.replyCount! > 0;
-
                     if (!Jiffy(message.createdAt.toLocal()).isSame(
                       nextMessage.createdAt.toLocal(),
                       Units.DAY,
                     )) {
                       separator = _buildDateDivider(nextMessage);
                     } else {
-                      final timeDiff =
-                          Jiffy(nextMessage.createdAt.toLocal()).diff(
-                        message.createdAt.toLocal(),
-                        Units.MINUTE,
-                      );
-
                       final isNextUserSame =
                           message.user!.id == nextMessage.user?.id;
                       final isDeleted = message.isDeleted;
-                      final hasTimeDiff = timeDiff >= 1;
 
                       final spacingRules = [
-                        if (hasTimeDiff) SpacingType.timeDiff,
                         if (!isNextUserSame) SpacingType.otherUser,
                         if (isDeleted) SpacingType.deleted,
                       ];
@@ -642,18 +631,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       );
                     }
 
-                    if (!isThread &&
-                        unreadCount > 0 &&
+                    if (unreadCount > 0 &&
                         _oldestUnreadMessage?.id == nextMessage.id) {
                       final unreadMessagesSeparator =
                           _buildUnreadMessagesSeparator(unreadCount);
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          separator,
-                          unreadMessagesSeparator,
-                        ],
+                        children: [separator, unreadMessagesSeparator],
                       );
                     }
                     return separator;
@@ -684,7 +669,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         direction: QueryDirection.top,
                         streamTheme: _streamTheme,
                         streamChannelState: streamChannel!,
-                        isThreadConversation: _isThreadConversation,
                         indicatorBuilder: indicatorBuilder,
                       );
                     }
@@ -694,7 +678,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         direction: QueryDirection.bottom,
                         streamTheme: _streamTheme,
                         streamChannelState: streamChannel!,
-                        isThreadConversation: _isThreadConversation,
                         indicatorBuilder: indicatorBuilder,
                       );
                     }
@@ -757,7 +740,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             itemPositionListener: _itemPositionListener,
             messages: messages,
             dateDividerBuilder: widget.dateDividerBuilder,
-            isThreadConversation: _isThreadConversation,
           ),
       ],
     );
@@ -825,7 +807,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             message.createdAt.toLocal(),
           )
         : Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: 10.h),
             child: StreamDateDivider(
               dateTime: message.createdAt.toLocal(),
             ),
@@ -864,19 +846,19 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       message: message,
       reverse: isMyMessage,
       showUsername: !isMyMessage,
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 0),
       showSendingIndicator: false,
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: const Radius.circular(16),
-        bottomLeft:
-            isMyMessage ? const Radius.circular(16) : const Radius.circular(2),
-        topRight: const Radius.circular(16),
-        bottomRight:
-            isMyMessage ? const Radius.circular(2) : const Radius.circular(16),
+        topLeft: isMyMessage ? Radius.circular(16.r) : Radius.circular(2.r),
+        bottomLeft: Radius.circular(16.r),
+        topRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
+        bottomRight: Radius.circular(16.r),
       ),
-      textPadding: EdgeInsets.symmetric(
-        vertical: 8,
-        horizontal: isOnlyEmoji ? 0 : 16.0,
+      textPadding: EdgeInsets.fromLTRB(
+        isOnlyEmoji ? 0 : 12.w,
+        6.h,
+        isOnlyEmoji ? 0 : 12.w,
+        0,
       ),
       borderSide: isMyMessage || isOnlyEmoji ? BorderSide.none : null,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
@@ -1008,11 +990,29 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
           );
     }
 
+    // Video Meeting message
+    if (message.attachments.isNotEmpty &&
+        message.attachments.first.type == 'videomeeting') {
+      return widget.videoMessageBuilder?.call(context, message) ??
+          const Offstage();
+    }
+
     final userId = StreamChat.of(context).currentUser!.id;
     final isMyMessage = message.user?.id == userId;
     final nextMessage = index - 1 >= 0 ? messages[index - 1] : null;
     final isNextUserSame =
         nextMessage != null && message.user!.id == nextMessage.user!.id;
+
+    final upperMessage =
+        index + 1 < messages.length ? messages[index + 1] : null;
+
+    // use to show whether to show username or not
+    final hideUsername = upperMessage != null &&
+        upperMessage.type != 'system' &&
+        message.user!.id == upperMessage.user!.id &&
+        Jiffy(upperMessage.createdAt.toLocal())
+                .diff(message.createdAt.toLocal(), Units.DAY) ==
+            0;
 
     num timeDiff = 0;
     if (nextMessage != null) {
@@ -1027,27 +1027,19 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     final hasReplies = message.replyCount! > 0;
 
-    final attachmentBorderRadius = hasFileAttachment ? 12.0 : 14.0;
+    final attachmentBorderRadius = hasFileAttachment ? 12.r : 14.r;
 
-    final showTimeStamp = !hasReplies &&
-        (timeDiff >= 1 || !isNextUserSame);
+    final showTimeStamp = !hasReplies && (timeDiff >= 1 || !isNextUserSame);
 
-    final showUsername = !isMyMessage &&
-     
-        !hasReplies &&
-        (timeDiff >= 1 || !isNextUserSame);
+    final showUsername =
+        !isMyMessage && !hasReplies && (timeDiff >= 1 || !isNextUserSame);
 
-    final showUserAvatar = isMyMessage
-        ? DisplayWidget.gone
-        : (timeDiff >= 1 || !isNextUserSame)
-            ? DisplayWidget.show
-            : DisplayWidget.hide;
+    final showUserAvatar =
+        isMyMessage ? DisplayWidget.gone : DisplayWidget.show;
 
     final showSendingIndicator =
         isMyMessage && (index == 0 || timeDiff >= 1 || !isNextUserSame);
 
-   
- 
     final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
 
     final hasUrlAttachment =
@@ -1064,10 +1056,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         members.firstWhereOrNull((e) => e.user!.id == currentUser!.id);
 
     Widget messageWidget = StreamMessageWidget(
+      isDm: widget.isDm,
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 0),
       showUsername: showUsername,
       showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,
@@ -1093,51 +1086,38 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
       showFlagButton: !isMyMessage,
+      hideUsername: hideUsername,
       borderSide: borderSide,
       attachmentBorderRadiusGeometry: BorderRadius.only(
-        topLeft: Radius.circular(attachmentBorderRadius),
-        bottomLeft: isMyMessage
+        topLeft: isMyMessage
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies || hasFileAttachment)
-                    ? 0
-                    : attachmentBorderRadius,
+                isNextUserSame ? attachmentBorderRadius : 0,
               ),
-        topRight: Radius.circular(attachmentBorderRadius),
-        bottomRight: isMyMessage
+        bottomLeft: Radius.circular(attachmentBorderRadius),
+        topRight: isMyMessage
             ? Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !(hasReplies  || hasFileAttachment)
-                    ? 0
-                    : attachmentBorderRadius,
+                isNextUserSame ? attachmentBorderRadius : 0,
               )
             : Radius.circular(attachmentBorderRadius),
+        bottomRight: Radius.circular(attachmentBorderRadius),
       ),
-      attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4 : 2),
+      attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4.r : 2.r),
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: const Radius.circular(16),
-        bottomLeft: isMyMessage
-            ? const Radius.circular(16)
-            : Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !hasReplies
-                    ? 0
-                    : 16,
-              ),
-        topRight: const Radius.circular(16),
-        bottomRight: isMyMessage
-            ? Radius.circular(
-                (timeDiff >= 1 || !isNextUserSame) &&
-                        !hasReplies
-                    ? 0
-                    : 16,
-              )
-            : const Radius.circular(16),
+        topLeft: isMyMessage
+            ? Radius.circular(16.r)
+            : Radius.circular(isNextUserSame ? 16.r : 0),
+        bottomLeft: Radius.circular(16.r),
+        topRight: isMyMessage
+            ? Radius.circular(isNextUserSame ? 16.r : 0)
+            : Radius.circular(16.r),
+        bottomRight: Radius.circular(16.r),
       ),
-      textPadding: EdgeInsets.symmetric(
-        vertical: 8,
-        horizontal: isOnlyEmoji ? 0 : 16.0,
+      textPadding: EdgeInsets.fromLTRB(
+        isOnlyEmoji ? 0 : 12.w,
+        6.h,
+        isOnlyEmoji ? 0 : 12.w,
+        0,
       ),
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme
@@ -1148,6 +1128,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       },
       showPinButton: currentUserMember != null &&
           _userPermissions.contains(PermissionType.pinMessage),
+      botBuilder: widget.botBuilder,
     );
 
     if (widget.messageBuilder != null) {
@@ -1203,7 +1184,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
           child: child,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: EdgeInsets.symmetric(vertical: 4.h),
           child: child,
         ),
       );

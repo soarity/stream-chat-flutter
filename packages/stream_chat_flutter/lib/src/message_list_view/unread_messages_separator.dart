@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template unreadMessagesSeparator}
@@ -16,19 +17,26 @@ class UnreadMessagesSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: StreamChatTheme.of(context).colorTheme.bgGradient,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.w,
+            vertical: 4.h,
+          ),
           child: Text(
-            context.translations.unreadMessagesSeparatorText(
-              unreadCount,
-            ),
+            context.translations
+                .unreadMessagesSeparatorText(unreadCount)
+                .toUpperCase(),
             textAlign: TextAlign.center,
-            style: StreamChannelHeaderTheme.of(context).subtitleStyle,
+            style: TextStyle(
+              fontSize: 14.fzs,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade800,
+            ),
           ),
         ),
       ),

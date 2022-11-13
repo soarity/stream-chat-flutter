@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template attachmentButton}
@@ -38,11 +39,11 @@ class AttachmentButton extends StatelessWidget {
         color: color,
       ),
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints.tightFor(
-        height: 24,
-        width: 24,
+      constraints: BoxConstraints.tightFor(
+        height: 24.r,
+        width: 24.r,
       ),
-      splashRadius: 24,
+      splashRadius: 24.r,
       onPressed: onPressed,
     );
   }

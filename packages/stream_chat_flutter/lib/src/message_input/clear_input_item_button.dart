@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template clearInputItemButton}
@@ -36,7 +37,7 @@ class ClearInputItemButton extends StatelessWidget {
             _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.5),
         child: Center(
           child: StreamSvgIcon.close(
-            size: 24,
+            size: 24.r,
             color: _streamChatTheme.colorTheme.barsBg,
           ),
         ),
