@@ -68,7 +68,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: padding,
-          child: Container(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.09),
               border: Border(
@@ -84,29 +84,32 @@ class StreamQuotedMessageWidget extends StatelessWidget {
                 bottom: Radius.circular(6.r),
               ),
             ),
-            padding: EdgeInsets.all(8.r),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(bottom: 3.h),
-                  child: Username(
-                    key: const Key('usernameKey'),
-                    messageTheme: messageTheme,
-                    message: message,
+            child: Padding(
+              padding: EdgeInsets.all(8.r),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 3.h),
+                    child: Username(
+                      key: const Key('usernameKey'),
+                      messageTheme: messageTheme,
+                      message: message,
+                    ),
                   ),
-                ),
-                _QuotedMessage(
-                  message: message,
-                  textLimit: textLimit,
-                  composing: composing,
-                  onQuotedMessageClear: onQuotedMessageClear,
-                  messageTheme: messageTheme,
-                  showBorder: showBorder,
-                  reverse: reverse,
-                  attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-                ),
-              ],
+                  _QuotedMessage(
+                    message: message,
+                    textLimit: textLimit,
+                    composing: composing,
+                    onQuotedMessageClear: onQuotedMessageClear,
+                    messageTheme: messageTheme,
+                    showBorder: showBorder,
+                    reverse: reverse,
+                    attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -195,7 +198,7 @@ class _QuotedMessage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment:
           reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: children,
+      children: reverse ? children.reversed.toList() : children,
     );
   }
 }
