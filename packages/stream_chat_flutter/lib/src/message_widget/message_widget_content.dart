@@ -211,10 +211,13 @@ class MessageWidgetContent extends StatelessWidget {
               showUserAvatar == DisplayWidget.show &&
               message.user != null &&
               !hideUsername)
-            Username(
-              key: const Key('usernameKey'),
-              messageTheme: messageTheme,
-              message: message,
+            Padding(
+              padding: EdgeInsets.only(bottom: 2.h, left: 8.w),
+              child: Username(
+                key: const Key('usernameKey'),
+                messageTheme: messageTheme,
+                message: message,
+              ),
             ),
           PortalTarget(
             visible: isMobileDevice && showReactions,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/clear_input_item_button.dart';
+import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/src/video/video_thumbnail_image.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:video_player/video_player.dart';
@@ -59,30 +60,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = [
-      Flexible(
-        child: _QuotedMessage(
-          message: message,
-          textLimit: textLimit,
-          composing: composing,
-          onQuotedMessageClear: onQuotedMessageClear,
-          messageTheme: messageTheme,
-          showBorder: showBorder,
-          reverse: reverse,
-          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-        ),
-      ),
-      const SizedBox(width: 8),
-      if (message.user != null)
-        StreamUserAvatar(
-          user: message.user!,
-          constraints: BoxConstraints.tightFor(
-            height: 24.r,
-            width: 24.r,
-          ),
-          showOnlineStatus: false,
-        ),
-    ];
+    final color = message.user?.extraData['color'];
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -90,10 +68,46 @@ class StreamQuotedMessageWidget extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: padding,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: reverse ? children.reversed.toList() : children,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.09),
+              border: Border(
+                left: BorderSide(
+                  color: color == null
+                      ? const Color(0XFF0001f6)
+                      : Color(int.parse('0x$color')),
+                  width: 4.w,
+                ),
+              ),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(12.r),
+                bottom: Radius.circular(6.r),
+              ),
+            ),
+            padding: EdgeInsets.all(8.r),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(bottom: 3.h),
+                  child: Username(
+                    key: const Key('usernameKey'),
+                    messageTheme: messageTheme,
+                    message: message,
+                  ),
+                ),
+                _QuotedMessage(
+                  message: message,
+                  textLimit: textLimit,
+                  composing: composing,
+                  onQuotedMessageClear: onQuotedMessageClear,
+                  messageTheme: messageTheme,
+                  showBorder: showBorder,
+                  reverse: reverse,
+                  attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -128,9 +142,6 @@ class _QuotedMessage extends StatelessWidget {
   bool get _hasAttachments => message.attachments.isNotEmpty;
 
   bool get _containsText => message.text?.isNotEmpty == true;
-
-  bool get _containsLinkAttachment =>
-      message.attachments.any((element) => element.titleLink != null);
 
   bool get _isGiphy =>
       message.attachments.any((element) => element.type == 'giphy');
@@ -179,36 +190,13 @@ class _QuotedMessage extends StatelessWidget {
         ),
     ].insertBetween(SizedBox(width: 8.w));
 
-    return Container(
-      decoration: BoxDecoration(
-        color: _getBackgroundColor(context),
-        border: showBorder
-            ? Border.all(
-                color: StreamChatTheme.of(context).colorTheme.disabled,
-              )
-            : null,
-        borderRadius: BorderRadius.only(
-          topRight: const Radius.circular(12),
-          topLeft: const Radius.circular(12),
-          bottomRight: reverse ? const Radius.circular(12) : Radius.zero,
-          bottomLeft: reverse ? Radius.zero : const Radius.circular(12),
-        ),
-      ),
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment:
-            reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: reverse ? children.reversed.toList() : children,
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment:
+          reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: children,
     );
-  }
-
-  Color? _getBackgroundColor(BuildContext context) {
-    if (_containsLinkAttachment) {
-      return messageTheme.linkBackgroundColor;
-    }
-    return messageTheme.messageBackgroundColor;
   }
 }
 

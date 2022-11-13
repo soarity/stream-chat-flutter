@@ -22,8 +22,8 @@ class ClearInputItemButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final _streamChatTheme = StreamChatTheme.of(context);
     return SizedBox(
-      height: 20,
-      width: 20,
+      height: 20.r,
+      width: 20.r,
       child: RawMaterialButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),

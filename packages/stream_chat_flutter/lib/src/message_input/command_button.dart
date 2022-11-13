@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
 
 /// {@template commandButton}
@@ -34,13 +35,11 @@ class CommandButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: StreamSvgIcon.lightning(
-        color: color,
-      ),
+      icon: StreamSvgIcon.lightning(color: color, size: 24.r),
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints.tightFor(
-        height: 24,
-        width: 24,
+      constraints: BoxConstraints.tightFor(
+        height: 24.r,
+        width: 24.r,
       ),
       splashRadius: 24,
       onPressed: onPressed,

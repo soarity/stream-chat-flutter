@@ -20,14 +20,15 @@ class Username extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const usernameColor = Color(0XFF0001f6);
     final color = message.user?.extraData['color'];
     return Text(
       message.user?.name ?? '',
       maxLines: 1,
       key: key,
       style: messageTheme.messageAuthorStyle!.copyWith(
-        color: color == null ? usernameColor : Color(int.parse('0x$color')),
+        color: color == null
+            ? const Color(0XFF0001f6)
+            : Color(int.parse('0x$color')),
       ),
       overflow: TextOverflow.ellipsis,
     );
