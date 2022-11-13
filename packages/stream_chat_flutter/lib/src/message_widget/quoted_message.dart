@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_input/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -60,10 +61,10 @@ class _QuotedMessageState extends State<QuotedMessage> {
           : chatThemeData.ownMessageTheme,
       reverse: widget.reverse,
       padding: EdgeInsets.only(
-        right: 8,
-        left: 8,
-        top: 8,
-        bottom: widget.hasNonUrlAttachments ? 8 : 0,
+        right: 3.w,
+        left: 3.w,
+        top: 3.h,
+        bottom: widget.hasNonUrlAttachments ? 3.h : 0,
       ),
       composing: false,
     );

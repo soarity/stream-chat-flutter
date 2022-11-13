@@ -32,31 +32,11 @@ class StreamDeletedMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatThemeData = StreamChatTheme.of(context);
-    return Material(
-      color: messageTheme.messageBackgroundColor,
-      shape: shape ??
-          RoundedRectangleBorder(
-            borderRadius: borderRadiusGeometry ?? BorderRadius.zero,
-            side: borderSide ??
-                BorderSide(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? chatThemeData.colorTheme.barsBg.withAlpha(24)
-                      : chatThemeData.colorTheme.textHighEmphasis.withAlpha(24),
-                ),
-          ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 8,
-          horizontal: 16,
-        ),
-        child: Text(
-          context.translations.messageDeletedLabel,
-          style: messageTheme.messageTextStyle?.copyWith(
-            fontStyle: FontStyle.italic,
-            color: messageTheme.createdAtStyle?.color,
-          ),
-        ),
+    return Text(
+      context.translations.messageDeletedLabel,
+      style: messageTheme.messageTextStyle?.copyWith(
+        fontStyle: FontStyle.italic,
+        color: messageTheme.createdAtStyle?.color,
       ),
     );
   }

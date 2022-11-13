@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/message_widget/sending_indicator_wrapper.dart';
-
-import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template bottomRow}
@@ -16,8 +14,6 @@ class BottomRow extends StatelessWidget {
     required this.isDeleted,
     required this.message,
     required this.showTimeStamp,
-    required this.showUsername,
-    required this.reverse,
     required this.showSendingIndicator,
     required this.hasUrlAttachments,
     required this.isGiphy,
@@ -27,7 +23,6 @@ class BottomRow extends StatelessWidget {
     required this.hasNonUrlAttachments,
     required this.streamChat,
     this.deletedBottomRowBuilder,
-    this.usernameBuilder,
   });
 
   /// {@macro messageIsDeleted}
@@ -41,12 +36,6 @@ class BottomRow extends StatelessWidget {
 
   /// {@macro showTimestamp}
   final bool showTimeStamp;
-
-  /// {@macro showUsername}
-  final bool showUsername;
-
-  /// {@macro reverse}
-  final bool reverse;
 
   /// {@macro showSendingIndicator}
   final bool showSendingIndicator;
@@ -72,9 +61,6 @@ class BottomRow extends StatelessWidget {
   /// {@macro streamChat}
   final StreamChatState streamChat;
 
-  /// {@macro usernameBuilder}
-  final Widget Function(BuildContext, Message)? usernameBuilder;
-
   @override
   Widget build(BuildContext context) {
     if (isDeleted) {
@@ -85,47 +71,30 @@ class BottomRow extends StatelessWidget {
           const Offstage();
     }
 
-    final children = <WidgetSpan>[];
-
-    const usernameKey = Key('username');
-
-    children.addAll([
-      if (showUsername)
-        WidgetSpan(
-          child: usernameBuilder?.call(context, message) ??
-              Username(
-                key: usernameKey,
-                message: message,
-                messageTheme: messageTheme,
-              ),
-        ),
-      if (showTimeStamp)
-        WidgetSpan(
-          child: Text(
-            Jiffy(message.createdAt.toLocal()).jm,
-            style: messageTheme.createdAtStyle,
-          ),
-        ),
-      if (showSendingIndicator)
-        WidgetSpan(
-          child: SendingIndicatorWrapper(
-            messageTheme: messageTheme,
-            message: message,
-            hasNonUrlAttachments: hasNonUrlAttachments,
-            streamChat: streamChat,
-            streamChatTheme: streamChatTheme,
-          ),
-        ),
-    ]);
-
     return Text.rich(
       TextSpan(
         children: [
-          ...children,
+          if (showTimeStamp)
+            WidgetSpan(
+              child: Text(
+                Jiffy(message.createdAt.toLocal()).jm,
+                style: messageTheme.createdAtStyle,
+              ),
+            ),
+          if (showSendingIndicator)
+            WidgetSpan(
+              child: SendingIndicatorWrapper(
+                messageTheme: messageTheme,
+                message: message,
+                hasNonUrlAttachments: hasNonUrlAttachments,
+                streamChat: streamChat,
+                streamChatTheme: streamChatTheme,
+              ),
+            ),
         ].insertBetween(const WidgetSpan(child: SizedBox(width: 8))),
       ),
       maxLines: 1,
-      textAlign: reverse ? TextAlign.right : TextAlign.left,
+      textAlign: TextAlign.right,
     );
   }
 }

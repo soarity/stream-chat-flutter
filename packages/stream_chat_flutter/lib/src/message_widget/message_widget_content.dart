@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content_components.dart';
-import 'package:stream_chat_flutter/src/message_widget/reactions/desktop_reactions_builder.dart';
+import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template messageWidgetContent}
@@ -13,6 +14,9 @@ class MessageWidgetContent extends StatelessWidget {
   /// {@macro messageWidgetContent}
   const MessageWidgetContent({
     super.key,
+    required this.isDm,
+    required this.hideUsername,
+    required this.botBuilder,
     required this.reverse,
     required this.isPinned,
     required this.showPinHighlight,
@@ -54,6 +58,17 @@ class MessageWidgetContent extends StatelessWidget {
     this.userAvatarBuilder,
     this.usernameBuilder,
   });
+
+  ///  Whether the widget is to be used for Direct Message or Group Message
+  ///
+  /// Defaults to false
+  final bool isDm;
+
+  /// checks if the username should be hidden
+  final bool hideUsername;
+
+  /// Widget builder for building bot message
+  final Widget Function(BuildContext, Message)? botBuilder;
 
   /// {@macro reverse}
   final bool reverse;
@@ -177,229 +192,102 @@ class MessageWidgetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment:
-          reverse ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          alignment: reverse
-              ? AlignmentDirectional.bottomEnd
-              : AlignmentDirectional.bottomStart,
-          children: [
-            if (showBottomRow)
-              Padding(
-                padding: EdgeInsets.only(
-                  left: !reverse ? bottomRowPadding : 0,
-                  right: reverse ? bottomRowPadding : 0,
-                  bottom: isPinned && showPinHighlight ? 6.0 : 0.0,
-                ),
-                child: bottomRowBuilder?.call(
-                      context,
-                      message,
-                    ) ??
-                    BottomRow(
-                      message: message,
-                      reverse: reverse,
-                      messageTheme: messageTheme,
-                      hasUrlAttachments: hasUrlAttachments,
-                      isOnlyEmoji: isOnlyEmoji,
-                      isDeleted: message.isDeleted,
-                      isGiphy: isGiphy,
-                      showSendingIndicator: showSendingIndicator,
-                      showTimeStamp: showTimeStamp,
-                      showUsername: showUsername,
-                      streamChatTheme: streamChatTheme,
-                      deletedBottomRowBuilder: deletedBottomRowBuilder,
-                      streamChat: streamChat,
-                      hasNonUrlAttachments: hasNonUrlAttachments,
-                      usernameBuilder: usernameBuilder,
-                    ),
-              ),
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: isPinned && showPinHighlight ? 8.0 : 0.0,
-              ),
-              child: Column(
-                crossAxisAlignment:
-                    reverse ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (message.pinned &&
-                      message.pinnedBy != null &&
-                      showPinHighlight)
-                    PinnedMessage(
-                      pinnedBy: message.pinnedBy!,
-                      currentUser: streamChat.currentUser!,
-                    ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (!reverse &&
-                          showUserAvatar == DisplayWidget.show &&
-                          message.user != null) ...[
-                        UserAvatarTransform(
-                          onUserAvatarTap: onUserAvatarTap,
-                          userAvatarBuilder: userAvatarBuilder,
-                          translateUserAvatar: translateUserAvatar,
-                          messageTheme: messageTheme,
-                          message: message,
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                      if (showUserAvatar == DisplayWidget.hide)
-                        SizedBox(width: avatarWidth + 4),
-                      Flexible(
-                        child: PortalTarget(
-                          visible: isMobileDevice && showReactions,
-                          portalFollower: isMobileDevice && showReactions
-                              ? ReactionIndicator(
-                                  message: message,
-                                  messageTheme: messageTheme,
-                                  ownId: streamChat.currentUser!.id,
-                                  reverse: reverse,
-                                  shouldShowReactions: shouldShowReactions,
-                                  onTap: () => _showMessageReactionsModal(
-                                    context,
-                                  ),
-                                )
-                              : null,
-                          anchor: Aligned(
-                            follower: Alignment(
-                              reverse ? 1 : -1,
-                              -1,
-                            ),
-                            target: Alignment(
-                              reverse ? -1 : 1,
-                              -1,
-                            ),
-                          ),
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Padding(
-                                padding: showReactions
-                                    ? EdgeInsets.only(
-                                        top: message.reactionCounts
-                                                    ?.isNotEmpty ==
-                                                true
-                                            ? 18
-                                            : 0,
-                                      )
-                                    : EdgeInsets.zero,
-                                child: (message.isDeleted && !isFailedState)
-                                    ? Container(
-                                        // ignore: lines_longer_than_80_chars
-                                        margin: EdgeInsets.symmetric(
-                                          horizontal:
-                                              // ignore: lines_longer_than_80_chars
-                                              showUserAvatar ==
-                                                      // ignore: lines_longer_than_80_chars
-                                                      DisplayWidget.gone
-                                                  ? 0
-                                                  : 4.0,
-                                        ),
-                                        child: StreamDeletedMessage(
-                                          borderRadiusGeometry:
-                                              borderRadiusGeometry,
-                                          borderSide: borderSide,
-                                          shape: shape,
-                                          messageTheme: messageTheme,
-                                        ),
-                                      )
-                                    : MessageCard(
-                                        message: message,
-                                        isFailedState: isFailedState,
-                                        showUserAvatar: showUserAvatar,
-                                        messageTheme: messageTheme,
-                                        hasQuotedMessage: hasQuotedMessage,
-                                        hasUrlAttachments: hasUrlAttachments,
-                                        hasNonUrlAttachments:
-                                            hasNonUrlAttachments,
-                                        isOnlyEmoji: isOnlyEmoji,
-                                        isGiphy: isGiphy,
-                                        attachmentBuilders: attachmentBuilders,
-                                        attachmentPadding: attachmentPadding,
-                                        textPadding: textPadding,
-                                        reverse: reverse,
-                                        onQuotedMessageTap: onQuotedMessageTap,
-                                        onMentionTap: onMentionTap,
-                                        onLinkTap: onLinkTap,
-                                        textBuilder: textBuilder,
-                                        borderRadiusGeometry:
-                                            borderRadiusGeometry,
-                                        borderSide: borderSide,
-                                        shape: shape,
-                                      ),
-                              ),
-                              if (showReactionPickerIndicator)
-                                Positioned(
-                                  right: reverse ? null : 4,
-                                  left: reverse ? 4 : null,
-                                  top: -8,
-                                  child: CustomPaint(
-                                    painter: ReactionBubblePainter(
-                                      streamChatTheme.colorTheme.barsBg,
-                                      Colors.transparent,
-                                      Colors.transparent,
-                                      tailCirclesSpace: 1,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (reverse &&
-                          showUserAvatar == DisplayWidget.show &&
-                          message.user != null) ...[
-                        UserAvatarTransform(
-                          translateUserAvatar: translateUserAvatar,
-                          messageTheme: messageTheme,
-                          message: message,
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                      if (showUserAvatar == DisplayWidget.hide)
-                        SizedBox(width: avatarWidth + 4),
-                    ],
-                  ),
-                  if (isDesktopDeviceOrWeb && shouldShowReactions) ...[
-                    Padding(
-                      padding: showUserAvatar != DisplayWidget.gone
-                          ? EdgeInsets.only(
-                              left: avatarWidth + 4,
-                              right: avatarWidth + 4,
-                            )
-                          : EdgeInsets.zero,
-                      child: DesktopReactionsBuilder(
-                        message: message,
-                        messageTheme: messageTheme,
-                        shouldShowReactions: shouldShowReactions,
-                        borderSide: borderSide,
-                        reverse: reverse,
-                      ),
-                    ),
-                  ],
-                  if (showBottomRow)
-                    SizedBox(
-                      height: context.textScaleFactor * 18.0,
-                    ),
-                ],
-              ),
+    return Padding(
+      padding: isPinned && showPinHighlight
+          ? EdgeInsets.symmetric(vertical: 10.h)
+          : EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment:
+            reverse ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (message.pinned && message.pinnedBy != null && showPinHighlight)
+            PinnedMessage(
+              pinnedBy: message.pinnedBy!,
+              currentUser: streamChat.currentUser!,
             ),
-            if (isFailedState)
-              Positioned(
-                right: reverse ? 0 : null,
-                left: reverse ? null : 0,
-                bottom: showBottomRow ? 18 : -2,
-                child: StreamSvgIcon.error(size: 20),
-              ),
-          ],
-        ),
-      ],
+          if (!isDm &&
+              !reverse &&
+              showUserAvatar == DisplayWidget.show &&
+              message.user != null &&
+              !hideUsername)
+            Username(
+              key: const Key('usernameKey'),
+              messageTheme: messageTheme,
+              message: message,
+            ),
+          PortalTarget(
+            visible: isMobileDevice && showReactions,
+            portalFollower: isMobileDevice && showReactions
+                ? ReactionIndicator(
+                    message: message,
+                    messageTheme: messageTheme,
+                    ownId: streamChat.currentUser!.id,
+                    reverse: reverse,
+                    shouldShowReactions: shouldShowReactions,
+                    onTap: () => _showMessageReactionsModal(
+                      context,
+                    ),
+                  )
+                : null,
+            anchor: Aligned(
+              follower: Alignment(reverse ? 1 : -1, -1),
+              target: Alignment(reverse ? -1 : 1, -1),
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Padding(
+                  padding: showReactions
+                      ? EdgeInsets.only(top: 10.h)
+                      : EdgeInsets.zero,
+                  child: MessageCard(
+                    message: message,
+                    botBuilder: botBuilder,
+                    isFailedState: isFailedState,
+                    showSendingIndicator: showSendingIndicator,
+                    showUserAvatar: showUserAvatar,
+                    messageTheme: messageTheme,
+                    hasQuotedMessage: hasQuotedMessage,
+                    hasUrlAttachments: hasUrlAttachments,
+                    hasNonUrlAttachments: hasNonUrlAttachments,
+                    isOnlyEmoji: isOnlyEmoji,
+                    isGiphy: isGiphy,
+                    streamChat: streamChat,
+                    streamChatTheme: streamChatTheme,
+                    attachmentBuilders: attachmentBuilders,
+                    attachmentPadding: attachmentPadding,
+                    textPadding: textPadding,
+                    reverse: reverse,
+                    onQuotedMessageTap: onQuotedMessageTap,
+                    onMentionTap: onMentionTap,
+                    onLinkTap: onLinkTap,
+                    textBuilder: textBuilder,
+                    borderRadiusGeometry: borderRadiusGeometry,
+                    borderSide: borderSide,
+                    shape: shape,
+                  ),
+                ),
+                if (showReactionPickerIndicator)
+                  Positioned(
+                    right: reverse ? null : 4,
+                    left: reverse ? 4 : null,
+                    top: -8,
+                    child: CustomPaint(
+                      painter: ReactionBubblePainter(
+                        streamChatTheme.colorTheme.barsBg,
+                        Colors.transparent,
+                        Colors.transparent,
+                        tailCirclesSpace: 1,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (isFailedState) StreamSvgIcon.error(size: 20.r),
+        ],
+      ),
     );
   }
 

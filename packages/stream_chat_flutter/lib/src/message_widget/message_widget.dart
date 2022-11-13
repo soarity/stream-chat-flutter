@@ -400,7 +400,6 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@endtemplate}
   final bool showReactions;
 
- 
   /// {@template onUserAvatarTap}
   /// The function called when tapping on UserAvatar
   /// {@endtemplate}
@@ -609,7 +608,6 @@ class StreamMessageWidget extends StatefulWidget {
       showUserAvatar: showUserAvatar ?? this.showUserAvatar,
       showSendingIndicator: showSendingIndicator ?? this.showSendingIndicator,
       showReactions: showReactions ?? this.showReactions,
-     
       onUserAvatarTap: onUserAvatarTap ?? this.onUserAvatarTap,
       onLinkTap: onLinkTap ?? this.onLinkTap,
       showReactionPickerIndicator:
@@ -648,7 +646,6 @@ class StreamMessageWidget extends StatefulWidget {
 
 class _StreamMessageWidgetState extends State<StreamMessageWidget>
     with AutomaticKeepAliveClientMixin<StreamMessageWidget> {
-  final usernameColor = const Color(0XFF0001f6);
   bool get showSendingIndicator => widget.showSendingIndicator;
 
   bool get isDeleted => widget.message.isDeleted;
@@ -710,10 +707,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   /// * [StreamMessageWidget.message.isDeleted]
   /// {@endtemplate}
   bool get showBottomRow =>
-      showUsername ||
-      showTimeStamp ||
-      showSendingIndicator ||
-      isDeleted;
+      showUsername || showTimeStamp || showSendingIndicator || isDeleted;
 
   /// {@template isPinned}
   /// Whether [StreamMessageWidget.message] is pinned or not.
@@ -797,7 +791,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           child: Portal(
             child: PlatformWidgetBuilder(
               mobile: (context, child) {
-                return InkWell(
+                return GestureDetector(
                   onTap: () => widget.onMessageTap!(widget.message),
                   onLongPress: widget.message.isDeleted && !isFailedState
                       ? null
@@ -808,18 +802,20 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
               desktop: (_, child) => MouseRegion(child: child),
               web: (_, child) => MouseRegion(child: child),
               child: Padding(
-                padding: widget.padding ?? const EdgeInsets.all(8),
+                padding: widget.padding ?? EdgeInsets.zero,
                 child: FractionallySizedBox(
                   alignment: widget.reverse
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                   widthFactor: widget.widthFactor,
                   child: MessageWidgetContent(
+                    isDm: widget.isDm,
+                    hideUsername: widget.hideUsername,
+                    botBuilder: widget.botBuilder,
                     streamChatTheme: _streamChatTheme,
                     showUsername: showUsername,
                     showTimeStamp: showTimeStamp,
                     showSendingIndicator: showSendingIndicator,
-                  
                     isGiphy: isGiphy,
                     isOnlyEmoji: isOnlyEmoji,
                     hasUrlAttachments: hasUrlAttachments,

@@ -11,6 +11,7 @@ class TextBubble extends StatelessWidget {
   /// {@macro textBubble}
   const TextBubble({
     super.key,
+    required this.botBuilder,
     required this.message,
     required this.isOnlyEmoji,
     required this.textPadding,
@@ -22,6 +23,8 @@ class TextBubble extends StatelessWidget {
     this.onMentionTap,
   });
 
+ /// Widget builder for building bot message
+  final Widget Function(BuildContext, Message)? botBuilder;
   /// {@macro message}
   final Message message;
 
@@ -52,6 +55,13 @@ class TextBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (message.text?.trim().isEmpty ?? false) return const Offstage();
+
+    if (message.user!.id == 'wer6bot' &&
+        message.extraData['html'] != null &&
+        botBuilder != null) {
+      return botBuilder!(context, message);
+    }
+
     return Padding(
       padding: isOnlyEmoji ? EdgeInsets.zero : textPadding,
       child: textBuilder != null
@@ -63,7 +73,7 @@ class TextBubble extends StatelessWidget {
               messageTheme: isOnlyEmoji
                   ? messageTheme.copyWith(
                       messageTextStyle: messageTheme.messageTextStyle!.copyWith(
-                        fontSize: 42,
+                        fontSize: 42.fzs,
                       ),
                     )
                   : messageTheme,
