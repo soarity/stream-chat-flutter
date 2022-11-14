@@ -166,20 +166,6 @@ class _QuotedMessage extends StatelessWidget {
     }
 
     final children = [
-      if (composing)
-        PlatformWidgetBuilder(
-          web: (context, child) => child,
-          desktop: (context, child) => child,
-          child: ClearInputItemButton(
-            onTap: onQuotedMessageClear,
-          ),
-        ),
-      if (_hasAttachments)
-        _ParseAttachments(
-          message: message,
-          messageTheme: messageTheme,
-          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-        ),
       if (msg.text!.isNotEmpty && !_isGiphy)
         Flexible(
           child: StreamMessageText(
@@ -197,13 +183,25 @@ class _QuotedMessage extends StatelessWidget {
                   ),
           ),
         ),
+      if (_hasAttachments)
+        _ParseAttachments(
+          message: message,
+          messageTheme: messageTheme,
+          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+        ),
+      if (composing)
+        PlatformWidgetBuilder(
+          web: (context, child) => child,
+          desktop: (context, child) => child,
+          child: ClearInputItemButton(
+            onTap: onQuotedMessageClear,
+          ),
+        ),
     ].insertBetween(SizedBox(width: 8.w));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment:
-          reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: reverse ? children.reversed.toList() : children,
+      children: children,
     );
   }
 }

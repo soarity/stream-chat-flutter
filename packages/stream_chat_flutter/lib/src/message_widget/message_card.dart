@@ -183,6 +183,7 @@ class _MessageCardState extends State<MessageCard> {
               )
             else
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (widget.hasQuotedMessage)
                     QuotedMessage(
