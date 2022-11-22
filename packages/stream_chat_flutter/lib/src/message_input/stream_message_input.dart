@@ -75,6 +75,7 @@ class StreamMessageInput extends StatefulWidget {
     this.minLines,
     this.textInputAction,
     this.actions = const [],
+    this.microphone,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.disableAttachments = false,
@@ -160,6 +161,10 @@ class StreamMessageInput extends StatefulWidget {
 
   /// List of action widgets.
   final List<Widget> actions;
+
+  /// Microphone Widget
+
+  final Widget? microphone;
 
   /// Map that defines a thumbnail builder for an attachment type.
   final Map<String, AttachmentThumbnailBuilder>? attachmentThumbnailBuilders;
@@ -578,17 +583,27 @@ class StreamMessageInputState extends State<StreamMessageInput>
     );
   }
 
-  Flex _buildTextField(BuildContext context) {
+  Widget _buildTextField(BuildContext context) {
     final channel = StreamChannel.of(context).channel;
-    return Flex(
-      direction: Axis.horizontal,
-      children: <Widget>[
-        if (!widget.disableAttachments &&
-            channel.ownCapabilities.contains(PermissionType.uploadFile))
-          _buildAttachmentButton(context),
-        _buildTextInput(context),
-        _buildExpandActionsButton(context),
-      ],
+    return AnimatedCrossFade(
+      crossFadeState: widget.microphone != null
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
+      firstCurve: Curves.easeOut,
+      secondCurve: Curves.easeIn,
+      firstChild: widget.microphone!,
+      secondChild: Flex(
+        direction: Axis.horizontal,
+        children: <Widget>[
+          if (!widget.disableAttachments &&
+              channel.ownCapabilities.contains(PermissionType.uploadFile))
+            _buildAttachmentButton(context),
+          _buildTextInput(context),
+          _buildExpandActionsButton(context),
+        ],
+      ),
+      duration: const Duration(milliseconds: 300),
+      alignment: Alignment.center,
     );
   }
 
