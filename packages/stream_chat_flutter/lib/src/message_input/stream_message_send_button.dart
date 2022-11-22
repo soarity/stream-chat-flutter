@@ -46,8 +46,6 @@ class StreamMessageSendButton extends StatelessWidget {
     late Widget sendButton;
     if (timeOut > 0) {
       sendButton = StreamCountdownButton(count: timeOut);
-    } else if (isIdle) {
-      sendButton = idleSendButton ?? _buildIdleSendButton(context);
     } else {
       sendButton = activeSendButton != null
           ? InkWell(
@@ -63,50 +61,24 @@ class StreamMessageSendButton extends StatelessWidget {
     );
   }
 
-  Widget _buildIdleSendButton(BuildContext context) {
-    final _messageInputTheme = StreamMessageInputTheme.of(context);
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w),
-      child: StreamSvgIcon(
-        assetName: _getIdleSendIcon(),
-        width: 26.r,
-        height: 26.r,
-        color: _messageInputTheme.sendButtonIdleColor,
-      ),
-    );
-  }
-
   Widget _buildSendButton(BuildContext context) {
     final _messageInputTheme = StreamMessageInputTheme.of(context);
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w),
-      child: IconButton(
-        onPressed: onSendMessage,
-        padding: EdgeInsets.zero,
-        iconSize: 26.r,
-        splashRadius: 26.r,
-        constraints: BoxConstraints.tightFor(
-          height: 26.r,
-          width: 26.r,
-        ),
-        icon: StreamSvgIcon(
-          assetName: _getSendIcon(),
-          color: _messageInputTheme.sendButtonColor,
-          height: 26.r,
-          width: 26.r,
-        ),
+    return IconButton(
+      onPressed: onSendMessage,
+      iconSize: 26.r,
+      splashRadius: 26.r,
+      constraints: BoxConstraints.tightFor(
+        height: 26.r,
+        width: 26.r,
+      ),
+      icon: StreamSvgIcon(
+        assetName: _getSendIcon(),
+        color: _messageInputTheme.sendButtonColor,
+        height: 26.r,
+        width: 26.r,
       ),
     );
-  }
-
-  String _getIdleSendIcon() {
-    if (isCommandEnabled) {
-      return 'Icon_search.svg';
-    } else {
-      return 'Icon_circle_right.svg';
-    }
   }
 
   String _getSendIcon() {
