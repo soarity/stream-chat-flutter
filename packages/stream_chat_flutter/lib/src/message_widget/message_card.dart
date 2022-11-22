@@ -164,7 +164,7 @@ class _MessageCardState extends State<MessageCard> {
                     ),
                 borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
               ),
-      color: widget.isGiphy ? Colors.transparent : _getBackgroundColor,
+      color: _getBackgroundColor,
       child: Padding(
         padding: EdgeInsets.only(bottom: 5.h),
         child: Wrap(

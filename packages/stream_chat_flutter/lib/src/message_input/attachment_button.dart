@@ -34,15 +34,12 @@ class AttachmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 28.r,
-      child: IconButton(
-        iconSize: 24.r,
-        icon: StreamSvgIcon.attach(color: color),
-        padding: EdgeInsets.zero,
-        splashRadius: 24.r,
-        onPressed: onPressed,
-      ),
+    return IconButton(
+      iconSize: 24.r,
+      icon: StreamSvgIcon.attach(color: color),
+      padding: EdgeInsets.zero,
+      splashRadius: 24.r,
+      onPressed: onPressed,
     );
   }
 }

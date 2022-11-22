@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart'
     hide ErrorListener;
@@ -80,7 +79,6 @@ class StreamMessageInput extends StatefulWidget {
     this.textCapitalization = TextCapitalization.sentences,
     this.disableAttachments = false,
     this.messageInputController,
-    this.actionsLocation = ActionsLocation.left,
     this.attachmentThumbnailBuilders,
     this.focusNode,
     this.sendButtonLocation = SendButtonLocation.outside,
@@ -162,9 +160,6 @@ class StreamMessageInput extends StatefulWidget {
 
   /// List of action widgets.
   final List<Widget> actions;
-
-  /// The location of the custom actions.
-  final ActionsLocation actionsLocation;
 
   /// Map that defines a thumbnail builder for an attachment type.
   final Map<String, AttachmentThumbnailBuilder>? attachmentThumbnailBuilders;
@@ -584,16 +579,15 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Flex _buildTextField(BuildContext context) {
+    final channel = StreamChannel.of(context).channel;
     return Flex(
       direction: Axis.horizontal,
       children: <Widget>[
-        if (!_commandEnabled && widget.actionsLocation == ActionsLocation.left)
-          _buildExpandActionsButton(context),
+        if (!widget.disableAttachments &&
+            channel.ownCapabilities.contains(PermissionType.uploadFile))
+          _buildAttachmentButton(context),
         _buildTextInput(context),
-        if (!_commandEnabled && widget.actionsLocation == ActionsLocation.right)
-          _buildExpandActionsButton(context),
-        if (widget.sendButtonLocation == SendButtonLocation.outside)
-          _buildSendButton(context),
+        _buildExpandActionsButton(context),
       ],
     );
   }
@@ -614,7 +608,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Widget _buildExpandActionsButton(BuildContext context) {
-    final channel = StreamChannel.of(context).channel;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.w),
       child: AnimatedCrossFade(
@@ -623,38 +616,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
             : CrossFadeState.showSecond,
         firstCurve: Curves.easeOut,
         secondCurve: Curves.easeIn,
-        firstChild: IconButton(
-          iconSize: 24.r,
-          onPressed: () {
-            if (_actionsShrunk) {
-              setState(() => _actionsShrunk = false);
-            }
-          },
-          icon: Transform.rotate(
-            angle: (widget.actionsLocation == ActionsLocation.right ||
-                    widget.actionsLocation == ActionsLocation.rightInside)
-                ? pi
-                : 0,
-            child: StreamSvgIcon.emptyCircleLeft(
-              size: 24.r,
-              color: _messageInputTheme.expandButtonColor,
-            ),
-          ),
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints.tightFor(
-            height: 24.r,
-            width: 24.r,
-          ),
-          splashRadius: 24.r,
-        ),
+        firstChild: _buildSendButton(context),
         secondChild: widget.disableAttachments && !widget.actions.isNotEmpty
             ? const Offstage()
             : Wrap(
                 children: <Widget>[
-                  if (!widget.disableAttachments &&
-                      channel.ownCapabilities
-                          .contains(PermissionType.uploadFile))
-                    _buildAttachmentButton(context),
                   ...widget.actions,
                 ].insertBetween(const SizedBox(width: 6)),
               ),
@@ -692,13 +658,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Expanded _buildTextInput(BuildContext context) {
-    final margin = (widget.sendButtonLocation == SendButtonLocation.inside
-            ? EdgeInsets.only(right: 8.w)
-            : EdgeInsets.zero) +
-        (widget.actionsLocation != ActionsLocation.left || _commandEnabled
-            ? EdgeInsets.only(left: 8.w)
-            : EdgeInsets.zero);
-
     return Expanded(
       child: DropTarget(
         onDragDone: (details) async {
@@ -723,7 +682,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
         },
         child: Container(
           clipBehavior: Clip.hardEdge,
-          margin: margin,
           decoration: BoxDecoration(
             borderRadius: _messageInputTheme.borderRadius,
             gradient: _effectiveFocusNode.hasFocus
@@ -862,12 +820,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 ),
               ],
             )
-          : (widget.actionsLocation == ActionsLocation.leftInside
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [_buildExpandActionsButton(context)],
-                )
-              : null),
+          : null,
       suffixIconConstraints: const BoxConstraints.tightFor(height: 40),
       prefixIconConstraints: const BoxConstraints.tightFor(height: 40),
       suffixIcon: Row(
@@ -888,9 +841,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 onPressed: _effectiveController.clear,
               ),
             ),
-          if (!_commandEnabled &&
-              widget.actionsLocation == ActionsLocation.rightInside)
-            _buildExpandActionsButton(context),
           if (widget.sendButtonLocation == SendButtonLocation.inside)
             _buildSendButton(context),
         ],
