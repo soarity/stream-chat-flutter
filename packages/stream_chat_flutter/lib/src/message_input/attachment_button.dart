@@ -36,12 +36,8 @@ class AttachmentButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       iconSize: 26.r,
-      icon: StreamSvgIcon.attach(color: color),
+      icon: StreamSvgIcon.attach(color: color, size: 26.r),
       splashRadius: 26.r,
-      constraints: BoxConstraints.tightFor(
-        height: 26.r,
-        width: 26.r,
-      ),
       onPressed: onPressed,
     );
   }

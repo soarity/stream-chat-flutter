@@ -617,12 +617,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
         firstCurve: Curves.easeOut,
         secondCurve: Curves.easeIn,
         firstChild: _buildSendButton(context),
-        secondChild: widget.disableAttachments && !widget.actions.isNotEmpty
+        secondChild: widget.disableAttachments && widget.actions.isEmpty
             ? const Offstage()
-            : Wrap(
-                children: <Widget>[
-                  ...widget.actions,
-                ].insertBetween(const SizedBox(width: 6)),
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: widget.actions,
               ),
         duration: const Duration(milliseconds: 300),
         alignment: Alignment.center,

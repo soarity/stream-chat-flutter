@@ -68,10 +68,6 @@ class StreamMessageSendButton extends StatelessWidget {
       onPressed: onSendMessage,
       iconSize: 26.r,
       splashRadius: 26.r,
-      constraints: BoxConstraints.tightFor(
-        height: 26.r,
-        width: 26.r,
-      ),
       icon: StreamSvgIcon(
         assetName: _getSendIcon(),
         color: _messageInputTheme.sendButtonColor,
