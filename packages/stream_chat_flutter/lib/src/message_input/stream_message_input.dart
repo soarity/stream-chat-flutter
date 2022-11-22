@@ -608,24 +608,21 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Widget _buildExpandActionsButton(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w),
-      child: AnimatedCrossFade(
-        crossFadeState: (_actionsShrunk && widget.enableActionAnimation)
-            ? CrossFadeState.showFirst
-            : CrossFadeState.showSecond,
-        firstCurve: Curves.easeOut,
-        secondCurve: Curves.easeIn,
-        firstChild: _buildSendButton(context),
-        secondChild: widget.disableAttachments && widget.actions.isEmpty
-            ? const Offstage()
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: widget.actions,
-              ),
-        duration: const Duration(milliseconds: 300),
-        alignment: Alignment.center,
-      ),
+    return AnimatedCrossFade(
+      crossFadeState: (_actionsShrunk && widget.enableActionAnimation)
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
+      firstCurve: Curves.easeOut,
+      secondCurve: Curves.easeIn,
+      firstChild: _buildSendButton(context),
+      secondChild: widget.disableAttachments && widget.actions.isEmpty
+          ? const Offstage()
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: widget.actions,
+            ),
+      duration: const Duration(milliseconds: 300),
+      alignment: Alignment.center,
     );
   }
 
