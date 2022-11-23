@@ -64,15 +64,18 @@ class StreamMessageSendButton extends StatelessWidget {
   Widget _buildSendButton(BuildContext context) {
     final _messageInputTheme = StreamMessageInputTheme.of(context);
 
-    return IconButton(
-      onPressed: onSendMessage,
-      iconSize: 26.r,
-      splashRadius: 26.r,
-      icon: StreamSvgIcon(
-        assetName: _getSendIcon(),
-        color: _messageInputTheme.sendButtonColor,
-        height: 26.r,
-        width: 26.r,
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: IconButton(
+        onPressed: onSendMessage,
+        iconSize: 26.r,
+        splashRadius: 26.r,
+        icon: StreamSvgIcon(
+          assetName: _getSendIcon(),
+          color: _messageInputTheme.sendButtonColor,
+          height: 26.r,
+          width: 26.r,
+        ),
       ),
     );
   }

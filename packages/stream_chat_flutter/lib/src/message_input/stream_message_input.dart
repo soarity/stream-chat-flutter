@@ -76,6 +76,7 @@ class StreamMessageInput extends StatefulWidget {
     this.textInputAction,
     this.actions = const [],
     this.microphone,
+    this.isRecording = false,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.disableAttachments = false,
@@ -163,8 +164,10 @@ class StreamMessageInput extends StatefulWidget {
   final List<Widget> actions;
 
   /// Microphone Widget
-
   final Widget? microphone;
+
+  /// if voice message recording is in progress
+  final bool isRecording;
 
   /// Map that defines a thumbnail builder for an attachment type.
   final Map<String, AttachmentThumbnailBuilder>? attachmentThumbnailBuilders;
@@ -586,12 +589,12 @@ class StreamMessageInputState extends State<StreamMessageInput>
   Widget _buildTextField(BuildContext context) {
     final channel = StreamChannel.of(context).channel;
     return AnimatedCrossFade(
-      crossFadeState: widget.microphone != null
+      crossFadeState: widget.isRecording
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,
       firstCurve: Curves.easeOut,
       secondCurve: Curves.easeIn,
-      firstChild: widget.microphone!,
+      firstChild: widget.microphone ?? const Offstage(),
       secondChild: Flex(
         direction: Axis.horizontal,
         children: <Widget>[
