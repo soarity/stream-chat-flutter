@@ -635,8 +635,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       firstChild: _buildSendButton(context),
       secondChild: widget.disableAttachments && widget.actions.isEmpty
           ? const Offstage()
-          : Row(
-              mainAxisSize: MainAxisSize.min,
+          : Wrap(
               children: widget.actions,
             ),
       duration: const Duration(milliseconds: 300),
