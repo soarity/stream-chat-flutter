@@ -605,7 +605,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
           _buildExpandActionsButton(context),
         ],
       ),
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
       alignment: Alignment.center,
     );
   }

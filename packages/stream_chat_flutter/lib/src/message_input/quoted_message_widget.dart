@@ -155,6 +155,9 @@ class _QuotedMessage extends StatelessWidget {
   bool get _isGiphy =>
       message.attachments.any((element) => element.type == 'giphy');
 
+  bool get _isVoiceNote =>
+      message.attachments.any((element) => element.type == 'voicenote');
+
   @override
   Widget build(BuildContext context) {
     final isOnlyEmoji = message.text!.isOnlyEmoji;
@@ -166,7 +169,7 @@ class _QuotedMessage extends StatelessWidget {
     }
 
     final children = [
-      if (msg.text!.isNotEmpty && !_isGiphy)
+      if (msg.text!.isNotEmpty && !_isGiphy && !_isVoiceNote)
         Flexible(
           child: StreamMessageText(
             message: msg,
@@ -299,6 +302,9 @@ class _ParseAttachments extends StatelessWidget {
               AttachmentError(constraints: BoxConstraints.loose(size)),
           fit: BoxFit.cover,
         );
+      },
+      'voicenote': (_, attachment) {
+        return Icon(Icons.mic, size: 20.r);
       },
       'file': (_, attachment) {
         return SizedBox(
