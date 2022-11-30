@@ -46,6 +46,8 @@ class StreamMessageSendButton extends StatelessWidget {
     late Widget sendButton;
     if (timeOut > 0) {
       sendButton = StreamCountdownButton(count: timeOut);
+    } else if (isIdle) {
+      sendButton = idleSendButton ?? _buildIdleSendButton(context);
     } else {
       sendButton = activeSendButton != null
           ? InkWell(
@@ -58,6 +60,17 @@ class StreamMessageSendButton extends StatelessWidget {
     return AnimatedSwitcher(
       duration: _streamChatTheme.messageInputTheme.sendAnimationDuration!,
       child: sendButton,
+    );
+  }
+
+  Widget _buildIdleSendButton(BuildContext context) {
+    final _messageInputTheme = StreamMessageInputTheme.of(context);
+
+    return StreamSvgIcon(
+      height: 26.r,
+      width: 26.r,
+      assetName: _getIdleSendIcon(),
+      color: _messageInputTheme.sendButtonIdleColor,
     );
   }
 
@@ -75,6 +88,10 @@ class StreamMessageSendButton extends StatelessWidget {
         width: 26.r,
       ),
     );
+  }
+
+  String _getIdleSendIcon() {
+    return 'Icon_circle_right.svg';
   }
 
   String _getSendIcon() {

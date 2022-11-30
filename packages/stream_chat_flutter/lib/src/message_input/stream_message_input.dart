@@ -602,8 +602,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
               channel.ownCapabilities.contains(PermissionType.uploadFile))
             _buildAttachmentButton(context),
           _buildTextInput(context),
-          if (!_hasQuotedMessage &&
-              (_isEditing || _effectiveController.attachments.isNotEmpty))
+          if (_isEditing || _effectiveController.attachments.isNotEmpty)
             _buildSendButton(context)
           else
             _buildExpandActionsButton(context),
