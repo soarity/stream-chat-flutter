@@ -66,11 +66,14 @@ class StreamMessageSendButton extends StatelessWidget {
   Widget _buildIdleSendButton(BuildContext context) {
     final _messageInputTheme = StreamMessageInputTheme.of(context);
 
-    return StreamSvgIcon(
-      height: 26.r,
-      width: 26.r,
-      assetName: _getIdleSendIcon(),
-      color: _messageInputTheme.sendButtonIdleColor,
+    return Padding(
+      padding: EdgeInsets.all(8.r),
+      child: StreamSvgIcon(
+        height: 26.r,
+        width: 26.r,
+        assetName: _getIdleSendIcon(),
+        color: _messageInputTheme.sendButtonIdleColor,
+      ),
     );
   }
 
