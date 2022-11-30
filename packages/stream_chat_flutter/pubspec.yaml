@@ -44,7 +44,7 @@ dependencies:
   stream_chat_flutter_core:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: wer6/release/5.2.0
+      ref: wer6/release/5.3.0
       path: packages/stream_chat_flutter_core
   synchronized: ^3.0.0
   thumblr: ^0.0.4
