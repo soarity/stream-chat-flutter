@@ -1025,20 +1025,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final hasFileAttachment =
         message.attachments.any((it) => it.type == 'file');
 
-    final hasReplies = message.replyCount! > 0;
-
     final attachmentBorderRadius = hasFileAttachment ? 12.r : 14.r;
 
-    final showTimeStamp = !hasReplies && (timeDiff >= 1 || !isNextUserSame);
-
-    final showUsername =
-        !isMyMessage && !hasReplies && (timeDiff >= 1 || !isNextUserSame);
+    final showUsername = !isMyMessage && (timeDiff >= 1 || !isNextUserSame);
 
     final showUserAvatar =
         isMyMessage ? DisplayWidget.gone : DisplayWidget.show;
 
-    final showSendingIndicator =
-        isMyMessage && (index == 0 || timeDiff >= 1 || !isNextUserSame);
+    final showSendingIndicator = isMyMessage;
 
     final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
 
@@ -1062,7 +1056,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showReactions: !message.isDeleted,
       padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 0),
       showUsername: showUsername,
-      showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,
       showUserAvatar: showUserAvatar,
       onQuotedMessageTap: (quotedMessageId) async {

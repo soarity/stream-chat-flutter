@@ -67,7 +67,7 @@ class StreamMessageSendButton extends StatelessWidget {
     final _messageInputTheme = StreamMessageInputTheme.of(context);
 
     return Padding(
-      padding: EdgeInsets.all(8.r),
+      padding: EdgeInsets.fromLTRB(10.w, 4.h, 5.w, 4.h),
       child: StreamSvgIcon(
         height: 26.r,
         width: 26.r,
@@ -80,15 +80,16 @@ class StreamMessageSendButton extends StatelessWidget {
   Widget _buildSendButton(BuildContext context) {
     final _messageInputTheme = StreamMessageInputTheme.of(context);
 
-    return IconButton(
-      onPressed: onSendMessage,
-      iconSize: 26.r,
-      splashRadius: 26.r,
-      icon: StreamSvgIcon(
-        assetName: _getSendIcon(),
-        color: _messageInputTheme.sendButtonColor,
-        height: 26.r,
-        width: 26.r,
+    return InkWell(
+      onTap: onSendMessage,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(10.w, 4.h, 5.w, 4.h),
+        child: StreamSvgIcon(
+          height: 26.r,
+          width: 26.r,
+          assetName: _getSendIcon(),
+          color: _messageInputTheme.sendButtonColor,
+        ),
       ),
     );
   }

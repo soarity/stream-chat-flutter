@@ -251,6 +251,7 @@ class MessageWidgetContent extends StatelessWidget {
                     isFailedState: isFailedState,
                     showSendingIndicator: showSendingIndicator,
                     showUserAvatar: showUserAvatar,
+                    showTimeStamp: showTimeStamp,
                     messageTheme: messageTheme,
                     hasQuotedMessage: hasQuotedMessage,
                     hasUrlAttachments: hasUrlAttachments,

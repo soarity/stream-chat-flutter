@@ -43,6 +43,6 @@ class StreamSendingIndicator extends StatelessWidget {
         size: size,
       );
     }
-    return const SizedBox();
+    return const SizedBox.shrink();
   }
 }

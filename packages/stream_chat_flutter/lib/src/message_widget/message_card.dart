@@ -22,6 +22,7 @@ class MessageCard extends StatefulWidget {
     required this.streamChatTheme,
     required this.streamChat,
     required this.showUserAvatar,
+    required this.showTimeStamp,
     required this.messageTheme,
     required this.hasQuotedMessage,
     required this.hasUrlAttachments,
@@ -91,6 +92,9 @@ class MessageCard extends StatefulWidget {
 
   /// {@macro message}
   final Message message;
+
+  /// {@macro showTimeStamp}
+  final bool showTimeStamp;
 
   /// {@macro attachmentBuilders}
   final Map<String, AttachmentBuilder> attachmentBuilders;
@@ -230,7 +234,7 @@ class _MessageCardState extends State<MessageCard> {
                 isDeleted: widget.message.isDeleted,
                 isGiphy: widget.isGiphy,
                 showSendingIndicator: widget.showSendingIndicator,
-                showTimeStamp: true,
+                showTimeStamp: widget.showTimeStamp,
                 streamChatTheme: widget.streamChatTheme,
                 streamChat: widget.streamChat,
                 hasNonUrlAttachments: widget.hasNonUrlAttachments,
