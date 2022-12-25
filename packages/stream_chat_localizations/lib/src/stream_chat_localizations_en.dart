@@ -6,6 +6,9 @@ class StreamChatLocalizationsEn extends GlobalStreamChatLocalizations {
   const StreamChatLocalizationsEn({super.localeName = 'en'});
 
   @override
+  String get edited => 'Edited';
+
+  @override
   String get launchUrlError => 'Cannot launch the url';
 
   @override

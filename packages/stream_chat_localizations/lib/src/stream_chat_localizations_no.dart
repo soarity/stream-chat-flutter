@@ -6,6 +6,9 @@ class StreamChatLocalizationsNo extends GlobalStreamChatLocalizations {
   const StreamChatLocalizationsNo({super.localeName = 'no'});
 
   @override
+  String get edited => 'Edited';
+
+  @override
   String get launchUrlError => 'Kan ikke laste inn url';
 
   @override

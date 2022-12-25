@@ -6,6 +6,9 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
   const StreamChatLocalizationsHi({super.localeName = 'hi'});
 
   @override
+  String get edited => 'Edited';
+
+  @override
   String get launchUrlError => 'यूआरएल लॉन्च नहीं कर सकते';
 
   @override

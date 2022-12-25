@@ -6,6 +6,9 @@ import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart'
 
 /// Translation strings for the stream chat widgets
 abstract class Translations {
+  /// The label for showing that message is edited
+  String get edited;
+
   /// The error shown when [launchURL] fails
   String get launchUrlError;
 
@@ -363,6 +366,9 @@ class DefaultTranslations implements Translations {
 
   /// Singleton instance of [DefaultTranslations]
   static const instance = DefaultTranslations._();
+
+  @override
+  String get edited => 'Edited';
 
   @override
   String get launchUrlError => 'Cannot launch the url';

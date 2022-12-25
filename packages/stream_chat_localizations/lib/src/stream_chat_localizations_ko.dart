@@ -6,6 +6,9 @@ class StreamChatLocalizationsKo extends GlobalStreamChatLocalizations {
   const StreamChatLocalizationsKo({super.localeName = 'ko'});
 
   @override
+  String get edited => 'Edited';
+
+  @override
   String get launchUrlError => 'URL을 시작할 수 없습니다';
 
   @override

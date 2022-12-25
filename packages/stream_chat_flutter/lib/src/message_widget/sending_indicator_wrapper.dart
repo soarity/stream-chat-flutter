@@ -71,7 +71,7 @@ class SendingIndicatorWrapper extends StatelessWidget {
         return StreamSendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
-          size: style!.fontSize,
+          size: style!.fontSize! * 1.2,
         );
       },
     );
