@@ -274,7 +274,7 @@ class _ParseAttachments extends StatelessWidget {
       'video': (_, attachment) {
         return StreamVideoThumbnailImage(
           key: ValueKey(attachment.assetUrl),
-          video: attachment.file?.path ?? attachment.assetUrl!,
+          video: attachment.file?.path ?? attachment.assetUrl,
           constraints: BoxConstraints.loose(Size(32.r, 32.r)),
           errorBuilder: (_, __) => AttachmentError(
             constraints: BoxConstraints.loose(Size(32.r, 32.r)),

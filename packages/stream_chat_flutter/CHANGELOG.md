@@ -1,3 +1,25 @@
+## 5.2.0
+
+✅ Added
+- Added a new `bottomRowBuilderWithDefaultWidget` parameter to `StreamMessageWidget` which contains a third parameter (default `BottomRow` widget with `copyWith` method available) to allow easier customization.
+
+🔄 Changed
+
+- Updated `lottie` dependency to `^2.0.0`
+- Updated `desktop_drop` dependency to `^0.4.0`
+- Updated `connectivity_plus` dependency to `^3.0.2`
+- Updated `dart_vlc` dependency to `^0.4.0`
+- Updated `file_picker` dependency to `^5.2.4`
+- Deprecated `StreamMessageWidget.bottomRowBuilder` in favor of `StreamMessageWidget.bottomRowBuilderWithDefaultWidget`.
+- Deprecated `StreamMessageWidget.deletedBottomRowBuilder` in favor of `StreamMessageWidget.bottomRowBuilderWithDefaultWidget`.
+- Deprecated `StreamMessageWidget.usernameBuilder` in favor of `StreamMessageWidget.bottomRowBuilderWithDefaultWidget`.
+
+🐞 Fixed
+- [[#1379]](https://github.com/GetStream/stream-chat-flutter/issues/1379) Fixed "Issues with photo attachments on web", where the cached image attachment would not render while uploading.
+- Fix render overflow issue with `MessageSearchListTileTitle`. It now uses `Text.rich` instead of `Row`. Better default behaviour and allows `TextOverflow`.
+- [[1346]](https://github.com/GetStream/stream-chat-flutter/issues/1346) Fixed a render issue while uploading video on web.
+- [[#1347]](https://github.com/GetStream/stream-chat-flutter/issues/1347) `onReply` not working in `AttachmentActionsModal` which is used by `StreamImageAttachment` and `StreamImageGroup`.
+
 ## 5.1.0
 
 🐞 Fixed

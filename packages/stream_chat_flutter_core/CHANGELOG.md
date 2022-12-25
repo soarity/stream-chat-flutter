@@ -1,3 +1,9 @@
+## 5.2.0
+
+🔄 Changed
+
+- Updated `connectivity_plus` dependency to `^3.0.2`
+
 ## 5.1.0
 
 - Deprecated the `sort` parameter in the `StreamChannelListController` in favor of `channelStateSort`.

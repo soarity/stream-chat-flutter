@@ -1152,7 +1152,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
               constraints: BoxConstraints.loose(
                 Size(104.w, 104.h),
               ),
-              video: (attachment.file?.path ?? attachment.assetUrl)!,
+              video: attachment.file?.path ?? attachment.assetUrl,
             ),
             Positioned(
               left: 8,

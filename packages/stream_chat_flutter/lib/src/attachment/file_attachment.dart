@@ -203,7 +203,7 @@ class _FileTypeImage extends StatelessWidget {
         shape: _getDefaultShape(context),
         child: source.when(
           local: () => StreamVideoThumbnailImage(
-            video: attachment.file!.path!,
+            video: attachment.file!.path,
             placeholderBuilder: (_) => const Center(
               child: SizedBox(
                 width: 20,
@@ -213,7 +213,7 @@ class _FileTypeImage extends StatelessWidget {
             ),
           ),
           network: () => StreamVideoThumbnailImage(
-            video: attachment.assetUrl!,
+            video: attachment.assetUrl,
             placeholderBuilder: (_) => const Center(
               child: SizedBox(
                 width: 20,

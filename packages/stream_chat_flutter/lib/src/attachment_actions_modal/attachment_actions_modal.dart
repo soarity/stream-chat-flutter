@@ -33,10 +33,10 @@ class AttachmentActionsModal extends StatelessWidget {
   /// Callback to download [attachment].
   final AttachmentDownloader? attachmentDownloader;
 
-  /// Show reply option
+  /// Show "reply" option
   final bool showReply;
 
-  /// Show show in chat option
+  /// Show "show in chat" option
   final bool showShowInChat;
 
   /// Show save option
@@ -55,6 +55,7 @@ class AttachmentActionsModal extends StatelessWidget {
     Attachment? attachment,
     Message? message,
     VoidCallback? onShowMessage,
+    VoidCallback? onReply,
     AttachmentDownloader? attachmentDownloader,
     bool? showReply,
     bool? showSave,
@@ -66,6 +67,7 @@ class AttachmentActionsModal extends StatelessWidget {
       attachment: attachment ?? this.attachment,
       message: message ?? this.message,
       onShowMessage: onShowMessage ?? this.onShowMessage,
+      onReply: onReply ?? this.onReply,
       attachmentDownloader: attachmentDownloader ?? this.attachmentDownloader,
       showReply: showReply ?? this.showReply,
       showShowInChat: showShowInChat,

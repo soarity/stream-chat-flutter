@@ -23,6 +23,8 @@ class BottomRow extends StatelessWidget {
     required this.hasNonUrlAttachments,
     required this.streamChat,
     this.deletedBottomRowBuilder,
+    this.usernameBuilder,
+    this.sendingIndicatorBuilder,
   });
 
   /// {@macro messageIsDeleted}
@@ -60,6 +62,54 @@ class BottomRow extends StatelessWidget {
 
   /// {@macro streamChat}
   final StreamChatState streamChat;
+
+  /// {@macro usernameBuilder}
+  final Widget Function(BuildContext, Message)? usernameBuilder;
+
+  /// {@macro sendingIndicatorBuilder}
+  final Widget Function(BuildContext, Message)? sendingIndicatorBuilder;
+
+  /// {@template copyWith}
+  /// Creates a copy of [BottomRow] with specified attributes
+  /// overridden.
+  /// {@endtemplate}
+  BottomRow copyWith({
+    Key? key,
+    bool? isDeleted,
+    Message? message,
+    bool? showTimeStamp,
+    bool? reverse,
+    bool? showSendingIndicator,
+    bool? hasUrlAttachments,
+    bool? isGiphy,
+    bool? isOnlyEmoji,
+    StreamMessageThemeData? messageTheme,
+    StreamChatThemeData? streamChatTheme,
+    bool? hasNonUrlAttachments,
+    StreamChatState? streamChat,
+    Widget Function(BuildContext, Message)? deletedBottomRowBuilder,
+    Widget Function(BuildContext, Message)? usernameBuilder,
+    Widget Function(BuildContext, Message)? sendingIndicatorBuilder,
+  }) =>
+      BottomRow(
+        key: key ?? this.key,
+        isDeleted: isDeleted ?? this.isDeleted,
+        message: message ?? this.message,
+        showTimeStamp: showTimeStamp ?? this.showTimeStamp,
+        showSendingIndicator: showSendingIndicator ?? this.showSendingIndicator,
+        hasUrlAttachments: hasUrlAttachments ?? this.hasUrlAttachments,
+        isGiphy: isGiphy ?? this.isGiphy,
+        isOnlyEmoji: isOnlyEmoji ?? this.isOnlyEmoji,
+        messageTheme: messageTheme ?? this.messageTheme,
+        streamChatTheme: streamChatTheme ?? this.streamChatTheme,
+        hasNonUrlAttachments: hasNonUrlAttachments ?? this.hasNonUrlAttachments,
+        streamChat: streamChat ?? this.streamChat,
+        deletedBottomRowBuilder:
+            deletedBottomRowBuilder ?? this.deletedBottomRowBuilder,
+        usernameBuilder: usernameBuilder ?? this.usernameBuilder,
+        sendingIndicatorBuilder:
+            sendingIndicatorBuilder ?? this.sendingIndicatorBuilder,
+      );
 
   @override
   Widget build(BuildContext context) {

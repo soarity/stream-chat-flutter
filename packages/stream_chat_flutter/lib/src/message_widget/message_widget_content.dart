@@ -5,6 +5,18 @@ import 'package:stream_chat_flutter/src/message_widget/message_widget_content_co
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+/// Signature for the builder function that will be called when the message
+/// bottom row is built. Includes the [Message].
+typedef BottomRowBuilder = Widget Function(BuildContext, Message);
+
+/// Signature for the builder function that will be called when the message
+/// bottom row is built. Includes the [Message] and the default [BottomRow].
+typedef BottomRowBuilderWithDefaultWidget = Widget Function(
+  BuildContext,
+  Message,
+  BottomRow,
+);
+
 /// {@template messageWidgetContent}
 /// The main content of a [StreamMessageWidget].
 ///
@@ -53,10 +65,6 @@ class MessageWidgetContent extends StatelessWidget {
     this.onMentionTap,
     this.onLinkTap,
     this.textBuilder,
-    this.bottomRowBuilder,
-    this.deletedBottomRowBuilder,
-    this.userAvatarBuilder,
-    this.usernameBuilder,
   });
 
   ///  Whether the widget is to be used for Direct Message or Group Message
@@ -163,9 +171,6 @@ class MessageWidgetContent extends StatelessWidget {
   /// The padding to use for this widget.
   final double bottomRowPadding;
 
-  /// {@macro bottomRowBuilder}
-  final Widget Function(BuildContext, Message)? bottomRowBuilder;
-
   /// {@macro streamChat}
   final StreamChatState streamChat;
 
@@ -178,17 +183,8 @@ class MessageWidgetContent extends StatelessWidget {
   /// {@macro showUsername}
   final bool showUsername;
 
-  /// {@macro deletedBottomRowBuilder}
-  final Widget Function(BuildContext, Message)? deletedBottomRowBuilder;
-
   /// {@macro messageWidget}
   final StreamMessageWidget messageWidget;
-
-  /// {@macro userAvatarBuilder}
-  final Widget Function(BuildContext, User)? userAvatarBuilder;
-
-  /// {@macro usernameBuilder}
-  final Widget Function(BuildContext, Message)? usernameBuilder;
 
   @override
   Widget build(BuildContext context) {
