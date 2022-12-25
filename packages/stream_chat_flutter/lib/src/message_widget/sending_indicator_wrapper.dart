@@ -44,7 +44,7 @@ class SendingIndicatorWrapper extends StatelessWidget {
           message.attachments.where((it) => !it.uploadState.isSuccess).length;
       if (uploadRemaining == 0) {
         return StreamSvgIcon.check(
-          size: style!.fontSize,
+          size: style!.fontSize! * 1.2,
           color: IconTheme.of(context).color!.withOpacity(0.5),
         );
       }

@@ -124,6 +124,13 @@ class BottomRow extends StatelessWidget {
     return Text.rich(
       TextSpan(
         children: [
+          if (message.createdAt != message.updatedAt)
+            WidgetSpan(
+              child: Text(
+                'Edited',
+                style: messageTheme.createdAtStyle,
+              ),
+            ),
           if (showTimeStamp)
             WidgetSpan(
               child: Text(
@@ -141,7 +148,7 @@ class BottomRow extends StatelessWidget {
                 streamChatTheme: streamChatTheme,
               ),
             ),
-        ].insertBetween(const WidgetSpan(child: SizedBox(width: 8))),
+        ].insertBetween(const WidgetSpan(child: SizedBox(width: 6))),
       ),
       maxLines: 1,
       textAlign: TextAlign.right,
