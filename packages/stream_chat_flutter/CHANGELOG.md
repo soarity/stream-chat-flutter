@@ -1,3 +1,30 @@
+## Upcoming
+
+🐞 Fixed
+[#1463](https://github.com/GetStream/stream-chat-flutter/pull/1463) Fixed support for iPad in the share button for images. 
+
+✅ Added
+
+- Now it is possible to customize the max lines of the title of a url attachment. Before it was always 1 line.
+
+🔄 Changed
+
+- Updated `share_plus` dependency to `^6.3.0`
+
+## 5.3.0
+
+🔄 Changed
+
+- Updated `photo_manager` dependency to `^2.5.2`
+
+🐞 Fixed
+- [[#1424]](https://github.com/GetStream/stream-chat-flutter/issues/1424) Fixed a render issue when showing messages starting with 4 whitespaces.
+- Fixed a bug where the `AttachmentPickerBottomSheet` was not able to identify the mobile browser.
+- Fixed uploading files on Windows - fixed temp file path.
+
+✅ Added
+- New `noPhotoOrVideoLabel` displayed when there is no files to choose.
+
 ## 5.2.0
 
 ✅ Added

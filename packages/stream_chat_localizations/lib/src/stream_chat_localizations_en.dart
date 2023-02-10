@@ -18,6 +18,9 @@ class StreamChatLocalizationsEn extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'There are no users currently';
 
   @override
+  String get noPhotoOrVideoLabel => 'There is no photo or video';
+
+  @override
   String get retryLabel => 'Retry';
 
   @override
@@ -435,12 +438,7 @@ class StreamChatLocalizationsEn extends GlobalStreamChatLocalizations {
   String get viewLibrary => 'View library';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 unread message';
-    }
-    return '$unreadCount unread messages';
-  }
+  String unreadMessagesSeparatorText(int unreadCount) => 'New messages';
 
   @override
   String get enableFileAccessMessage => 'Please enable access to files'

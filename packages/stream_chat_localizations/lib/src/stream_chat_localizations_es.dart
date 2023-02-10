@@ -18,6 +18,9 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'No hay usuarios actualmente';
 
   @override
+  String get noPhotoOrVideoLabel => 'No hay fotos ni vídeos';
+
+  @override
   String get retryLabel => 'Inténtelo de nuevo';
 
   @override
@@ -87,7 +90,7 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
   String get messageDeletedLabel => 'Mensaje borrado';
 
   @override
-  String get messageReactionsLabel => 'Reacciones a los mensajes';
+  String get messageReactionsLabel => 'Reacciones de los mensajes';
 
   @override
   String get emptyChatMessagesText => 'Todavía no hay charlas aquí...';
@@ -168,7 +171,7 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
   @override
   String get enablePhotoAndVideoAccessMessage =>
       'Por favor, permita el acceso a sus fotos'
-      '\ny vídeos para que puedas compartirlos con sus amigos.';
+      '\ny vídeos para que pueda compartirlos con sus amigos.';
 
   @override
   String get allowGalleryAccessMessage => 'Permitir el acceso a su galería';
@@ -209,7 +212,7 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
       'La operación no pudo completarse.';
 
   @override
-  String get replyLabel => 'Respuesta';
+  String get replyLabel => 'Responder';
 
   @override
   String togglePinUnpinText({required bool pinned}) {
@@ -392,14 +395,14 @@ No es posible añadir más de $limit archivos adjuntos
     if (isMuted) {
       return 'No silenciar usuario';
     } else {
-      return 'Usuario mudo';
+      return 'Silenciar usuario';
     }
   }
 
   @override
   String toggleMuteUnmuteGroupQuestion({required bool isMuted}) {
     if (isMuted) {
-      return '¿Estás seguro de que quieres activar el silencio de este grupo?';
+      return '¿Estás seguro de que quieres activar el sonido de este grupo?';
     } else {
       return '¿Estás seguro de que quieres silenciar a este grupo?';
     }
@@ -440,12 +443,7 @@ No es posible añadir más de $limit archivos adjuntos
   String get linkDisabledError => 'Los enlaces están deshabilitados';
 
   @override
-  String unreadMessagesSeparatorText(int unreadCount) {
-    if (unreadCount == 1) {
-      return '1 mensaje no leído';
-    }
-    return '$unreadCount mensajes no leídos';
-  }
+  String unreadMessagesSeparatorText(int unreadCount) => 'Nuevos mensajes';
 
   @override
   String get enableFileAccessMessage => 'Habilite el acceso a los archivos'
