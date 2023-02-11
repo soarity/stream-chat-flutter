@@ -6,6 +6,9 @@ class StreamChatLocalizationsCa extends GlobalStreamChatLocalizations {
   const StreamChatLocalizationsCa({super.localeName = 'ca'});
 
   @override
+  String get edited => 'Editado';
+
+  @override
   String get launchUrlError => "No s'ha pogut obrir l'enllaç";
 
   @override
