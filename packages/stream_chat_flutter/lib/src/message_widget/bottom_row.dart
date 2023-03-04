@@ -124,16 +124,16 @@ class BottomRow extends StatelessWidget {
     return Text.rich(
       TextSpan(
         children: [
-          if (message.status == MessageSendingStatus.sent &&
-              message.createdAt != message.updatedAt)
-            WidgetSpan(
-              child: Text(
-                context.translations.edited,
-                style: messageTheme.createdAtStyle?.copyWith(
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
+          // if (message.status == MessageSendingStatus.sent &&
+          //     message.createdAt != message.updatedAt)
+          //   WidgetSpan(
+          //     child: Text(
+          //       context.translations.edited,
+          //       style: messageTheme.createdAtStyle?.copyWith(
+          //         fontStyle: FontStyle.italic,
+          //       ),
+          //     ),
+          //   ),
           if (showTimeStamp)
             WidgetSpan(
               child: Text(
