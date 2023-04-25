@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stream_chat_flutter/src/attachment/attachment_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -21,6 +22,7 @@ class StreamImageAttachment extends StreamAttachmentWidget {
     this.imageThumbnailSize = const Size(400, 400),
     this.imageThumbnailResizeType = 'clip',
     this.imageThumbnailCropType = 'center',
+    this.attachmentActionsModalBuilder,
   });
 
   /// The [StreamMessageThemeData] to use for the image title
@@ -50,6 +52,9 @@ class StreamImageAttachment extends StreamAttachmentWidget {
   ///
   /// Defaults to [center]
   final String /*center|top|bottom|left|right*/ imageThumbnailCropType;
+
+  /// {@macro attachmentActionsBuilder}
+  final AttachmentActionsBuilder? attachmentActionsModalBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +165,8 @@ class StreamImageAttachment extends StreamAttachmentWidget {
                                     userName: message.user!.name,
                                     onShowMessage: onShowMessage,
                                     onReplyMessage: onReplyMessage,
+                                    attachmentActionsModalBuilder:
+                                        attachmentActionsModalBuilder,
                                   ),
                                 );
                               },

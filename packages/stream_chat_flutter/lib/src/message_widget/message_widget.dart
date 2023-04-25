@@ -106,6 +106,7 @@ class StreamMessageWidget extends StatefulWidget {
     this.imageAttachmentThumbnailSize = const Size(400, 400),
     this.imageAttachmentThumbnailResizeType = 'clip',
     this.imageAttachmentThumbnailCropType = 'center',
+    this.attachmentActionsModalBuilder,
   })  : assert(
           bottomRowBuilder == null || bottomRowBuilderWithDefaultWidget == null,
           'You can only use one of the two bottom row builders',
@@ -143,6 +144,8 @@ class StreamMessageWidget extends StatefulWidget {
                       imageThumbnailResizeType:
                           imageAttachmentThumbnailResizeType,
                       imageThumbnailCropType: imageAttachmentThumbnailCropType,
+                      attachmentActionsModalBuilder:
+                          attachmentActionsModalBuilder,
                     ),
                   ),
                   attachmentShape: border,
@@ -170,6 +173,7 @@ class StreamMessageWidget extends StatefulWidget {
                 imageThumbnailSize: imageAttachmentThumbnailSize,
                 imageThumbnailResizeType: imageAttachmentThumbnailResizeType,
                 imageThumbnailCropType: imageAttachmentThumbnailCropType,
+                attachmentActionsModalBuilder: attachmentActionsModalBuilder,
               ),
               attachmentShape: border,
             );
@@ -203,6 +207,8 @@ class StreamMessageWidget extends StatefulWidget {
                             onAttachmentTap(message, attachment);
                           }
                         : null,
+                    attachmentActionsModalBuilder:
+                        attachmentActionsModalBuilder,
                   );
                 }).toList(),
               ),
@@ -523,6 +529,9 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@macro onMessageWidgetAttachmentTap}
   final OnMessageWidgetAttachmentTap? onAttachmentTap;
 
+  /// {@macro attachmentActionsBuilder}
+  final AttachmentActionsBuilder? attachmentActionsModalBuilder;
+
   /// Size of the image attachment thumbnail.
   final Size imageAttachmentThumbnailSize;
 
@@ -596,6 +605,7 @@ class StreamMessageWidget extends StatefulWidget {
     Size? imageAttachmentThumbnailSize,
     String? imageAttachmentThumbnailResizeType,
     String? imageAttachmentThumbnailCropType,
+    AttachmentActionsBuilder? attachmentActionsModalBuilder,
   }) {
     assert(
       bottomRowBuilder == null || bottomRowBuilderWithDefaultWidget == null,
@@ -675,6 +685,8 @@ class StreamMessageWidget extends StatefulWidget {
           this.imageAttachmentThumbnailResizeType,
       imageAttachmentThumbnailCropType: imageAttachmentThumbnailCropType ??
           this.imageAttachmentThumbnailCropType,
+      attachmentActionsModalBuilder:
+          attachmentActionsModalBuilder ?? this.attachmentActionsModalBuilder,
     );
   }
 

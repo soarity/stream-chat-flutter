@@ -1,15 +1,10 @@
-export 'package:dio/dio.dart';
-export 'package:flutter_svg/flutter_svg.dart';
-export 'package:image_picker/image_picker.dart';
+
 export 'package:jiffy/jiffy.dart';
 export 'package:photo_manager/photo_manager.dart'
     show ThumbnailSize, ThumbnailFormat;
-export 'package:share_plus/share_plus.dart';
-export 'package:shimmer/shimmer.dart';
 export 'package:stream_chat_flutter/src/message_widget/parse_attachments.dart';
 export 'package:stream_chat_flutter/src/message_widget/quoted_message.dart';
 export 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-export 'package:url_launcher/url_launcher.dart';
 
 export 'src/attachment/attachment.dart';
 export 'src/attachment/attachment_title.dart';

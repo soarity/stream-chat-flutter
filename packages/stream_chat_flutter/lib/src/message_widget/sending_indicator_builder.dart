@@ -6,15 +6,16 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 ///
 /// Used in [BottomRow]. Should not be used elsewhere.
 /// {@endtemplate}
-class SendingIndicatorWrapper extends StatelessWidget {
+class SendingIndicatorBuilder extends StatelessWidget {
   /// {@macro sendingIndicatorWrapper}
-  const SendingIndicatorWrapper({
+  const SendingIndicatorBuilder({
     super.key,
     required this.messageTheme,
     required this.message,
     required this.hasNonUrlAttachments,
     required this.streamChat,
     required this.streamChatTheme,
+    this.channel,
   });
 
   /// {@macro messageTheme}
@@ -32,9 +33,13 @@ class SendingIndicatorWrapper extends StatelessWidget {
   /// {@macro streamChatThemeData}
   final StreamChatThemeData streamChatTheme;
 
+  /// {@macro channel}
+  final Channel? channel;
+
   @override
   Widget build(BuildContext context) {
     final style = messageTheme.createdAtStyle;
+    final channel = this.channel ?? StreamChannel.of(context).channel;
 
     if (hasNonUrlAttachments &&
         (message.status == MessageSendingStatus.sending ||
@@ -57,8 +62,6 @@ class SendingIndicatorWrapper extends StatelessWidget {
       );
     }
 
-    final channel = StreamChannel.of(context).channel;
-
     return BetterStreamBuilder<List<Read>>(
       stream: channel.state?.readStream,
       initialData: channel.state?.read,
@@ -67,13 +70,15 @@ class SendingIndicatorWrapper extends StatelessWidget {
             it.user.id != streamChat.currentUser?.id &&
             (it.lastRead.isAfter(message.createdAt) ||
                 it.lastRead.isAtSameMomentAs(message.createdAt)));
-        final isMessageRead = readList.length >= (channel.memberCount ?? 0) - 1;
+
+        final isMessageRead = readList.isNotEmpty;
         return StreamSendingIndicator(
           message: message,
           isMessageRead: isMessageRead,
           size: style!.fontSize! * 1.3,
         );
-      },
+
+              },
     );
   }
 }

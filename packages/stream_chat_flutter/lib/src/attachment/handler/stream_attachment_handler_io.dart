@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
-
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/common.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler_base.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/message_widget/sending_indicator_wrapper.dart';
+import 'package:stream_chat_flutter/src/message_widget/sending_indicator_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template bottomRow}
@@ -143,7 +143,7 @@ class BottomRow extends StatelessWidget {
             ),
           if (showSendingIndicator)
             WidgetSpan(
-              child: SendingIndicatorWrapper(
+              child: SendingIndicatorBuilder(
                 messageTheme: messageTheme,
                 message: message,
                 hasNonUrlAttachments: hasNonUrlAttachments,

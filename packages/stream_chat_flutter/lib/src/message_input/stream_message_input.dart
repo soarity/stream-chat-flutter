@@ -1,13 +1,17 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart'
     hide ErrorListener;
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/src/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_button.dart';
 import 'package:stream_chat_flutter/src/message_input/command_button.dart';
@@ -109,7 +113,16 @@ class StreamMessageInput extends StatefulWidget {
     this.onQuotedMessageCleared,
     this.enableMentionsOverlay = true,
     this.enableActionAnimation = true,
+    this.sendMessageKeyPredicate = _defaultSendMessageKeyPredicate,
+    this.clearQuotedMessageKeyPredicate =
+        _defaultClearQuotedMessageKeyPredicate,
   });
+
+  /// The predicate used to send a message on desktop/web
+  final KeyEventPredicate sendMessageKeyPredicate;
+
+  /// The predicate used to clear the quoted message on desktop/web
+  final KeyEventPredicate clearQuotedMessageKeyPredicate;
 
   /// If true the message input will animate the actions while you type
   final bool enableActionAnimation;
@@ -253,6 +266,22 @@ class StreamMessageInput extends StatefulWidget {
 
   static bool _defaultValidator(Message message) =>
       message.text?.isNotEmpty == true || message.attachments.isNotEmpty;
+
+  static bool _defaultSendMessageKeyPredicate(
+    FocusNode node,
+    KeyEvent event,
+  ) {
+    // On desktop/web, send the message when the user presses the enter key.
+    return event is KeyUpEvent && event.logicalKey == LogicalKeyboardKey.enter;
+  }
+
+  static bool _defaultClearQuotedMessageKeyPredicate(
+    FocusNode node,
+    KeyEvent event,
+  ) {
+    // On desktop/web, clear the quoted message when the user presses the escape key.
+    return event is KeyUpEvent && event.logicalKey == LogicalKeyboardKey.escape;
+  }
 
   @override
   StreamMessageInputState createState() => StreamMessageInputState();
@@ -511,9 +540,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
                             : CrossFadeState.showSecond,
                       ),
                     ),
-                  // PlatformWidgetBuilder(
-                  //   mobile: (context, child) => _buildFilePickerSection(),
-                  // ),
                 ],
               ),
             ),
@@ -721,24 +747,12 @@ class StreamMessageInputState extends State<StreamMessageInput>
                   LimitedBox(
                     maxHeight: widget.maxHeight,
                     child: PlatformWidgetBuilder(
-                      web: (context, child) => KeyboardShortcutRunner(
-                        onEnterKeypress: sendMessage,
-                        onEscapeKeypress: () {
-                          if (_hasQuotedMessage &&
-                              _effectiveController.text.isEmpty) {
-                            widget.onQuotedMessageCleared?.call();
-                          }
-                        },
+                      web: (context, child) => Focus(
+                        onKeyEvent: _handleKeyPressed,
                         child: child!,
                       ),
-                      desktop: (context, child) => KeyboardShortcutRunner(
-                        onEnterKeypress: sendMessage,
-                        onEscapeKeypress: () {
-                          if (_hasQuotedMessage &&
-                              _effectiveController.text.isEmpty) {
-                            widget.onQuotedMessageCleared?.call();
-                          }
-                        },
+                      desktop: (context, child) => Focus(
+                        onKeyEvent: _handleKeyPressed,
                         child: child!,
                       ),
                       mobile: (context, child) => child,
@@ -767,6 +781,25 @@ class StreamMessageInputState extends State<StreamMessageInput>
         ),
       ),
     );
+  }
+
+  KeyEventResult _handleKeyPressed(FocusNode node, KeyEvent event) {
+    // Check for send message key.
+    if (widget.sendMessageKeyPredicate(node, event)) {
+      sendMessage();
+      return KeyEventResult.handled;
+    }
+
+    // Check for clear quoted message key.
+    if (widget.clearQuotedMessageKeyPredicate(node, event)) {
+      if (_hasQuotedMessage && _effectiveController.text.isEmpty) {
+        widget.onQuotedMessageCleared?.call();
+      }
+      return KeyEventResult.handled;
+    }
+
+    // Return ignored to allow other key events to be handled.
+    return KeyEventResult.ignored;
   }
 
   InputDecoration _getInputDecoration(BuildContext context) {

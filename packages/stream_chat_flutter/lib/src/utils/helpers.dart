@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:synchronized/synchronized.dart' as synchronized;
+import 'package:url_launcher/url_launcher.dart';
 
 final _permissionRequestLock = synchronized.Lock();
 

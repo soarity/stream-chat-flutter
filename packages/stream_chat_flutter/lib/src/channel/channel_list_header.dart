@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamChannelListHeader}
@@ -130,8 +131,8 @@ class StreamChannelListHeader extends StatelessWidget
           showMessage: showConnectionStateTile && showStatus,
           message: statusString,
           child: AppBar(
-            toolbarTextStyle: theme.textTheme.bodyText2,
-            titleTextStyle: theme.textTheme.headline6,
+            toolbarTextStyle: theme.textTheme.bodyMedium,
+            titleTextStyle: theme.textTheme.titleLarge,
             systemOverlayStyle: theme.brightness == Brightness.dark
                 ? SystemUiOverlayStyle.light
                 : SystemUiOverlayStyle.dark,
@@ -180,7 +181,10 @@ class StreamChannelListHeader extends StatelessWidget
                             package: 'stream_chat_flutter',
                             width: 24,
                             height: 24,
-                            color: color,
+                            colorFilter: ColorFilter.mode(
+                              color,
+                              BlendMode.srcIn,
+                            ),
                           );
                         },
                       ),
