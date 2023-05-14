@@ -155,19 +155,16 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: widget.isGiphy ? 0.0 : 0.5,
-      shape: widget.isGiphy
-          ? null
-          : widget.shape ??
-              RoundedRectangleBorder(
-                side: widget.borderSide ??
-                    BorderSide(
-                      color:
-                          widget.messageTheme.messageBorderColor ?? Colors.grey,
-                    ),
-                borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
-              ),
+    return Card(
+      elevation: 0.5,
+      shape: widget.shape ??
+          RoundedRectangleBorder(
+            side: widget.borderSide ??
+                BorderSide(
+                  color: widget.messageTheme.messageBorderColor ?? Colors.grey,
+                ),
+            borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
+          ),
       color: _getBackgroundColor,
       child: Padding(
         padding: EdgeInsets.only(bottom: 5.h),
@@ -272,7 +269,7 @@ class _MessageCardState extends State<MessageCard> {
     }
 
     if (widget.hasUrlAttachments) {
-      return widget.messageTheme.linkBackgroundColor;
+      return widget.messageTheme.urlAttachmentBackgroundColor;
     }
 
     if (widget.isOnlyEmoji) {

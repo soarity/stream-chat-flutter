@@ -71,7 +71,6 @@ class _QuotedMessageState extends State<QuotedMessage> {
         top: 3.h,
         bottom: widget.hasNonUrlAttachments ? 3.h : 0,
       ),
-      composing: false,
     );
   }
 }

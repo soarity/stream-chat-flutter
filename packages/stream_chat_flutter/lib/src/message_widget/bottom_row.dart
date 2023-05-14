@@ -114,11 +114,10 @@ class BottomRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isDeleted) {
-      return deletedBottomRowBuilder?.call(
-            context,
-            message,
-          ) ??
-          const Offstage();
+      final deletedBottomRowBuilder = this.deletedBottomRowBuilder;
+      if (deletedBottomRowBuilder != null) {
+        return deletedBottomRowBuilder(context, message);
+      }
     }
 
     return Text.rich(

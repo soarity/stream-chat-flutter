@@ -69,7 +69,7 @@ enum SpacingType {
 /// A [StreamChannel] ancestor widget is required in order to provide the
 /// information about the channels.
 ///
-/// Uses a [ListView.custom] to render the list of channels.
+/// Uses a [ScrollablePositionedList] to render the list of channels.
 ///
 /// The UI is rendered based on the first ancestor of type [StreamChatTheme].
 /// Modify it to change the widget's appearance.
@@ -87,8 +87,10 @@ class StreamMessageListView extends StatefulWidget {
     this.botBuilder,
     this.videoMessageBuilder,
     this.dateDividerBuilder,
-    this.scrollPhysics =
-        const ClampingScrollPhysics(), // we need to use ClampingScrollPhysics to avoid the list view to animate and break while loading
+    // we need to use ClampingScrollPhysics to avoid the list view to bounce
+    // when we are at the either end of the list view and try to use 'animateTo'
+    // to animate in the same direction.
+    this.scrollPhysics = const ClampingScrollPhysics(),
     this.initialScrollIndex,
     this.initialAlignment,
     this.scrollController,
@@ -111,6 +113,7 @@ class StreamMessageListView extends StatefulWidget {
     this.unreadMessagesSeparatorBuilder,
     this.messageListController,
     this.reverse = true,
+    this.shrinkWrap = false,
     this.paginationLimit = 20,
     this.paginationLoadingIndicatorBuilder,
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.onDrag,
@@ -141,6 +144,14 @@ class StreamMessageListView extends StatefulWidget {
   ///
   /// See [ScrollView.reverse].
   final bool reverse;
+
+  /// Whether the extent of the scroll view in the [scrollDirection] should be
+  /// determined by the contents being viewed.
+  ///
+  ///  Defaults to false.
+  ///
+  /// See [ScrollView.shrinkWrap].
+  final bool shrinkWrap;
 
   /// Limit used during pagination
   final int paginationLimit;
@@ -535,6 +546,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   physics: widget.scrollPhysics,
                   itemScrollController: _scrollController,
                   reverse: widget.reverse,
+                  shrinkWrap: widget.shrinkWrap,
                   itemCount: itemCount,
                   findChildIndexCallback: (Key key) {
                     final indexedKey = key as IndexedKey;
@@ -542,6 +554,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                     if (valueKey != null) {
                       final index = messagesIndex[valueKey.value];
                       if (index != null) {
+                        // The calculation is as follows:
+                        // * Add 2 to the index retrieved to account for the footer and the bottom loader.
+                        // * Multiply the result by 2 to account for the separators between each pair of items.
+                        // * Subtract 1 to adjust for the 0-based indexing of the list view.
                         return ((index + 2) * 2) - 1;
                       }
                     }
@@ -630,7 +646,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         spacingRules,
                       );
                     }
-
                     if (unreadCount > 0 &&
                         _oldestUnreadMessage?.id == nextMessage.id) {
                       final unreadMessagesSeparator =
@@ -837,6 +852,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final currentUserMember =
         members.firstWhereOrNull((e) => e.user!.id == currentUser!.id);
 
+    final hasUrlAttachment =
+        message.attachments.any((it) => it.ogScrapeUrl != null);
+
+    final borderSide = isOnlyEmoji || hasUrlAttachment ? BorderSide.none : null;
+
     final defaultMessageWidget = StreamMessageWidget(
       showReplyMessage: false,
       showResendMessage: false,
@@ -860,7 +880,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         isOnlyEmoji ? 0 : 12.w,
         0,
       ),
-      borderSide: isMyMessage || isOnlyEmoji ? BorderSide.none : null,
+      borderSide: borderSide,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme

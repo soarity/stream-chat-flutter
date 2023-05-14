@@ -25,7 +25,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     this.padding = const EdgeInsets.all(8),
     this.onTap,
     this.onQuotedMessageClear,
-    this.composing = true,
   });
 
   /// The message
@@ -58,9 +57,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 
   /// Callback for clearing quoted messages.
   final VoidCallback? onQuotedMessageClear;
-
-  /// True if the message is being composed
-  final bool composing;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +102,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
                     _QuotedMessage(
                       message: message,
                       textLimit: textLimit,
-                      composing: composing,
                       onQuotedMessageClear: onQuotedMessageClear,
                       messageTheme: messageTheme,
                       showBorder: showBorder,
@@ -128,17 +123,15 @@ class _QuotedMessage extends StatelessWidget {
   const _QuotedMessage({
     required this.message,
     required this.textLimit,
-    required this.composing,
-    required this.onQuotedMessageClear,
     required this.messageTheme,
     required this.showBorder,
     required this.reverse,
+    this.onQuotedMessageClear,
     this.attachmentThumbnailBuilders,
   });
 
   final Message message;
   final int textLimit;
-  final bool composing;
   final VoidCallback? onQuotedMessageClear;
   final StreamMessageThemeData messageTheme;
   final bool showBorder;
@@ -158,6 +151,8 @@ class _QuotedMessage extends StatelessWidget {
   bool get _isVoiceNote =>
       message.attachments.any((element) => element.type == 'voicenote');
 
+  bool get _isDeleted => message.isDeleted || message.deletedAt != null;
+
   @override
   Widget build(BuildContext context) {
     final isOnlyEmoji = message.text!.isOnlyEmoji;
@@ -168,9 +163,23 @@ class _QuotedMessage extends StatelessWidget {
       msg = msg.copyWith(text: '${msg.text!.substring(0, textLimit - 3)}...');
     }
 
-    final children = [
-      if (msg.text!.isNotEmpty && !_isGiphy && !_isVoiceNote)
-        Flexible(
+    List<Widget> children;
+    if (_isDeleted) {
+      // Show deleted message text
+      children = [
+        Text(
+          context.translations.messageDeletedLabel,
+          style: messageTheme.messageTextStyle?.copyWith(
+            fontStyle: FontStyle.italic,
+            color: messageTheme.createdAtStyle?.color,
+          ),
+        ),
+      ];
+    } else {
+      // Show quoted message
+      children = [
+        if (msg.text!.isNotEmpty && !_isGiphy && !_isVoiceNote)
+          Flexible(
           child: StreamMessageText(
             message: msg,
             messageTheme: isOnlyEmoji && _containsText
@@ -186,21 +195,22 @@ class _QuotedMessage extends StatelessWidget {
                   ),
           ),
         ),
-      if (_hasAttachments)
-        _ParseAttachments(
-          message: message,
-          messageTheme: messageTheme,
-          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-        ),
-      if (composing)
-        PlatformWidgetBuilder(
-          web: (context, child) => child,
-          desktop: (context, child) => child,
-          child: ClearInputItemButton(
-            onTap: onQuotedMessageClear,
+          if (_hasAttachments)
+          _ParseAttachments(
+            message: message,
+            messageTheme: messageTheme,
+            attachmentThumbnailBuilders: attachmentThumbnailBuilders,
           ),
-        ),
-    ].insertBetween(SizedBox(width: 8.w));
+          if (onQuotedMessageClear != null)
+          PlatformWidgetBuilder(
+            web: (context, child) => child,
+            desktop: (context, child) => child,
+            child: ClearInputItemButton(
+              onTap: onQuotedMessageClear,
+            ),
+          ),
+      ].insertBetween(SizedBox(width: 8.w));
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
