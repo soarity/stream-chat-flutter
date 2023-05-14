@@ -155,16 +155,22 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0.5,
-      shape: widget.shape ??
-          RoundedRectangleBorder(
-            side: widget.borderSide ??
-                BorderSide(
-                  color: widget.messageTheme.messageBorderColor ?? Colors.grey,
-                ),
-            borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
-          ),
+    final hideBackground = widget.hasNonUrlAttachments &&
+        widget.message.text != null &&
+        widget.message.text!.trim().isNotEmpty;
+    return Material(
+      elevation: hideBackground ? 0.0 : 0.5,
+      shape: hideBackground
+          ? null
+          : widget.shape ??
+              RoundedRectangleBorder(
+                side: widget.borderSide ??
+                    BorderSide(
+                      color:
+                          widget.messageTheme.messageBorderColor ?? Colors.grey,
+                    ),
+                borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
+              ),
       color: _getBackgroundColor,
       child: Padding(
         padding: EdgeInsets.only(bottom: 5.h),
@@ -195,12 +201,41 @@ class _MessageCardState extends State<MessageCard> {
                       onQuotedMessageTap: widget.onQuotedMessageTap,
                     ),
                   if (widget.hasNonUrlAttachments)
-                    ParseAttachments(
-                      key: attachmentsKey,
-                      message: widget.message,
-                      attachmentBuilders: widget.attachmentBuilders,
-                      attachmentPadding: widget.attachmentPadding,
-                    ),
+                    if (hideBackground)
+                      ParseAttachments(
+                        key: attachmentsKey,
+                        message: widget.message,
+                        attachmentBuilders: widget.attachmentBuilders,
+                        attachmentPadding: widget.attachmentPadding,
+                      )
+                    else
+                      Stack(
+                        children: [
+                          ParseAttachments(
+                            key: attachmentsKey,
+                            message: widget.message,
+                            attachmentBuilders: widget.attachmentBuilders,
+                            attachmentPadding: widget.attachmentPadding,
+                          ),
+                          Positioned(
+                            right: widget.reverse ? 4.w : 8.w,
+                            bottom: 2.h,
+                            child: BottomRow(
+                              message: widget.message,
+                              messageTheme: widget.messageTheme,
+                              hasUrlAttachments: widget.hasUrlAttachments,
+                              isOnlyEmoji: widget.isOnlyEmoji,
+                              isDeleted: widget.message.isDeleted,
+                              isGiphy: widget.isGiphy,
+                              showSendingIndicator: widget.showSendingIndicator,
+                              showTimeStamp: widget.showTimeStamp,
+                              streamChatTheme: widget.streamChatTheme,
+                              streamChat: widget.streamChat,
+                              hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                            ),
+                          ),
+                        ],
+                      ),
                   if (!widget.isGiphy)
                     TextBubble(
                       messageTheme: widget.messageTheme,
@@ -218,25 +253,26 @@ class _MessageCardState extends State<MessageCard> {
                     _buildUrlAttachment(),
                 ],
               ),
-            Padding(
-              padding: EdgeInsets.only(
-                top: 2.h,
-                right: widget.reverse ? 4.w : 8.w,
+            if (hideBackground)
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 2.h,
+                  right: widget.reverse ? 4.w : 8.w,
+                ),
+                child: BottomRow(
+                  message: widget.message,
+                  messageTheme: widget.messageTheme,
+                  hasUrlAttachments: widget.hasUrlAttachments,
+                  isOnlyEmoji: widget.isOnlyEmoji,
+                  isDeleted: widget.message.isDeleted,
+                  isGiphy: widget.isGiphy,
+                  showSendingIndicator: widget.showSendingIndicator,
+                  showTimeStamp: widget.showTimeStamp,
+                  streamChatTheme: widget.streamChatTheme,
+                  streamChat: widget.streamChat,
+                  hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                ),
               ),
-              child: BottomRow(
-                message: widget.message,
-                messageTheme: widget.messageTheme,
-                hasUrlAttachments: widget.hasUrlAttachments,
-                isOnlyEmoji: widget.isOnlyEmoji,
-                isDeleted: widget.message.isDeleted,
-                isGiphy: widget.isGiphy,
-                showSendingIndicator: widget.showSendingIndicator,
-                showTimeStamp: widget.showTimeStamp,
-                streamChatTheme: widget.streamChatTheme,
-                streamChat: widget.streamChat,
-                hasNonUrlAttachments: widget.hasNonUrlAttachments,
-              ),
-            ),
           ],
         ),
       ),
