@@ -155,25 +155,27 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
-    final hideBackground = widget.hasNonUrlAttachments &&
-        widget.message.text != null &&
-        widget.message.text!.trim().isNotEmpty;
-    return Material(
-      elevation: hideBackground ? 0.0 : 0.5,
-      shape: hideBackground
+    final showText = widget.message.attachments
+        .where((it) =>
+            it.type == 'image' || it.type == 'giphy' || it.type == 'video')
+        .isEmpty;
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: widget.isGiphy
           ? null
           : widget.shape ??
               RoundedRectangleBorder(
                 side: widget.borderSide ??
                     BorderSide(
-                      color:
-                          widget.messageTheme.messageBorderColor ?? Colors.grey,
+                      color: widget.messageTheme.messageBorderColor ??
+                          Colors.transparent,
                     ),
                 borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
               ),
       color: _getBackgroundColor,
       child: Padding(
-        padding: EdgeInsets.only(bottom: 5.h),
+        padding: showText ? EdgeInsets.only(bottom: 5.h) : EdgeInsets.zero,
         child: Wrap(
           alignment: WrapAlignment.end,
           crossAxisAlignment: WrapCrossAlignment.end,
@@ -201,7 +203,7 @@ class _MessageCardState extends State<MessageCard> {
                       onQuotedMessageTap: widget.onQuotedMessageTap,
                     ),
                   if (widget.hasNonUrlAttachments)
-                    if (hideBackground)
+                    if (showText)
                       ParseAttachments(
                         key: attachmentsKey,
                         message: widget.message,
@@ -219,7 +221,7 @@ class _MessageCardState extends State<MessageCard> {
                           ),
                           Positioned(
                             right: widget.reverse ? 4.w : 8.w,
-                            bottom: 2.h,
+                            bottom: 4.h,
                             child: BottomRow(
                               message: widget.message,
                               messageTheme: widget.messageTheme,
@@ -253,7 +255,7 @@ class _MessageCardState extends State<MessageCard> {
                     _buildUrlAttachment(),
                 ],
               ),
-            if (hideBackground)
+            if (showText)
               Padding(
                 padding: EdgeInsets.only(
                   top: 2.h,
