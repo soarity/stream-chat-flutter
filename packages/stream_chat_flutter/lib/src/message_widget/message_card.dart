@@ -158,7 +158,7 @@ class _MessageCardState extends State<MessageCard> {
     final showText = widget.message.attachments
         .where((it) =>
             it.type == 'image' || it.type == 'giphy' || it.type == 'video')
-        .isEmpty;
+        .isEmpty || (widget.message.text != null && widget.message.text!.trim().isNotEmpty);
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -220,8 +220,8 @@ class _MessageCardState extends State<MessageCard> {
                             attachmentPadding: widget.attachmentPadding,
                           ),
                           Positioned(
-                            right: widget.reverse ? 4.w : 8.w,
-                            bottom: 4.h,
+                            right: 8.w,
+                            bottom: 6.h,
                             child: BottomRow(
                               message: widget.message,
                               messageTheme: widget.messageTheme,
