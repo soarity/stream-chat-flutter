@@ -155,10 +155,11 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
-    final showText = widget.message.attachments
-        .where((it) =>
-            it.type == 'image' || it.type == 'giphy' || it.type == 'video')
-        .isEmpty || (widget.message.text != null && widget.message.text!.trim().isNotEmpty);
+    final message = widget.message;
+    final showText = message.attachments.where((it) {
+          return it.type == 'image' || it.type == 'giphy' || it.type == 'video';
+        }).isEmpty ||
+        (message.text != null && message.text!.trim().isNotEmpty);
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
