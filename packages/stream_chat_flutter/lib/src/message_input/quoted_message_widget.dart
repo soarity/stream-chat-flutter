@@ -301,7 +301,7 @@ class _ParseAttachments extends StatelessWidget {
               width: size.width,
               height: size.height,
               child: const Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator.adaptive(),
               ),
             );
           },
@@ -395,7 +395,7 @@ class _VideoAttachmentThumbnailState extends State<_VideoAttachmentThumbnail> {
       width: 32.r,
       child: _controller.value.isInitialized
           ? VideoPlayer(_controller)
-          : const CircularProgressIndicator(),
+          : const CircularProgressIndicator.adaptive(),
     );
   }
 }

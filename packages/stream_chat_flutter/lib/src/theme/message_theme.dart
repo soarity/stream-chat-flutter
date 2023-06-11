@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/theme/avatar_theme.dart';
@@ -22,12 +24,13 @@ class StreamMessageThemeData with Diagnosticable {
     this.avatarTheme,
     this.createdAtStyle,
     @Deprecated('Use urlAttachmentBackgroundColor instead')
-        Color? linkBackgroundColor,
+    Color? linkBackgroundColor,
     Color? urlAttachmentBackgroundColor,
     this.urlAttachmentHostStyle,
     this.urlAttachmentTitleStyle,
     this.urlAttachmentTextStyle,
     this.urlAttachmentTitleMaxLine,
+    this.urlAttachmentTextMaxLine,
   }) : urlAttachmentBackgroundColor =
             urlAttachmentBackgroundColor ?? linkBackgroundColor;
 
@@ -86,6 +89,9 @@ class StreamMessageThemeData with Diagnosticable {
   /// Max number of lines in Url link title.
   final int? urlAttachmentTitleMaxLine;
 
+  /// Max number of lines in Url link text.
+  final int? urlAttachmentTextMaxLine;
+
   /// Copy with a theme
   StreamMessageThemeData copyWith({
     TextStyle? messageTextStyle,
@@ -101,12 +107,13 @@ class StreamMessageThemeData with Diagnosticable {
     Color? reactionsBorderColor,
     Color? reactionsMaskColor,
     @Deprecated('Use urlAttachmentBackgroundColor instead')
-        Color? linkBackgroundColor,
+    Color? linkBackgroundColor,
     Color? urlAttachmentBackgroundColor,
     TextStyle? urlAttachmentHostStyle,
     TextStyle? urlAttachmentTitleStyle,
     TextStyle? urlAttachmentTextStyle,
     int? urlAttachmentTitleMaxLine,
+    int? urlAttachmentTextMaxLine,
   }) {
     return StreamMessageThemeData(
       messageTextStyle: messageTextStyle ?? this.messageTextStyle,
@@ -133,6 +140,8 @@ class StreamMessageThemeData with Diagnosticable {
           urlAttachmentTextStyle ?? this.urlAttachmentTextStyle,
       urlAttachmentTitleMaxLine:
           urlAttachmentTitleMaxLine ?? this.urlAttachmentTitleMaxLine,
+      urlAttachmentTextMaxLine:
+          urlAttachmentTextMaxLine ?? this.urlAttachmentTextMaxLine,
     );
   }
 
@@ -183,6 +192,16 @@ class StreamMessageThemeData with Diagnosticable {
         b.urlAttachmentTitleStyle,
         t,
       ),
+      urlAttachmentTitleMaxLine: lerpDouble(
+        a.urlAttachmentTitleMaxLine,
+        b.urlAttachmentTitleMaxLine,
+        t,
+      )?.round(),
+      urlAttachmentTextMaxLine: lerpDouble(
+        a.urlAttachmentTextMaxLine,
+        b.urlAttachmentTextMaxLine,
+        t,
+      )?.round(),
     );
   }
 
@@ -212,6 +231,7 @@ class StreamMessageThemeData with Diagnosticable {
       urlAttachmentTitleStyle: other.urlAttachmentTitleStyle,
       urlAttachmentTextStyle: other.urlAttachmentTextStyle,
       urlAttachmentTitleMaxLine: other.urlAttachmentTitleMaxLine,
+      urlAttachmentTextMaxLine: other.urlAttachmentTextMaxLine,
     );
   }
 
@@ -236,7 +256,8 @@ class StreamMessageThemeData with Diagnosticable {
           urlAttachmentHostStyle == other.urlAttachmentHostStyle &&
           urlAttachmentTitleStyle == other.urlAttachmentTitleStyle &&
           urlAttachmentTextStyle == other.urlAttachmentTextStyle &&
-          urlAttachmentTitleMaxLine == other.urlAttachmentTitleMaxLine;
+          urlAttachmentTitleMaxLine == other.urlAttachmentTitleMaxLine &&
+          urlAttachmentTextMaxLine == other.urlAttachmentTextMaxLine;
 
   @override
   int get hashCode =>
@@ -256,7 +277,8 @@ class StreamMessageThemeData with Diagnosticable {
       urlAttachmentHostStyle.hashCode ^
       urlAttachmentTitleStyle.hashCode ^
       urlAttachmentTextStyle.hashCode ^
-      urlAttachmentTitleMaxLine.hashCode;
+      urlAttachmentTitleMaxLine.hashCode ^
+      urlAttachmentTextMaxLine.hashCode;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -293,6 +315,10 @@ class StreamMessageThemeData with Diagnosticable {
       ..add(DiagnosticsProperty(
         'urlAttachmentTitleMaxLine',
         urlAttachmentTitleMaxLine,
+      ))
+      ..add(DiagnosticsProperty(
+        'urlAttachmentTextMaxLine',
+        urlAttachmentTextMaxLine,
       ));
   }
 }

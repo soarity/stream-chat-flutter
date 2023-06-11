@@ -58,7 +58,7 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
 
   bool get _debugIsConnected {
     assert(() {
-      if (db == null) {
+      if (!isConnected) {
         throw StateError('''
         $runtimeType hasn't been connected yet or used after `disconnect` 
         was called. Consider calling `connect` to create a connection. 
@@ -78,6 +78,12 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
         connectionMode: mode,
         webUseIndexedDbIfSupported: _webUseIndexedDbIfSupported,
       );
+
+  @override
+  bool get isConnected => db != null;
+
+  @override
+  String? get userId => db?.userId;
 
   @override
   Future<void> connect(
@@ -245,9 +251,8 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
   @override
   Future<List<ChannelState>> getChannelStates({
     Filter? filter,
-    @Deprecated('''
-    sort has been deprecated. 
-    Please use channelStateSort instead.''') List<SortOption<ChannelModel>>? sort,
+    @Deprecated('Use channelStateSort instead.')
+    List<SortOption<ChannelModel>>? sort,
     List<SortOption<ChannelState>>? channelStateSort,
     PaginationParams? paginationParams,
   }) async {
@@ -405,7 +410,7 @@ class StreamChatPersistenceClient extends ChatPersistenceClient {
   @override
   Future<void> disconnect({bool flush = false}) async {
     _logger.info('disconnect');
-    if (db != null) {
+    if (isConnected) {
       _logger.info('Disconnecting');
       if (flush) {
         _logger.info('Flushing');

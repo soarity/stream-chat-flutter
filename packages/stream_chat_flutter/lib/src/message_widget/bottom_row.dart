@@ -120,34 +120,31 @@ class BottomRow extends StatelessWidget {
       }
     }
 
+    final mediaQueryData = MediaQuery.of(context);
     return Text.rich(
       TextSpan(
         children: [
-          // if (message.status == MessageSendingStatus.sent &&
-          //     message.createdAt != message.updatedAt)
-          //   WidgetSpan(
-          //     child: Text(
-          //       context.translations.edited,
-          //       style: messageTheme.createdAtStyle?.copyWith(
-          //         fontStyle: FontStyle.italic,
-          //       ),
-          //     ),
-          //   ),
           if (showTimeStamp)
             WidgetSpan(
-              child: Text(
-                Jiffy(message.createdAt.toLocal()).jm,
-                style: messageTheme.createdAtStyle,
+              child: MediaQuery(
+                data: mediaQueryData.copyWith(textScaleFactor: 1),
+                child: Text(
+                  Jiffy(message.createdAt.toLocal()).jm,
+                  style: messageTheme.createdAtStyle,
+                ),
               ),
             ),
           if (showSendingIndicator)
             WidgetSpan(
-              child: SendingIndicatorBuilder(
-                messageTheme: messageTheme,
-                message: message,
-                hasNonUrlAttachments: hasNonUrlAttachments,
-                streamChat: streamChat,
-                streamChatTheme: streamChatTheme,
+              child: MediaQuery(
+                data: mediaQueryData.copyWith(textScaleFactor: 1),
+                child: SendingIndicatorBuilder(
+                  messageTheme: messageTheme,
+                  message: message,
+                  hasNonUrlAttachments: hasNonUrlAttachments,
+                  streamChat: streamChat,
+                  streamChatTheme: streamChatTheme,
+                ),
               ),
             ),
         ].insertBetween(const WidgetSpan(child: SizedBox(width: 6))),
