@@ -13,7 +13,10 @@ class BottomRow extends StatelessWidget {
     super.key,
     required this.isDeleted,
     required this.message,
+    required this.showInChannel,
     required this.showTimeStamp,
+    required this.showUsername,
+    required this.reverse,
     required this.showSendingIndicator,
     required this.hasUrlAttachments,
     required this.isGiphy,
@@ -36,8 +39,17 @@ class BottomRow extends StatelessWidget {
   /// {@macro message}
   final Message message;
 
+  /// {@macro showInChannelIndicator}
+  final bool showInChannel;
+
   /// {@macro showTimestamp}
   final bool showTimeStamp;
+
+  /// {@macro showUsername}
+  final bool showUsername;
+
+  /// {@macro reverse}
+  final bool reverse;
 
   /// {@macro showSendingIndicator}
   final bool showSendingIndicator;
@@ -77,7 +89,9 @@ class BottomRow extends StatelessWidget {
     Key? key,
     bool? isDeleted,
     Message? message,
+    bool? showInChannel,
     bool? showTimeStamp,
+    bool? showUsername,
     bool? reverse,
     bool? showSendingIndicator,
     bool? hasUrlAttachments,
@@ -95,7 +109,10 @@ class BottomRow extends StatelessWidget {
         key: key ?? this.key,
         isDeleted: isDeleted ?? this.isDeleted,
         message: message ?? this.message,
+        showInChannel: showInChannel ?? this.showInChannel,
         showTimeStamp: showTimeStamp ?? this.showTimeStamp,
+        showUsername: showUsername ?? this.showUsername,
+        reverse: reverse ?? this.reverse,
         showSendingIndicator: showSendingIndicator ?? this.showSendingIndicator,
         hasUrlAttachments: hasUrlAttachments ?? this.hasUrlAttachments,
         isGiphy: isGiphy ?? this.isGiphy,

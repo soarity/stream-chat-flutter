@@ -8,7 +8,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 ///
 /// Used in [QuotedMessageCard]. Should not be used elsewhere.
 /// {@endtemplate}
-class QuotedMessage extends StatefulWidget {
+class QuotedMessage extends StatelessWidget {
   /// {@macro quotedMessage}
   const QuotedMessage({
     super.key,
@@ -16,14 +16,10 @@ class QuotedMessage extends StatefulWidget {
     required this.reverse,
     this.isDm = false,
     required this.hasNonUrlAttachments,
-    this.onQuotedMessageTap,
   });
 
   /// {@macro message}
   final Message message;
-
-  /// {@macro onQuotedMessageTap}
-  final OnQuotedMessageTap? onQuotedMessageTap;
 
   /// {@macro reverse}
   final bool reverse;
@@ -35,41 +31,23 @@ class QuotedMessage extends StatefulWidget {
   final bool hasNonUrlAttachments;
 
   @override
-  State<QuotedMessage> createState() => _QuotedMessageState();
-}
-
-class _QuotedMessageState extends State<QuotedMessage> {
-  late StreamChatState _streamChat;
-  late StreamChatThemeData _streamChatTheme;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _streamChatTheme = StreamChatTheme.of(context);
-    _streamChat = StreamChat.of(context);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isMyMessage = widget.message.user?.id == _streamChat.currentUser?.id;
-    final onTap = widget.message.quotedMessage?.isDeleted != true &&
-            widget.onQuotedMessageTap != null
-        ? () => widget.onQuotedMessageTap!(widget.message.quotedMessageId)
-        : null;
-    final chatThemeData = _streamChatTheme;
+    final streamChat = StreamChat.of(context);
+    final chatThemeData = StreamChatTheme.of(context);
+
+    final isMyMessage = message.user?.id == streamChat.currentUser?.id;
     return StreamQuotedMessageWidget(
-      onTap: onTap,
-      isDm: widget.isDm,
-      message: widget.message.quotedMessage!,
+      isDm: isDm,
+      message: message.quotedMessage!,
       messageTheme: isMyMessage
           ? chatThemeData.otherMessageTheme
           : chatThemeData.ownMessageTheme,
-      reverse: widget.reverse,
+      reverse: reverse,
       padding: EdgeInsets.only(
         right: 3.w,
         left: 3.w,
         top: 3.h,
-        bottom: widget.hasNonUrlAttachments ? 3.h : 0,
+        bottom: hasNonUrlAttachments ? 3.h : 0,
       ),
     );
   }

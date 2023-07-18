@@ -227,13 +227,13 @@ class $ChannelsTable extends Channels
   }
 
   static TypeConverter<List<String>, String> $converterownCapabilities =
-      ListConverter<String>();
+      ListConverter();
   static TypeConverter<List<String>?, String?> $converterownCapabilitiesn =
       NullAwareTypeConverter.wrap($converterownCapabilities);
   static TypeConverter<Map<String, dynamic>, String> $converterconfig =
       MapConverter();
   static TypeConverter<Map<String, Object?>, String> $converterextraData =
-      MapConverter<Object?>();
+      MapConverter();
   static TypeConverter<Map<String, Object?>?, String?> $converterextraDatan =
       NullAwareTypeConverter.wrap($converterextraData);
 }
@@ -667,14 +667,11 @@ class $MessagesTable extends Messages
       attachments = GeneratedColumn<String>('attachments', aliasedName, false,
               type: DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<List<String>>($MessagesTable.$converterattachments);
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
   @override
-  late final GeneratedColumnWithTypeConverter<MessageSendingStatus, int>
-      status = GeneratedColumn<int>('status', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              defaultValue: const Constant(1))
-          .withConverter<MessageSendingStatus>($MessagesTable.$converterstatus);
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+      'state', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
@@ -757,28 +754,42 @@ class $MessagesTable extends Messages
   late final GeneratedColumn<String> command = GeneratedColumn<String>(
       'command', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+  static const VerificationMeta _localCreatedAtMeta =
+      const VerificationMeta('localCreatedAt');
   @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+  late final GeneratedColumn<DateTime> localCreatedAt =
+      GeneratedColumn<DateTime>('local_created_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _remoteCreatedAtMeta =
+      const VerificationMeta('remoteCreatedAt');
   @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _deletedAtMeta =
-      const VerificationMeta('deletedAt');
+  late final GeneratedColumn<DateTime> remoteCreatedAt =
+      GeneratedColumn<DateTime>('remote_created_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _localUpdatedAtMeta =
+      const VerificationMeta('localUpdatedAt');
   @override
-  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
-      'deleted_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> localUpdatedAt =
+      GeneratedColumn<DateTime>('local_updated_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _remoteUpdatedAtMeta =
+      const VerificationMeta('remoteUpdatedAt');
+  @override
+  late final GeneratedColumn<DateTime> remoteUpdatedAt =
+      GeneratedColumn<DateTime>('remote_updated_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _localDeletedAtMeta =
+      const VerificationMeta('localDeletedAt');
+  @override
+  late final GeneratedColumn<DateTime> localDeletedAt =
+      GeneratedColumn<DateTime>('local_deleted_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _remoteDeletedAtMeta =
+      const VerificationMeta('remoteDeletedAt');
+  @override
+  late final GeneratedColumn<DateTime> remoteDeletedAt =
+      GeneratedColumn<DateTime>('remote_deleted_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
@@ -842,7 +853,7 @@ class $MessagesTable extends Messages
         id,
         messageText,
         attachments,
-        status,
+        state,
         type,
         mentionedUsers,
         reactionCounts,
@@ -853,9 +864,12 @@ class $MessagesTable extends Messages
         showInChannel,
         shadowed,
         command,
-        createdAt,
-        updatedAt,
-        deletedAt,
+        localCreatedAt,
+        remoteCreatedAt,
+        localUpdatedAt,
+        remoteUpdatedAt,
+        localDeletedAt,
+        remoteDeletedAt,
         userId,
         pinned,
         pinnedAt,
@@ -886,7 +900,12 @@ class $MessagesTable extends Messages
               data['message_text']!, _messageTextMeta));
     }
     context.handle(_attachmentsMeta, const VerificationResult.success());
-    context.handle(_statusMeta, const VerificationResult.success());
+    if (data.containsKey('state')) {
+      context.handle(
+          _stateMeta, state.isAcceptableOrUnknown(data['state']!, _stateMeta));
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
     if (data.containsKey('type')) {
       context.handle(
           _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
@@ -924,17 +943,41 @@ class $MessagesTable extends Messages
       context.handle(_commandMeta,
           command.isAcceptableOrUnknown(data['command']!, _commandMeta));
     }
-    if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    if (data.containsKey('local_created_at')) {
+      context.handle(
+          _localCreatedAtMeta,
+          localCreatedAt.isAcceptableOrUnknown(
+              data['local_created_at']!, _localCreatedAtMeta));
     }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    if (data.containsKey('remote_created_at')) {
+      context.handle(
+          _remoteCreatedAtMeta,
+          remoteCreatedAt.isAcceptableOrUnknown(
+              data['remote_created_at']!, _remoteCreatedAtMeta));
     }
-    if (data.containsKey('deleted_at')) {
-      context.handle(_deletedAtMeta,
-          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    if (data.containsKey('local_updated_at')) {
+      context.handle(
+          _localUpdatedAtMeta,
+          localUpdatedAt.isAcceptableOrUnknown(
+              data['local_updated_at']!, _localUpdatedAtMeta));
+    }
+    if (data.containsKey('remote_updated_at')) {
+      context.handle(
+          _remoteUpdatedAtMeta,
+          remoteUpdatedAt.isAcceptableOrUnknown(
+              data['remote_updated_at']!, _remoteUpdatedAtMeta));
+    }
+    if (data.containsKey('local_deleted_at')) {
+      context.handle(
+          _localDeletedAtMeta,
+          localDeletedAt.isAcceptableOrUnknown(
+              data['local_deleted_at']!, _localDeletedAtMeta));
+    }
+    if (data.containsKey('remote_deleted_at')) {
+      context.handle(
+          _remoteDeletedAtMeta,
+          remoteDeletedAt.isAcceptableOrUnknown(
+              data['remote_deleted_at']!, _remoteDeletedAtMeta));
     }
     if (data.containsKey('user_id')) {
       context.handle(_userIdMeta,
@@ -986,9 +1029,8 @@ class $MessagesTable extends Messages
       attachments: $MessagesTable.$converterattachments.fromSql(attachedDatabase
           .typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}attachments'])!),
-      status: $MessagesTable.$converterstatus.fromSql(attachedDatabase
-          .typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}status'])!),
+      state: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}state'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
       mentionedUsers: $MessagesTable.$convertermentionedUsers.fromSql(
@@ -1012,12 +1054,18 @@ class $MessagesTable extends Messages
           .read(DriftSqlType.bool, data['${effectivePrefix}shadowed'])!,
       command: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}command']),
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
-      deletedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      localCreatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}local_created_at']),
+      remoteCreatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_created_at']),
+      localUpdatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}local_updated_at']),
+      remoteUpdatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_updated_at']),
+      localDeletedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}local_deleted_at']),
+      remoteDeletedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_deleted_at']),
       userId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
       pinned: attachedDatabase.typeMapping
@@ -1044,23 +1092,21 @@ class $MessagesTable extends Messages
   }
 
   static TypeConverter<List<String>, String> $converterattachments =
-      ListConverter<String>();
-  static TypeConverter<MessageSendingStatus, int> $converterstatus =
-      MessageSendingStatusConverter();
+      ListConverter();
   static TypeConverter<List<String>, String> $convertermentionedUsers =
-      ListConverter<String>();
+      ListConverter();
   static TypeConverter<Map<String, int>, String> $converterreactionCounts =
-      MapConverter<int>();
+      MapConverter();
   static TypeConverter<Map<String, int>?, String?> $converterreactionCountsn =
       NullAwareTypeConverter.wrap($converterreactionCounts);
   static TypeConverter<Map<String, int>, String> $converterreactionScores =
-      MapConverter<int>();
+      MapConverter();
   static TypeConverter<Map<String, int>?, String?> $converterreactionScoresn =
       NullAwareTypeConverter.wrap($converterreactionScores);
   static TypeConverter<Map<String, String>?, String?> $converteri18n =
-      NullableMapConverter<String>();
+      NullableMapConverter();
   static TypeConverter<Map<String, Object?>, String> $converterextraData =
-      MapConverter<Object?>();
+      MapConverter();
   static TypeConverter<Map<String, Object?>?, String?> $converterextraDatan =
       NullAwareTypeConverter.wrap($converterextraData);
 }
@@ -1076,8 +1122,8 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
   /// or generated from a command or as a result of URL scraping.
   final List<String> attachments;
 
-  /// The status of a sending message
-  final MessageSendingStatus status;
+  /// The current state of the message.
+  final String state;
 
   /// The message type
   final String type;
@@ -1109,14 +1155,23 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
   /// A used command name.
   final String? command;
 
-  /// The DateTime when the message was created.
-  final DateTime createdAt;
+  /// The DateTime on which the message was created on the client.
+  final DateTime? localCreatedAt;
 
-  /// The DateTime when the message was updated last time.
-  final DateTime updatedAt;
+  /// The DateTime on which the message was created on the server.
+  final DateTime? remoteCreatedAt;
 
-  /// The DateTime when the message was deleted.
-  final DateTime? deletedAt;
+  /// The DateTime on which the message was updated on the client.
+  final DateTime? localUpdatedAt;
+
+  /// The DateTime on which the message was updated on the server.
+  final DateTime? remoteUpdatedAt;
+
+  /// The DateTime on which the message was deleted on the client.
+  final DateTime? localDeletedAt;
+
+  /// The DateTime on which the message was deleted on the server.
+  final DateTime? remoteDeletedAt;
 
   /// Id of the User who sent the message
   final String? userId;
@@ -1145,7 +1200,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
       {required this.id,
       this.messageText,
       required this.attachments,
-      required this.status,
+      required this.state,
       required this.type,
       required this.mentionedUsers,
       this.reactionCounts,
@@ -1156,9 +1211,12 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
       this.showInChannel,
       required this.shadowed,
       this.command,
-      required this.createdAt,
-      required this.updatedAt,
-      this.deletedAt,
+      this.localCreatedAt,
+      this.remoteCreatedAt,
+      this.localUpdatedAt,
+      this.remoteUpdatedAt,
+      this.localDeletedAt,
+      this.remoteDeletedAt,
       this.userId,
       required this.pinned,
       this.pinnedAt,
@@ -1178,10 +1236,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
       final converter = $MessagesTable.$converterattachments;
       map['attachments'] = Variable<String>(converter.toSql(attachments));
     }
-    {
-      final converter = $MessagesTable.$converterstatus;
-      map['status'] = Variable<int>(converter.toSql(status));
-    }
+    map['state'] = Variable<String>(state);
     map['type'] = Variable<String>(type);
     {
       final converter = $MessagesTable.$convertermentionedUsers;
@@ -1214,10 +1269,23 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
     if (!nullToAbsent || command != null) {
       map['command'] = Variable<String>(command);
     }
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    if (!nullToAbsent || localCreatedAt != null) {
+      map['local_created_at'] = Variable<DateTime>(localCreatedAt);
+    }
+    if (!nullToAbsent || remoteCreatedAt != null) {
+      map['remote_created_at'] = Variable<DateTime>(remoteCreatedAt);
+    }
+    if (!nullToAbsent || localUpdatedAt != null) {
+      map['local_updated_at'] = Variable<DateTime>(localUpdatedAt);
+    }
+    if (!nullToAbsent || remoteUpdatedAt != null) {
+      map['remote_updated_at'] = Variable<DateTime>(remoteUpdatedAt);
+    }
+    if (!nullToAbsent || localDeletedAt != null) {
+      map['local_deleted_at'] = Variable<DateTime>(localDeletedAt);
+    }
+    if (!nullToAbsent || remoteDeletedAt != null) {
+      map['remote_deleted_at'] = Variable<DateTime>(remoteDeletedAt);
     }
     if (!nullToAbsent || userId != null) {
       map['user_id'] = Variable<String>(userId);
@@ -1251,7 +1319,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
       id: serializer.fromJson<String>(json['id']),
       messageText: serializer.fromJson<String?>(json['messageText']),
       attachments: serializer.fromJson<List<String>>(json['attachments']),
-      status: serializer.fromJson<MessageSendingStatus>(json['status']),
+      state: serializer.fromJson<String>(json['state']),
       type: serializer.fromJson<String>(json['type']),
       mentionedUsers: serializer.fromJson<List<String>>(json['mentionedUsers']),
       reactionCounts:
@@ -1264,9 +1332,12 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
       showInChannel: serializer.fromJson<bool?>(json['showInChannel']),
       shadowed: serializer.fromJson<bool>(json['shadowed']),
       command: serializer.fromJson<String?>(json['command']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      localCreatedAt: serializer.fromJson<DateTime?>(json['localCreatedAt']),
+      remoteCreatedAt: serializer.fromJson<DateTime?>(json['remoteCreatedAt']),
+      localUpdatedAt: serializer.fromJson<DateTime?>(json['localUpdatedAt']),
+      remoteUpdatedAt: serializer.fromJson<DateTime?>(json['remoteUpdatedAt']),
+      localDeletedAt: serializer.fromJson<DateTime?>(json['localDeletedAt']),
+      remoteDeletedAt: serializer.fromJson<DateTime?>(json['remoteDeletedAt']),
       userId: serializer.fromJson<String?>(json['userId']),
       pinned: serializer.fromJson<bool>(json['pinned']),
       pinnedAt: serializer.fromJson<DateTime?>(json['pinnedAt']),
@@ -1284,7 +1355,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
       'id': serializer.toJson<String>(id),
       'messageText': serializer.toJson<String?>(messageText),
       'attachments': serializer.toJson<List<String>>(attachments),
-      'status': serializer.toJson<MessageSendingStatus>(status),
+      'state': serializer.toJson<String>(state),
       'type': serializer.toJson<String>(type),
       'mentionedUsers': serializer.toJson<List<String>>(mentionedUsers),
       'reactionCounts': serializer.toJson<Map<String, int>?>(reactionCounts),
@@ -1295,9 +1366,12 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
       'showInChannel': serializer.toJson<bool?>(showInChannel),
       'shadowed': serializer.toJson<bool>(shadowed),
       'command': serializer.toJson<String?>(command),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'localCreatedAt': serializer.toJson<DateTime?>(localCreatedAt),
+      'remoteCreatedAt': serializer.toJson<DateTime?>(remoteCreatedAt),
+      'localUpdatedAt': serializer.toJson<DateTime?>(localUpdatedAt),
+      'remoteUpdatedAt': serializer.toJson<DateTime?>(remoteUpdatedAt),
+      'localDeletedAt': serializer.toJson<DateTime?>(localDeletedAt),
+      'remoteDeletedAt': serializer.toJson<DateTime?>(remoteDeletedAt),
       'userId': serializer.toJson<String?>(userId),
       'pinned': serializer.toJson<bool>(pinned),
       'pinnedAt': serializer.toJson<DateTime?>(pinnedAt),
@@ -1313,7 +1387,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
           {String? id,
           Value<String?> messageText = const Value.absent(),
           List<String>? attachments,
-          MessageSendingStatus? status,
+          String? state,
           String? type,
           List<String>? mentionedUsers,
           Value<Map<String, int>?> reactionCounts = const Value.absent(),
@@ -1324,9 +1398,12 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
           Value<bool?> showInChannel = const Value.absent(),
           bool? shadowed,
           Value<String?> command = const Value.absent(),
-          DateTime? createdAt,
-          DateTime? updatedAt,
-          Value<DateTime?> deletedAt = const Value.absent(),
+          Value<DateTime?> localCreatedAt = const Value.absent(),
+          Value<DateTime?> remoteCreatedAt = const Value.absent(),
+          Value<DateTime?> localUpdatedAt = const Value.absent(),
+          Value<DateTime?> remoteUpdatedAt = const Value.absent(),
+          Value<DateTime?> localDeletedAt = const Value.absent(),
+          Value<DateTime?> remoteDeletedAt = const Value.absent(),
           Value<String?> userId = const Value.absent(),
           bool? pinned,
           Value<DateTime?> pinnedAt = const Value.absent(),
@@ -1339,7 +1416,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
         id: id ?? this.id,
         messageText: messageText.present ? messageText.value : this.messageText,
         attachments: attachments ?? this.attachments,
-        status: status ?? this.status,
+        state: state ?? this.state,
         type: type ?? this.type,
         mentionedUsers: mentionedUsers ?? this.mentionedUsers,
         reactionCounts:
@@ -1355,9 +1432,21 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
             showInChannel.present ? showInChannel.value : this.showInChannel,
         shadowed: shadowed ?? this.shadowed,
         command: command.present ? command.value : this.command,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        localCreatedAt:
+            localCreatedAt.present ? localCreatedAt.value : this.localCreatedAt,
+        remoteCreatedAt: remoteCreatedAt.present
+            ? remoteCreatedAt.value
+            : this.remoteCreatedAt,
+        localUpdatedAt:
+            localUpdatedAt.present ? localUpdatedAt.value : this.localUpdatedAt,
+        remoteUpdatedAt: remoteUpdatedAt.present
+            ? remoteUpdatedAt.value
+            : this.remoteUpdatedAt,
+        localDeletedAt:
+            localDeletedAt.present ? localDeletedAt.value : this.localDeletedAt,
+        remoteDeletedAt: remoteDeletedAt.present
+            ? remoteDeletedAt.value
+            : this.remoteDeletedAt,
         userId: userId.present ? userId.value : this.userId,
         pinned: pinned ?? this.pinned,
         pinnedAt: pinnedAt.present ? pinnedAt.value : this.pinnedAt,
@@ -1374,7 +1463,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
           ..write('id: $id, ')
           ..write('messageText: $messageText, ')
           ..write('attachments: $attachments, ')
-          ..write('status: $status, ')
+          ..write('state: $state, ')
           ..write('type: $type, ')
           ..write('mentionedUsers: $mentionedUsers, ')
           ..write('reactionCounts: $reactionCounts, ')
@@ -1385,9 +1474,12 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
           ..write('showInChannel: $showInChannel, ')
           ..write('shadowed: $shadowed, ')
           ..write('command: $command, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt, ')
+          ..write('localCreatedAt: $localCreatedAt, ')
+          ..write('remoteCreatedAt: $remoteCreatedAt, ')
+          ..write('localUpdatedAt: $localUpdatedAt, ')
+          ..write('remoteUpdatedAt: $remoteUpdatedAt, ')
+          ..write('localDeletedAt: $localDeletedAt, ')
+          ..write('remoteDeletedAt: $remoteDeletedAt, ')
           ..write('userId: $userId, ')
           ..write('pinned: $pinned, ')
           ..write('pinnedAt: $pinnedAt, ')
@@ -1405,7 +1497,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
         id,
         messageText,
         attachments,
-        status,
+        state,
         type,
         mentionedUsers,
         reactionCounts,
@@ -1416,9 +1508,12 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
         showInChannel,
         shadowed,
         command,
-        createdAt,
-        updatedAt,
-        deletedAt,
+        localCreatedAt,
+        remoteCreatedAt,
+        localUpdatedAt,
+        remoteUpdatedAt,
+        localDeletedAt,
+        remoteDeletedAt,
         userId,
         pinned,
         pinnedAt,
@@ -1435,7 +1530,7 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
           other.id == this.id &&
           other.messageText == this.messageText &&
           other.attachments == this.attachments &&
-          other.status == this.status &&
+          other.state == this.state &&
           other.type == this.type &&
           other.mentionedUsers == this.mentionedUsers &&
           other.reactionCounts == this.reactionCounts &&
@@ -1446,9 +1541,12 @@ class MessageEntity extends DataClass implements Insertable<MessageEntity> {
           other.showInChannel == this.showInChannel &&
           other.shadowed == this.shadowed &&
           other.command == this.command &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.deletedAt == this.deletedAt &&
+          other.localCreatedAt == this.localCreatedAt &&
+          other.remoteCreatedAt == this.remoteCreatedAt &&
+          other.localUpdatedAt == this.localUpdatedAt &&
+          other.remoteUpdatedAt == this.remoteUpdatedAt &&
+          other.localDeletedAt == this.localDeletedAt &&
+          other.remoteDeletedAt == this.remoteDeletedAt &&
           other.userId == this.userId &&
           other.pinned == this.pinned &&
           other.pinnedAt == this.pinnedAt &&
@@ -1463,7 +1561,7 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
   final Value<String> id;
   final Value<String?> messageText;
   final Value<List<String>> attachments;
-  final Value<MessageSendingStatus> status;
+  final Value<String> state;
   final Value<String> type;
   final Value<List<String>> mentionedUsers;
   final Value<Map<String, int>?> reactionCounts;
@@ -1474,9 +1572,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
   final Value<bool?> showInChannel;
   final Value<bool> shadowed;
   final Value<String?> command;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
-  final Value<DateTime?> deletedAt;
+  final Value<DateTime?> localCreatedAt;
+  final Value<DateTime?> remoteCreatedAt;
+  final Value<DateTime?> localUpdatedAt;
+  final Value<DateTime?> remoteUpdatedAt;
+  final Value<DateTime?> localDeletedAt;
+  final Value<DateTime?> remoteDeletedAt;
   final Value<String?> userId;
   final Value<bool> pinned;
   final Value<DateTime?> pinnedAt;
@@ -1490,7 +1591,7 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
     this.id = const Value.absent(),
     this.messageText = const Value.absent(),
     this.attachments = const Value.absent(),
-    this.status = const Value.absent(),
+    this.state = const Value.absent(),
     this.type = const Value.absent(),
     this.mentionedUsers = const Value.absent(),
     this.reactionCounts = const Value.absent(),
@@ -1501,9 +1602,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
     this.showInChannel = const Value.absent(),
     this.shadowed = const Value.absent(),
     this.command = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.deletedAt = const Value.absent(),
+    this.localCreatedAt = const Value.absent(),
+    this.remoteCreatedAt = const Value.absent(),
+    this.localUpdatedAt = const Value.absent(),
+    this.remoteUpdatedAt = const Value.absent(),
+    this.localDeletedAt = const Value.absent(),
+    this.remoteDeletedAt = const Value.absent(),
     this.userId = const Value.absent(),
     this.pinned = const Value.absent(),
     this.pinnedAt = const Value.absent(),
@@ -1518,7 +1622,7 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
     required String id,
     this.messageText = const Value.absent(),
     required List<String> attachments,
-    this.status = const Value.absent(),
+    required String state,
     this.type = const Value.absent(),
     required List<String> mentionedUsers,
     this.reactionCounts = const Value.absent(),
@@ -1529,9 +1633,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
     this.showInChannel = const Value.absent(),
     this.shadowed = const Value.absent(),
     this.command = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.deletedAt = const Value.absent(),
+    this.localCreatedAt = const Value.absent(),
+    this.remoteCreatedAt = const Value.absent(),
+    this.localUpdatedAt = const Value.absent(),
+    this.remoteUpdatedAt = const Value.absent(),
+    this.localDeletedAt = const Value.absent(),
+    this.remoteDeletedAt = const Value.absent(),
     this.userId = const Value.absent(),
     this.pinned = const Value.absent(),
     this.pinnedAt = const Value.absent(),
@@ -1543,13 +1650,14 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         attachments = Value(attachments),
+        state = Value(state),
         mentionedUsers = Value(mentionedUsers),
         channelCid = Value(channelCid);
   static Insertable<MessageEntity> custom({
     Expression<String>? id,
     Expression<String>? messageText,
     Expression<String>? attachments,
-    Expression<int>? status,
+    Expression<String>? state,
     Expression<String>? type,
     Expression<String>? mentionedUsers,
     Expression<String>? reactionCounts,
@@ -1560,9 +1668,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
     Expression<bool>? showInChannel,
     Expression<bool>? shadowed,
     Expression<String>? command,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
-    Expression<DateTime>? deletedAt,
+    Expression<DateTime>? localCreatedAt,
+    Expression<DateTime>? remoteCreatedAt,
+    Expression<DateTime>? localUpdatedAt,
+    Expression<DateTime>? remoteUpdatedAt,
+    Expression<DateTime>? localDeletedAt,
+    Expression<DateTime>? remoteDeletedAt,
     Expression<String>? userId,
     Expression<bool>? pinned,
     Expression<DateTime>? pinnedAt,
@@ -1577,7 +1688,7 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
       if (id != null) 'id': id,
       if (messageText != null) 'message_text': messageText,
       if (attachments != null) 'attachments': attachments,
-      if (status != null) 'status': status,
+      if (state != null) 'state': state,
       if (type != null) 'type': type,
       if (mentionedUsers != null) 'mentioned_users': mentionedUsers,
       if (reactionCounts != null) 'reaction_counts': reactionCounts,
@@ -1588,9 +1699,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
       if (showInChannel != null) 'show_in_channel': showInChannel,
       if (shadowed != null) 'shadowed': shadowed,
       if (command != null) 'command': command,
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
-      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (localCreatedAt != null) 'local_created_at': localCreatedAt,
+      if (remoteCreatedAt != null) 'remote_created_at': remoteCreatedAt,
+      if (localUpdatedAt != null) 'local_updated_at': localUpdatedAt,
+      if (remoteUpdatedAt != null) 'remote_updated_at': remoteUpdatedAt,
+      if (localDeletedAt != null) 'local_deleted_at': localDeletedAt,
+      if (remoteDeletedAt != null) 'remote_deleted_at': remoteDeletedAt,
       if (userId != null) 'user_id': userId,
       if (pinned != null) 'pinned': pinned,
       if (pinnedAt != null) 'pinned_at': pinnedAt,
@@ -1607,7 +1721,7 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
       {Value<String>? id,
       Value<String?>? messageText,
       Value<List<String>>? attachments,
-      Value<MessageSendingStatus>? status,
+      Value<String>? state,
       Value<String>? type,
       Value<List<String>>? mentionedUsers,
       Value<Map<String, int>?>? reactionCounts,
@@ -1618,9 +1732,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
       Value<bool?>? showInChannel,
       Value<bool>? shadowed,
       Value<String?>? command,
-      Value<DateTime>? createdAt,
-      Value<DateTime>? updatedAt,
-      Value<DateTime?>? deletedAt,
+      Value<DateTime?>? localCreatedAt,
+      Value<DateTime?>? remoteCreatedAt,
+      Value<DateTime?>? localUpdatedAt,
+      Value<DateTime?>? remoteUpdatedAt,
+      Value<DateTime?>? localDeletedAt,
+      Value<DateTime?>? remoteDeletedAt,
       Value<String?>? userId,
       Value<bool>? pinned,
       Value<DateTime?>? pinnedAt,
@@ -1634,7 +1751,7 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
       id: id ?? this.id,
       messageText: messageText ?? this.messageText,
       attachments: attachments ?? this.attachments,
-      status: status ?? this.status,
+      state: state ?? this.state,
       type: type ?? this.type,
       mentionedUsers: mentionedUsers ?? this.mentionedUsers,
       reactionCounts: reactionCounts ?? this.reactionCounts,
@@ -1645,9 +1762,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
       showInChannel: showInChannel ?? this.showInChannel,
       shadowed: shadowed ?? this.shadowed,
       command: command ?? this.command,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      deletedAt: deletedAt ?? this.deletedAt,
+      localCreatedAt: localCreatedAt ?? this.localCreatedAt,
+      remoteCreatedAt: remoteCreatedAt ?? this.remoteCreatedAt,
+      localUpdatedAt: localUpdatedAt ?? this.localUpdatedAt,
+      remoteUpdatedAt: remoteUpdatedAt ?? this.remoteUpdatedAt,
+      localDeletedAt: localDeletedAt ?? this.localDeletedAt,
+      remoteDeletedAt: remoteDeletedAt ?? this.remoteDeletedAt,
       userId: userId ?? this.userId,
       pinned: pinned ?? this.pinned,
       pinnedAt: pinnedAt ?? this.pinnedAt,
@@ -1673,9 +1793,8 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
       final converter = $MessagesTable.$converterattachments;
       map['attachments'] = Variable<String>(converter.toSql(attachments.value));
     }
-    if (status.present) {
-      final converter = $MessagesTable.$converterstatus;
-      map['status'] = Variable<int>(converter.toSql(status.value));
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
@@ -1713,14 +1832,23 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
     if (command.present) {
       map['command'] = Variable<String>(command.value);
     }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+    if (localCreatedAt.present) {
+      map['local_created_at'] = Variable<DateTime>(localCreatedAt.value);
     }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    if (remoteCreatedAt.present) {
+      map['remote_created_at'] = Variable<DateTime>(remoteCreatedAt.value);
     }
-    if (deletedAt.present) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    if (localUpdatedAt.present) {
+      map['local_updated_at'] = Variable<DateTime>(localUpdatedAt.value);
+    }
+    if (remoteUpdatedAt.present) {
+      map['remote_updated_at'] = Variable<DateTime>(remoteUpdatedAt.value);
+    }
+    if (localDeletedAt.present) {
+      map['local_deleted_at'] = Variable<DateTime>(localDeletedAt.value);
+    }
+    if (remoteDeletedAt.present) {
+      map['remote_deleted_at'] = Variable<DateTime>(remoteDeletedAt.value);
     }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
@@ -1760,7 +1888,7 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
           ..write('id: $id, ')
           ..write('messageText: $messageText, ')
           ..write('attachments: $attachments, ')
-          ..write('status: $status, ')
+          ..write('state: $state, ')
           ..write('type: $type, ')
           ..write('mentionedUsers: $mentionedUsers, ')
           ..write('reactionCounts: $reactionCounts, ')
@@ -1771,9 +1899,12 @@ class MessagesCompanion extends UpdateCompanion<MessageEntity> {
           ..write('showInChannel: $showInChannel, ')
           ..write('shadowed: $shadowed, ')
           ..write('command: $command, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt, ')
+          ..write('localCreatedAt: $localCreatedAt, ')
+          ..write('remoteCreatedAt: $remoteCreatedAt, ')
+          ..write('localUpdatedAt: $localUpdatedAt, ')
+          ..write('remoteUpdatedAt: $remoteUpdatedAt, ')
+          ..write('localDeletedAt: $localDeletedAt, ')
+          ..write('remoteDeletedAt: $remoteDeletedAt, ')
           ..write('userId: $userId, ')
           ..write('pinned: $pinned, ')
           ..write('pinnedAt: $pinnedAt, ')
@@ -1813,15 +1944,11 @@ class $PinnedMessagesTable extends PinnedMessages
               type: DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<List<String>>(
               $PinnedMessagesTable.$converterattachments);
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
   @override
-  late final GeneratedColumnWithTypeConverter<MessageSendingStatus, int>
-      status = GeneratedColumn<int>('status', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              defaultValue: const Constant(1))
-          .withConverter<MessageSendingStatus>(
-              $PinnedMessagesTable.$converterstatus);
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+      'state', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
@@ -1905,28 +2032,42 @@ class $PinnedMessagesTable extends PinnedMessages
   late final GeneratedColumn<String> command = GeneratedColumn<String>(
       'command', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+  static const VerificationMeta _localCreatedAtMeta =
+      const VerificationMeta('localCreatedAt');
   @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+  late final GeneratedColumn<DateTime> localCreatedAt =
+      GeneratedColumn<DateTime>('local_created_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _remoteCreatedAtMeta =
+      const VerificationMeta('remoteCreatedAt');
   @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _deletedAtMeta =
-      const VerificationMeta('deletedAt');
+  late final GeneratedColumn<DateTime> remoteCreatedAt =
+      GeneratedColumn<DateTime>('remote_created_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _localUpdatedAtMeta =
+      const VerificationMeta('localUpdatedAt');
   @override
-  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
-      'deleted_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> localUpdatedAt =
+      GeneratedColumn<DateTime>('local_updated_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _remoteUpdatedAtMeta =
+      const VerificationMeta('remoteUpdatedAt');
+  @override
+  late final GeneratedColumn<DateTime> remoteUpdatedAt =
+      GeneratedColumn<DateTime>('remote_updated_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _localDeletedAtMeta =
+      const VerificationMeta('localDeletedAt');
+  @override
+  late final GeneratedColumn<DateTime> localDeletedAt =
+      GeneratedColumn<DateTime>('local_deleted_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _remoteDeletedAtMeta =
+      const VerificationMeta('remoteDeletedAt');
+  @override
+  late final GeneratedColumn<DateTime> remoteDeletedAt =
+      GeneratedColumn<DateTime>('remote_deleted_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
@@ -1991,7 +2132,7 @@ class $PinnedMessagesTable extends PinnedMessages
         id,
         messageText,
         attachments,
-        status,
+        state,
         type,
         mentionedUsers,
         reactionCounts,
@@ -2002,9 +2143,12 @@ class $PinnedMessagesTable extends PinnedMessages
         showInChannel,
         shadowed,
         command,
-        createdAt,
-        updatedAt,
-        deletedAt,
+        localCreatedAt,
+        remoteCreatedAt,
+        localUpdatedAt,
+        remoteUpdatedAt,
+        localDeletedAt,
+        remoteDeletedAt,
         userId,
         pinned,
         pinnedAt,
@@ -2036,7 +2180,12 @@ class $PinnedMessagesTable extends PinnedMessages
               data['message_text']!, _messageTextMeta));
     }
     context.handle(_attachmentsMeta, const VerificationResult.success());
-    context.handle(_statusMeta, const VerificationResult.success());
+    if (data.containsKey('state')) {
+      context.handle(
+          _stateMeta, state.isAcceptableOrUnknown(data['state']!, _stateMeta));
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
     if (data.containsKey('type')) {
       context.handle(
           _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
@@ -2074,17 +2223,41 @@ class $PinnedMessagesTable extends PinnedMessages
       context.handle(_commandMeta,
           command.isAcceptableOrUnknown(data['command']!, _commandMeta));
     }
-    if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    if (data.containsKey('local_created_at')) {
+      context.handle(
+          _localCreatedAtMeta,
+          localCreatedAt.isAcceptableOrUnknown(
+              data['local_created_at']!, _localCreatedAtMeta));
     }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    if (data.containsKey('remote_created_at')) {
+      context.handle(
+          _remoteCreatedAtMeta,
+          remoteCreatedAt.isAcceptableOrUnknown(
+              data['remote_created_at']!, _remoteCreatedAtMeta));
     }
-    if (data.containsKey('deleted_at')) {
-      context.handle(_deletedAtMeta,
-          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    if (data.containsKey('local_updated_at')) {
+      context.handle(
+          _localUpdatedAtMeta,
+          localUpdatedAt.isAcceptableOrUnknown(
+              data['local_updated_at']!, _localUpdatedAtMeta));
+    }
+    if (data.containsKey('remote_updated_at')) {
+      context.handle(
+          _remoteUpdatedAtMeta,
+          remoteUpdatedAt.isAcceptableOrUnknown(
+              data['remote_updated_at']!, _remoteUpdatedAtMeta));
+    }
+    if (data.containsKey('local_deleted_at')) {
+      context.handle(
+          _localDeletedAtMeta,
+          localDeletedAt.isAcceptableOrUnknown(
+              data['local_deleted_at']!, _localDeletedAtMeta));
+    }
+    if (data.containsKey('remote_deleted_at')) {
+      context.handle(
+          _remoteDeletedAtMeta,
+          remoteDeletedAt.isAcceptableOrUnknown(
+              data['remote_deleted_at']!, _remoteDeletedAtMeta));
     }
     if (data.containsKey('user_id')) {
       context.handle(_userIdMeta,
@@ -2136,9 +2309,8 @@ class $PinnedMessagesTable extends PinnedMessages
       attachments: $PinnedMessagesTable.$converterattachments.fromSql(
           attachedDatabase.typeMapping.read(
               DriftSqlType.string, data['${effectivePrefix}attachments'])!),
-      status: $PinnedMessagesTable.$converterstatus.fromSql(attachedDatabase
-          .typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}status'])!),
+      state: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}state'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
       mentionedUsers: $PinnedMessagesTable.$convertermentionedUsers.fromSql(
@@ -2162,12 +2334,18 @@ class $PinnedMessagesTable extends PinnedMessages
           .read(DriftSqlType.bool, data['${effectivePrefix}shadowed'])!,
       command: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}command']),
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
-      deletedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      localCreatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}local_created_at']),
+      remoteCreatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_created_at']),
+      localUpdatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}local_updated_at']),
+      remoteUpdatedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_updated_at']),
+      localDeletedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}local_deleted_at']),
+      remoteDeletedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_deleted_at']),
       userId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
       pinned: attachedDatabase.typeMapping
@@ -2195,23 +2373,21 @@ class $PinnedMessagesTable extends PinnedMessages
   }
 
   static TypeConverter<List<String>, String> $converterattachments =
-      ListConverter<String>();
-  static TypeConverter<MessageSendingStatus, int> $converterstatus =
-      MessageSendingStatusConverter();
+      ListConverter();
   static TypeConverter<List<String>, String> $convertermentionedUsers =
-      ListConverter<String>();
+      ListConverter();
   static TypeConverter<Map<String, int>, String> $converterreactionCounts =
-      MapConverter<int>();
+      MapConverter();
   static TypeConverter<Map<String, int>?, String?> $converterreactionCountsn =
       NullAwareTypeConverter.wrap($converterreactionCounts);
   static TypeConverter<Map<String, int>, String> $converterreactionScores =
-      MapConverter<int>();
+      MapConverter();
   static TypeConverter<Map<String, int>?, String?> $converterreactionScoresn =
       NullAwareTypeConverter.wrap($converterreactionScores);
   static TypeConverter<Map<String, String>?, String?> $converteri18n =
-      NullableMapConverter<String>();
+      NullableMapConverter();
   static TypeConverter<Map<String, Object?>, String> $converterextraData =
-      MapConverter<Object?>();
+      MapConverter();
   static TypeConverter<Map<String, Object?>?, String?> $converterextraDatan =
       NullAwareTypeConverter.wrap($converterextraData);
 }
@@ -2228,8 +2404,8 @@ class PinnedMessageEntity extends DataClass
   /// or generated from a command or as a result of URL scraping.
   final List<String> attachments;
 
-  /// The status of a sending message
-  final MessageSendingStatus status;
+  /// The current state of the message.
+  final String state;
 
   /// The message type
   final String type;
@@ -2261,14 +2437,23 @@ class PinnedMessageEntity extends DataClass
   /// A used command name.
   final String? command;
 
-  /// The DateTime when the message was created.
-  final DateTime createdAt;
+  /// The DateTime on which the message was created on the client.
+  final DateTime? localCreatedAt;
 
-  /// The DateTime when the message was updated last time.
-  final DateTime updatedAt;
+  /// The DateTime on which the message was created on the server.
+  final DateTime? remoteCreatedAt;
 
-  /// The DateTime when the message was deleted.
-  final DateTime? deletedAt;
+  /// The DateTime on which the message was updated on the client.
+  final DateTime? localUpdatedAt;
+
+  /// The DateTime on which the message was updated on the server.
+  final DateTime? remoteUpdatedAt;
+
+  /// The DateTime on which the message was deleted on the client.
+  final DateTime? localDeletedAt;
+
+  /// The DateTime on which the message was deleted on the server.
+  final DateTime? remoteDeletedAt;
 
   /// Id of the User who sent the message
   final String? userId;
@@ -2297,7 +2482,7 @@ class PinnedMessageEntity extends DataClass
       {required this.id,
       this.messageText,
       required this.attachments,
-      required this.status,
+      required this.state,
       required this.type,
       required this.mentionedUsers,
       this.reactionCounts,
@@ -2308,9 +2493,12 @@ class PinnedMessageEntity extends DataClass
       this.showInChannel,
       required this.shadowed,
       this.command,
-      required this.createdAt,
-      required this.updatedAt,
-      this.deletedAt,
+      this.localCreatedAt,
+      this.remoteCreatedAt,
+      this.localUpdatedAt,
+      this.remoteUpdatedAt,
+      this.localDeletedAt,
+      this.remoteDeletedAt,
       this.userId,
       required this.pinned,
       this.pinnedAt,
@@ -2330,10 +2518,7 @@ class PinnedMessageEntity extends DataClass
       final converter = $PinnedMessagesTable.$converterattachments;
       map['attachments'] = Variable<String>(converter.toSql(attachments));
     }
-    {
-      final converter = $PinnedMessagesTable.$converterstatus;
-      map['status'] = Variable<int>(converter.toSql(status));
-    }
+    map['state'] = Variable<String>(state);
     map['type'] = Variable<String>(type);
     {
       final converter = $PinnedMessagesTable.$convertermentionedUsers;
@@ -2366,10 +2551,23 @@ class PinnedMessageEntity extends DataClass
     if (!nullToAbsent || command != null) {
       map['command'] = Variable<String>(command);
     }
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    if (!nullToAbsent || localCreatedAt != null) {
+      map['local_created_at'] = Variable<DateTime>(localCreatedAt);
+    }
+    if (!nullToAbsent || remoteCreatedAt != null) {
+      map['remote_created_at'] = Variable<DateTime>(remoteCreatedAt);
+    }
+    if (!nullToAbsent || localUpdatedAt != null) {
+      map['local_updated_at'] = Variable<DateTime>(localUpdatedAt);
+    }
+    if (!nullToAbsent || remoteUpdatedAt != null) {
+      map['remote_updated_at'] = Variable<DateTime>(remoteUpdatedAt);
+    }
+    if (!nullToAbsent || localDeletedAt != null) {
+      map['local_deleted_at'] = Variable<DateTime>(localDeletedAt);
+    }
+    if (!nullToAbsent || remoteDeletedAt != null) {
+      map['remote_deleted_at'] = Variable<DateTime>(remoteDeletedAt);
     }
     if (!nullToAbsent || userId != null) {
       map['user_id'] = Variable<String>(userId);
@@ -2403,7 +2601,7 @@ class PinnedMessageEntity extends DataClass
       id: serializer.fromJson<String>(json['id']),
       messageText: serializer.fromJson<String?>(json['messageText']),
       attachments: serializer.fromJson<List<String>>(json['attachments']),
-      status: serializer.fromJson<MessageSendingStatus>(json['status']),
+      state: serializer.fromJson<String>(json['state']),
       type: serializer.fromJson<String>(json['type']),
       mentionedUsers: serializer.fromJson<List<String>>(json['mentionedUsers']),
       reactionCounts:
@@ -2416,9 +2614,12 @@ class PinnedMessageEntity extends DataClass
       showInChannel: serializer.fromJson<bool?>(json['showInChannel']),
       shadowed: serializer.fromJson<bool>(json['shadowed']),
       command: serializer.fromJson<String?>(json['command']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      localCreatedAt: serializer.fromJson<DateTime?>(json['localCreatedAt']),
+      remoteCreatedAt: serializer.fromJson<DateTime?>(json['remoteCreatedAt']),
+      localUpdatedAt: serializer.fromJson<DateTime?>(json['localUpdatedAt']),
+      remoteUpdatedAt: serializer.fromJson<DateTime?>(json['remoteUpdatedAt']),
+      localDeletedAt: serializer.fromJson<DateTime?>(json['localDeletedAt']),
+      remoteDeletedAt: serializer.fromJson<DateTime?>(json['remoteDeletedAt']),
       userId: serializer.fromJson<String?>(json['userId']),
       pinned: serializer.fromJson<bool>(json['pinned']),
       pinnedAt: serializer.fromJson<DateTime?>(json['pinnedAt']),
@@ -2436,7 +2637,7 @@ class PinnedMessageEntity extends DataClass
       'id': serializer.toJson<String>(id),
       'messageText': serializer.toJson<String?>(messageText),
       'attachments': serializer.toJson<List<String>>(attachments),
-      'status': serializer.toJson<MessageSendingStatus>(status),
+      'state': serializer.toJson<String>(state),
       'type': serializer.toJson<String>(type),
       'mentionedUsers': serializer.toJson<List<String>>(mentionedUsers),
       'reactionCounts': serializer.toJson<Map<String, int>?>(reactionCounts),
@@ -2447,9 +2648,12 @@ class PinnedMessageEntity extends DataClass
       'showInChannel': serializer.toJson<bool?>(showInChannel),
       'shadowed': serializer.toJson<bool>(shadowed),
       'command': serializer.toJson<String?>(command),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'localCreatedAt': serializer.toJson<DateTime?>(localCreatedAt),
+      'remoteCreatedAt': serializer.toJson<DateTime?>(remoteCreatedAt),
+      'localUpdatedAt': serializer.toJson<DateTime?>(localUpdatedAt),
+      'remoteUpdatedAt': serializer.toJson<DateTime?>(remoteUpdatedAt),
+      'localDeletedAt': serializer.toJson<DateTime?>(localDeletedAt),
+      'remoteDeletedAt': serializer.toJson<DateTime?>(remoteDeletedAt),
       'userId': serializer.toJson<String?>(userId),
       'pinned': serializer.toJson<bool>(pinned),
       'pinnedAt': serializer.toJson<DateTime?>(pinnedAt),
@@ -2465,7 +2669,7 @@ class PinnedMessageEntity extends DataClass
           {String? id,
           Value<String?> messageText = const Value.absent(),
           List<String>? attachments,
-          MessageSendingStatus? status,
+          String? state,
           String? type,
           List<String>? mentionedUsers,
           Value<Map<String, int>?> reactionCounts = const Value.absent(),
@@ -2476,9 +2680,12 @@ class PinnedMessageEntity extends DataClass
           Value<bool?> showInChannel = const Value.absent(),
           bool? shadowed,
           Value<String?> command = const Value.absent(),
-          DateTime? createdAt,
-          DateTime? updatedAt,
-          Value<DateTime?> deletedAt = const Value.absent(),
+          Value<DateTime?> localCreatedAt = const Value.absent(),
+          Value<DateTime?> remoteCreatedAt = const Value.absent(),
+          Value<DateTime?> localUpdatedAt = const Value.absent(),
+          Value<DateTime?> remoteUpdatedAt = const Value.absent(),
+          Value<DateTime?> localDeletedAt = const Value.absent(),
+          Value<DateTime?> remoteDeletedAt = const Value.absent(),
           Value<String?> userId = const Value.absent(),
           bool? pinned,
           Value<DateTime?> pinnedAt = const Value.absent(),
@@ -2491,7 +2698,7 @@ class PinnedMessageEntity extends DataClass
         id: id ?? this.id,
         messageText: messageText.present ? messageText.value : this.messageText,
         attachments: attachments ?? this.attachments,
-        status: status ?? this.status,
+        state: state ?? this.state,
         type: type ?? this.type,
         mentionedUsers: mentionedUsers ?? this.mentionedUsers,
         reactionCounts:
@@ -2507,9 +2714,21 @@ class PinnedMessageEntity extends DataClass
             showInChannel.present ? showInChannel.value : this.showInChannel,
         shadowed: shadowed ?? this.shadowed,
         command: command.present ? command.value : this.command,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        localCreatedAt:
+            localCreatedAt.present ? localCreatedAt.value : this.localCreatedAt,
+        remoteCreatedAt: remoteCreatedAt.present
+            ? remoteCreatedAt.value
+            : this.remoteCreatedAt,
+        localUpdatedAt:
+            localUpdatedAt.present ? localUpdatedAt.value : this.localUpdatedAt,
+        remoteUpdatedAt: remoteUpdatedAt.present
+            ? remoteUpdatedAt.value
+            : this.remoteUpdatedAt,
+        localDeletedAt:
+            localDeletedAt.present ? localDeletedAt.value : this.localDeletedAt,
+        remoteDeletedAt: remoteDeletedAt.present
+            ? remoteDeletedAt.value
+            : this.remoteDeletedAt,
         userId: userId.present ? userId.value : this.userId,
         pinned: pinned ?? this.pinned,
         pinnedAt: pinnedAt.present ? pinnedAt.value : this.pinnedAt,
@@ -2526,7 +2745,7 @@ class PinnedMessageEntity extends DataClass
           ..write('id: $id, ')
           ..write('messageText: $messageText, ')
           ..write('attachments: $attachments, ')
-          ..write('status: $status, ')
+          ..write('state: $state, ')
           ..write('type: $type, ')
           ..write('mentionedUsers: $mentionedUsers, ')
           ..write('reactionCounts: $reactionCounts, ')
@@ -2537,9 +2756,12 @@ class PinnedMessageEntity extends DataClass
           ..write('showInChannel: $showInChannel, ')
           ..write('shadowed: $shadowed, ')
           ..write('command: $command, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt, ')
+          ..write('localCreatedAt: $localCreatedAt, ')
+          ..write('remoteCreatedAt: $remoteCreatedAt, ')
+          ..write('localUpdatedAt: $localUpdatedAt, ')
+          ..write('remoteUpdatedAt: $remoteUpdatedAt, ')
+          ..write('localDeletedAt: $localDeletedAt, ')
+          ..write('remoteDeletedAt: $remoteDeletedAt, ')
           ..write('userId: $userId, ')
           ..write('pinned: $pinned, ')
           ..write('pinnedAt: $pinnedAt, ')
@@ -2557,7 +2779,7 @@ class PinnedMessageEntity extends DataClass
         id,
         messageText,
         attachments,
-        status,
+        state,
         type,
         mentionedUsers,
         reactionCounts,
@@ -2568,9 +2790,12 @@ class PinnedMessageEntity extends DataClass
         showInChannel,
         shadowed,
         command,
-        createdAt,
-        updatedAt,
-        deletedAt,
+        localCreatedAt,
+        remoteCreatedAt,
+        localUpdatedAt,
+        remoteUpdatedAt,
+        localDeletedAt,
+        remoteDeletedAt,
         userId,
         pinned,
         pinnedAt,
@@ -2587,7 +2812,7 @@ class PinnedMessageEntity extends DataClass
           other.id == this.id &&
           other.messageText == this.messageText &&
           other.attachments == this.attachments &&
-          other.status == this.status &&
+          other.state == this.state &&
           other.type == this.type &&
           other.mentionedUsers == this.mentionedUsers &&
           other.reactionCounts == this.reactionCounts &&
@@ -2598,9 +2823,12 @@ class PinnedMessageEntity extends DataClass
           other.showInChannel == this.showInChannel &&
           other.shadowed == this.shadowed &&
           other.command == this.command &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.deletedAt == this.deletedAt &&
+          other.localCreatedAt == this.localCreatedAt &&
+          other.remoteCreatedAt == this.remoteCreatedAt &&
+          other.localUpdatedAt == this.localUpdatedAt &&
+          other.remoteUpdatedAt == this.remoteUpdatedAt &&
+          other.localDeletedAt == this.localDeletedAt &&
+          other.remoteDeletedAt == this.remoteDeletedAt &&
           other.userId == this.userId &&
           other.pinned == this.pinned &&
           other.pinnedAt == this.pinnedAt &&
@@ -2615,7 +2843,7 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
   final Value<String> id;
   final Value<String?> messageText;
   final Value<List<String>> attachments;
-  final Value<MessageSendingStatus> status;
+  final Value<String> state;
   final Value<String> type;
   final Value<List<String>> mentionedUsers;
   final Value<Map<String, int>?> reactionCounts;
@@ -2626,9 +2854,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
   final Value<bool?> showInChannel;
   final Value<bool> shadowed;
   final Value<String?> command;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
-  final Value<DateTime?> deletedAt;
+  final Value<DateTime?> localCreatedAt;
+  final Value<DateTime?> remoteCreatedAt;
+  final Value<DateTime?> localUpdatedAt;
+  final Value<DateTime?> remoteUpdatedAt;
+  final Value<DateTime?> localDeletedAt;
+  final Value<DateTime?> remoteDeletedAt;
   final Value<String?> userId;
   final Value<bool> pinned;
   final Value<DateTime?> pinnedAt;
@@ -2642,7 +2873,7 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
     this.id = const Value.absent(),
     this.messageText = const Value.absent(),
     this.attachments = const Value.absent(),
-    this.status = const Value.absent(),
+    this.state = const Value.absent(),
     this.type = const Value.absent(),
     this.mentionedUsers = const Value.absent(),
     this.reactionCounts = const Value.absent(),
@@ -2653,9 +2884,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
     this.showInChannel = const Value.absent(),
     this.shadowed = const Value.absent(),
     this.command = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.deletedAt = const Value.absent(),
+    this.localCreatedAt = const Value.absent(),
+    this.remoteCreatedAt = const Value.absent(),
+    this.localUpdatedAt = const Value.absent(),
+    this.remoteUpdatedAt = const Value.absent(),
+    this.localDeletedAt = const Value.absent(),
+    this.remoteDeletedAt = const Value.absent(),
     this.userId = const Value.absent(),
     this.pinned = const Value.absent(),
     this.pinnedAt = const Value.absent(),
@@ -2670,7 +2904,7 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
     required String id,
     this.messageText = const Value.absent(),
     required List<String> attachments,
-    this.status = const Value.absent(),
+    required String state,
     this.type = const Value.absent(),
     required List<String> mentionedUsers,
     this.reactionCounts = const Value.absent(),
@@ -2681,9 +2915,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
     this.showInChannel = const Value.absent(),
     this.shadowed = const Value.absent(),
     this.command = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.deletedAt = const Value.absent(),
+    this.localCreatedAt = const Value.absent(),
+    this.remoteCreatedAt = const Value.absent(),
+    this.localUpdatedAt = const Value.absent(),
+    this.remoteUpdatedAt = const Value.absent(),
+    this.localDeletedAt = const Value.absent(),
+    this.remoteDeletedAt = const Value.absent(),
     this.userId = const Value.absent(),
     this.pinned = const Value.absent(),
     this.pinnedAt = const Value.absent(),
@@ -2695,13 +2932,14 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         attachments = Value(attachments),
+        state = Value(state),
         mentionedUsers = Value(mentionedUsers),
         channelCid = Value(channelCid);
   static Insertable<PinnedMessageEntity> custom({
     Expression<String>? id,
     Expression<String>? messageText,
     Expression<String>? attachments,
-    Expression<int>? status,
+    Expression<String>? state,
     Expression<String>? type,
     Expression<String>? mentionedUsers,
     Expression<String>? reactionCounts,
@@ -2712,9 +2950,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
     Expression<bool>? showInChannel,
     Expression<bool>? shadowed,
     Expression<String>? command,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
-    Expression<DateTime>? deletedAt,
+    Expression<DateTime>? localCreatedAt,
+    Expression<DateTime>? remoteCreatedAt,
+    Expression<DateTime>? localUpdatedAt,
+    Expression<DateTime>? remoteUpdatedAt,
+    Expression<DateTime>? localDeletedAt,
+    Expression<DateTime>? remoteDeletedAt,
     Expression<String>? userId,
     Expression<bool>? pinned,
     Expression<DateTime>? pinnedAt,
@@ -2729,7 +2970,7 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
       if (id != null) 'id': id,
       if (messageText != null) 'message_text': messageText,
       if (attachments != null) 'attachments': attachments,
-      if (status != null) 'status': status,
+      if (state != null) 'state': state,
       if (type != null) 'type': type,
       if (mentionedUsers != null) 'mentioned_users': mentionedUsers,
       if (reactionCounts != null) 'reaction_counts': reactionCounts,
@@ -2740,9 +2981,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
       if (showInChannel != null) 'show_in_channel': showInChannel,
       if (shadowed != null) 'shadowed': shadowed,
       if (command != null) 'command': command,
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
-      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (localCreatedAt != null) 'local_created_at': localCreatedAt,
+      if (remoteCreatedAt != null) 'remote_created_at': remoteCreatedAt,
+      if (localUpdatedAt != null) 'local_updated_at': localUpdatedAt,
+      if (remoteUpdatedAt != null) 'remote_updated_at': remoteUpdatedAt,
+      if (localDeletedAt != null) 'local_deleted_at': localDeletedAt,
+      if (remoteDeletedAt != null) 'remote_deleted_at': remoteDeletedAt,
       if (userId != null) 'user_id': userId,
       if (pinned != null) 'pinned': pinned,
       if (pinnedAt != null) 'pinned_at': pinnedAt,
@@ -2759,7 +3003,7 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
       {Value<String>? id,
       Value<String?>? messageText,
       Value<List<String>>? attachments,
-      Value<MessageSendingStatus>? status,
+      Value<String>? state,
       Value<String>? type,
       Value<List<String>>? mentionedUsers,
       Value<Map<String, int>?>? reactionCounts,
@@ -2770,9 +3014,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
       Value<bool?>? showInChannel,
       Value<bool>? shadowed,
       Value<String?>? command,
-      Value<DateTime>? createdAt,
-      Value<DateTime>? updatedAt,
-      Value<DateTime?>? deletedAt,
+      Value<DateTime?>? localCreatedAt,
+      Value<DateTime?>? remoteCreatedAt,
+      Value<DateTime?>? localUpdatedAt,
+      Value<DateTime?>? remoteUpdatedAt,
+      Value<DateTime?>? localDeletedAt,
+      Value<DateTime?>? remoteDeletedAt,
       Value<String?>? userId,
       Value<bool>? pinned,
       Value<DateTime?>? pinnedAt,
@@ -2786,7 +3033,7 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
       id: id ?? this.id,
       messageText: messageText ?? this.messageText,
       attachments: attachments ?? this.attachments,
-      status: status ?? this.status,
+      state: state ?? this.state,
       type: type ?? this.type,
       mentionedUsers: mentionedUsers ?? this.mentionedUsers,
       reactionCounts: reactionCounts ?? this.reactionCounts,
@@ -2797,9 +3044,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
       showInChannel: showInChannel ?? this.showInChannel,
       shadowed: shadowed ?? this.shadowed,
       command: command ?? this.command,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      deletedAt: deletedAt ?? this.deletedAt,
+      localCreatedAt: localCreatedAt ?? this.localCreatedAt,
+      remoteCreatedAt: remoteCreatedAt ?? this.remoteCreatedAt,
+      localUpdatedAt: localUpdatedAt ?? this.localUpdatedAt,
+      remoteUpdatedAt: remoteUpdatedAt ?? this.remoteUpdatedAt,
+      localDeletedAt: localDeletedAt ?? this.localDeletedAt,
+      remoteDeletedAt: remoteDeletedAt ?? this.remoteDeletedAt,
       userId: userId ?? this.userId,
       pinned: pinned ?? this.pinned,
       pinnedAt: pinnedAt ?? this.pinnedAt,
@@ -2825,9 +3075,8 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
       final converter = $PinnedMessagesTable.$converterattachments;
       map['attachments'] = Variable<String>(converter.toSql(attachments.value));
     }
-    if (status.present) {
-      final converter = $PinnedMessagesTable.$converterstatus;
-      map['status'] = Variable<int>(converter.toSql(status.value));
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
@@ -2865,14 +3114,23 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
     if (command.present) {
       map['command'] = Variable<String>(command.value);
     }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+    if (localCreatedAt.present) {
+      map['local_created_at'] = Variable<DateTime>(localCreatedAt.value);
     }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    if (remoteCreatedAt.present) {
+      map['remote_created_at'] = Variable<DateTime>(remoteCreatedAt.value);
     }
-    if (deletedAt.present) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    if (localUpdatedAt.present) {
+      map['local_updated_at'] = Variable<DateTime>(localUpdatedAt.value);
+    }
+    if (remoteUpdatedAt.present) {
+      map['remote_updated_at'] = Variable<DateTime>(remoteUpdatedAt.value);
+    }
+    if (localDeletedAt.present) {
+      map['local_deleted_at'] = Variable<DateTime>(localDeletedAt.value);
+    }
+    if (remoteDeletedAt.present) {
+      map['remote_deleted_at'] = Variable<DateTime>(remoteDeletedAt.value);
     }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
@@ -2912,7 +3170,7 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
           ..write('id: $id, ')
           ..write('messageText: $messageText, ')
           ..write('attachments: $attachments, ')
-          ..write('status: $status, ')
+          ..write('state: $state, ')
           ..write('type: $type, ')
           ..write('mentionedUsers: $mentionedUsers, ')
           ..write('reactionCounts: $reactionCounts, ')
@@ -2923,9 +3181,12 @@ class PinnedMessagesCompanion extends UpdateCompanion<PinnedMessageEntity> {
           ..write('showInChannel: $showInChannel, ')
           ..write('shadowed: $shadowed, ')
           ..write('command: $command, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt, ')
+          ..write('localCreatedAt: $localCreatedAt, ')
+          ..write('remoteCreatedAt: $remoteCreatedAt, ')
+          ..write('localUpdatedAt: $localUpdatedAt, ')
+          ..write('remoteUpdatedAt: $remoteUpdatedAt, ')
+          ..write('localDeletedAt: $localDeletedAt, ')
+          ..write('remoteDeletedAt: $remoteDeletedAt, ')
           ..write('userId: $userId, ')
           ..write('pinned: $pinned, ')
           ..write('pinnedAt: $pinnedAt, ')
@@ -3060,7 +3321,7 @@ class $PinnedMessageReactionsTable extends PinnedMessageReactions
   }
 
   static TypeConverter<Map<String, Object?>, String> $converterextraData =
-      MapConverter<Object?>();
+      MapConverter();
   static TypeConverter<Map<String, Object?>?, String?> $converterextraDatan =
       NullAwareTypeConverter.wrap($converterextraData);
 }
@@ -3403,7 +3664,7 @@ class $ReactionsTable extends Reactions
   }
 
   static TypeConverter<Map<String, Object?>, String> $converterextraData =
-      MapConverter<Object?>();
+      MapConverter();
   static TypeConverter<Map<String, Object?>?, String?> $converterextraDatan =
       NullAwareTypeConverter.wrap($converterextraData);
 }
@@ -3790,7 +4051,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserEntity> {
   }
 
   static TypeConverter<Map<String, Object?>, String> $converterextraData =
-      MapConverter<Object?>();
+      MapConverter();
 }
 
 class UserEntity extends DataClass implements Insertable<UserEntity> {

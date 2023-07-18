@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_widget/bottom_row.dart';
+import 'package:stream_chat_flutter/src/message_widget/message_widget_content.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template messageCard}
@@ -22,7 +23,10 @@ class MessageCard extends StatefulWidget {
     required this.streamChatTheme,
     required this.streamChat,
     required this.showUserAvatar,
+    required this.showInChannel,
     required this.showTimeStamp,
+    required this.showUsername,
+    required this.reverse,
     required this.messageTheme,
     required this.hasQuotedMessage,
     required this.hasUrlAttachments,
@@ -32,11 +36,11 @@ class MessageCard extends StatefulWidget {
     required this.attachmentBuilders,
     required this.attachmentPadding,
     required this.textPadding,
-    required this.reverse,
     this.shape,
     this.borderSide,
     this.borderRadiusGeometry,
     this.textBuilder,
+    this.quotedMessageBuilder,
     this.onLinkTap,
     this.onMentionTap,
     this.onQuotedMessageTap,
@@ -93,8 +97,17 @@ class MessageCard extends StatefulWidget {
   /// {@macro message}
   final Message message;
 
-  /// {@macro showTimeStamp}
+  /// {@macro showInChannelIndicator}
+  final bool showInChannel;
+
+  /// {@macro showTimestamp}
   final bool showTimeStamp;
+
+  /// {@macro showUsername}
+  final bool showUsername;
+
+  /// {@macro reverse}
+  final bool reverse;
 
   /// {@macro attachmentBuilders}
   final Map<String, AttachmentBuilder> attachmentBuilders;
@@ -108,6 +121,9 @@ class MessageCard extends StatefulWidget {
   /// {@macro textBuilder}
   final Widget Function(BuildContext, Message)? textBuilder;
 
+  /// {@macro quotedMessageBuilder}
+  final Widget Function(BuildContext, Message)? quotedMessageBuilder;
+
   /// {@macro onLinkTap}
   final void Function(String)? onLinkTap;
 
@@ -116,9 +132,6 @@ class MessageCard extends StatefulWidget {
 
   /// {@macro onQuotedMessageTap}
   final OnQuotedMessageTap? onQuotedMessageTap;
-
-  /// {@macro reverse}
-  final bool reverse;
 
   @override
   State<MessageCard> createState() => _MessageCardState();
@@ -155,6 +168,8 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
+    final onQuotedMessageTap = widget.onQuotedMessageTap;
+    final quotedMessageBuilder = widget.quotedMessageBuilder;
     final message = widget.message;
     final showText = message.attachments.where((it) {
           return it.type == 'image' || it.type == 'giphy' || it.type == 'video';
@@ -196,12 +211,25 @@ class _MessageCardState extends State<MessageCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (widget.hasQuotedMessage)
-                    QuotedMessage(
-                      isDm: widget.isDm,
-                      reverse: widget.reverse,
-                      message: widget.message,
-                      hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                      onQuotedMessageTap: widget.onQuotedMessageTap,
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: InkWell(
+                        onTap: !widget.message.quotedMessage!.isDeleted &&
+                                onQuotedMessageTap != null
+                            ? () => onQuotedMessageTap(
+                                widget.message.quotedMessageId)
+                            : null,
+                        child: quotedMessageBuilder?.call(
+                              context,
+                              widget.message.quotedMessage!,
+                            ) ??
+                            QuotedMessage(
+                              isDm: widget.isDm,
+                              reverse: widget.reverse,
+                              message: widget.message,
+                              hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                            ),
+                      ),
                     ),
                   if (widget.hasNonUrlAttachments)
                     if (showText)
@@ -225,7 +253,10 @@ class _MessageCardState extends State<MessageCard> {
                             bottom: 6.h,
                             child: BottomRow(
                               message: widget.message,
+                              showInChannel: widget.showInChannel,
+                              showUsername: widget.showUsername,
                               messageTheme: widget.messageTheme,
+                              reverse: widget.reverse,
                               hasUrlAttachments: widget.hasUrlAttachments,
                               isOnlyEmoji: widget.isOnlyEmoji,
                               isDeleted: widget.message.isDeleted,
@@ -264,6 +295,9 @@ class _MessageCardState extends State<MessageCard> {
                 ),
                 child: BottomRow(
                   message: widget.message,
+                  showInChannel: widget.showInChannel,
+                  showUsername: widget.showUsername,
+                  reverse: widget.reverse,
                   messageTheme: widget.messageTheme,
                   hasUrlAttachments: widget.hasUrlAttachments,
                   isOnlyEmoji: widget.isOnlyEmoji,

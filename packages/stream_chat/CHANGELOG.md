@@ -1,3 +1,25 @@
+## 6.6.0
+
+🔄 Changed
+
+- Deprecated `Message.status` in favor of `Message.state`.
+- Deprecated `RetryPolicy.retryTimeout` in favor of `RetryPolicy.delayFactor`.
+
+## 6.5.0
+
+🔄 Changed
+
+- Updated minimum supported `SDK` version to Dart 2.19
+
+## 6.4.0
+
+🐞 Fixed
+
+- [[#1293]](https://github.com/GetStream/stream-chat-flutter/issues/1293) Fixed wrong message order when sending
+  messages quickly.
+- [[#1612]](https://github.com/GetStream/stream-chat-flutter/issues/1612) Fixed `Channel.isMutedStream` does not emit
+  when channel mute expires.
+
 ## 6.3.0
 
 🐞 Fixed

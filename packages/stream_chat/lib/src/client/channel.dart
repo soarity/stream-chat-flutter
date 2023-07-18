@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:stream_chat/src/client/retry_queue.dart';
 import 'package:stream_chat/src/core/util/utils.dart';
 import 'package:stream_chat/stream_chat.dart';
+import 'package:synchronized/synchronized.dart';
 
 /// The maximum time the incoming [Event.typingStart] event is valid before a
 /// [Event.typingStop] event is emitted automatically.
@@ -563,6 +564,8 @@ class Channel {
     });
   }
 
+  final _sendMessageLock = Lock();
+
   /// Send a [message] to this channel.
   ///
   /// If [skipPush] is true the message will not send a push notification.
@@ -579,17 +582,17 @@ class Channel {
     // Eg. Updating the message while the previous call is in progress.
     _messageAttachmentsUploadCompleter
         .remove(message.id)
-        ?.completeError('Message Cancelled');
+        ?.completeError(const StreamChatError('Message cancelled'));
 
     final quotedMessage = state!.messages.firstWhereOrNull(
       (m) => m.id == message.quotedMessageId,
     );
     // ignore: parameter_assignments
     message = message.copyWith(
-      createdAt: message.createdAt,
+      localCreatedAt: DateTime.now(),
       user: _client.state.currentUser,
       quotedMessage: quotedMessage,
-      status: MessageSendingStatus.sending,
+      state: MessageState.sending,
       attachments: message.attachments.map(
         (it) {
           if (it.uploadState.isSuccess) return it;
@@ -615,23 +618,41 @@ class Channel {
         message = await attachmentsUploadCompleter.future;
       }
 
-      final response = await _client.sendMessage(
-        message,
-        id!,
-        type,
-        skipPush: skipPush,
-        skipEnrichUrl: skipEnrichUrl,
+      // Wait for the previous sendMessage call to finish. Otherwise, the order
+      // of messages will not be maintained.
+      final response = await _sendMessageLock.synchronized(
+        () => _client.sendMessage(
+          message,
+          id!,
+          type,
+          skipPush: skipPush,
+          skipEnrichUrl: skipEnrichUrl,
+        ),
       );
-      state!.updateMessage(response.message);
+
+      final sentMessage = response.message.syncWith(message).copyWith(
+            // Update the message state to sent.
+            state: MessageState.sent,
+          );
+
+      state!.updateMessage(sentMessage);
       if (cooldown > 0) cooldownStartedAt = DateTime.now();
       return response;
     } catch (e) {
       if (e is StreamChatNetworkError && e.isRetriable) {
-        state!._retryQueue.add([message]);
+        state!._retryQueue.add([
+          message.copyWith(
+            // Update the message state to failed.
+            state: MessageState.sendingFailed,
+          ),
+        ]);
       }
+
       rethrow;
     }
   }
+
+  final _updateMessageLock = Lock();
 
   /// Updates the [message] in this channel.
   ///
@@ -641,18 +662,19 @@ class Channel {
     Message message, {
     bool skipEnrichUrl = false,
   }) async {
+    _checkInitialized();
     final originalMessage = message;
 
     // Cancelling previous completer in case it's called again in the process
     // Eg. Updating the message while the previous call is in progress.
     _messageAttachmentsUploadCompleter
         .remove(message.id)
-        ?.completeError('Message Cancelled');
+        ?.completeError(const StreamChatError('Message cancelled'));
 
     // ignore: parameter_assignments
     message = message.copyWith(
-      status: MessageSendingStatus.updating,
-      updatedAt: message.updatedAt,
+      state: MessageState.updating,
+      localUpdatedAt: DateTime.now(),
       attachments: message.attachments.map(
         (it) {
           if (it.uploadState.isSuccess) return it;
@@ -678,24 +700,39 @@ class Channel {
         message = await attachmentsUploadCompleter.future;
       }
 
-      final response = await _client.updateMessage(
-        message,
-        skipEnrichUrl: skipEnrichUrl,
+      // Wait for the previous update call to finish. Otherwise, the order of
+      // messages will not be maintained.
+      final response = await _updateMessageLock.synchronized(
+        () => _client.updateMessage(
+          message,
+          skipEnrichUrl: skipEnrichUrl,
+        ),
       );
 
-      final m = response.message.copyWith(
-        ownReactions: message.ownReactions,
-      );
+      final updateMessage = response.message.syncWith(message).copyWith(
+            // Update the message state to updated.
+            state: MessageState.updated,
+            ownReactions: message.ownReactions,
+          );
 
-      state?.updateMessage(m);
+      state?.updateMessage(updateMessage);
 
       return response;
     } catch (e) {
       if (e is StreamChatNetworkError) {
         if (e.isRetriable) {
-          state!._retryQueue.add([message]);
+          state!._retryQueue.add([
+            message.copyWith(
+              // Update the message state to failed.
+              state: MessageState.updatingFailed,
+            ),
+          ]);
         } else {
-          state?.updateMessage(originalMessage);
+          // Reset the message to original state if the update fails and is not
+          // retriable.
+          state?.updateMessage(originalMessage.copyWith(
+            state: MessageState.updatingFailed,
+          ));
         }
       }
       rethrow;
@@ -713,77 +750,147 @@ class Channel {
     List<String>? unset,
     bool skipEnrichUrl = false,
   }) async {
+    _checkInitialized();
+    final originalMessage = message;
+
+    // Cancelling previous completer in case it's called again in the process
+    // Eg. Updating the message while the previous call is in progress.
+    _messageAttachmentsUploadCompleter
+        .remove(message.id)
+        ?.completeError(const StreamChatError('Message cancelled'));
+
+    // ignore: parameter_assignments
+    message = message.copyWith(
+      state: MessageState.updating,
+      localUpdatedAt: DateTime.now(),
+    );
+
+    state?.updateMessage(message);
+
     try {
-      final response = await _client.partialUpdateMessage(
-        message.id,
-        set: set,
-        unset: unset,
-        skipEnrichUrl: skipEnrichUrl,
+      // Wait for the previous update call to finish. Otherwise, the order of
+      // messages will not be maintained.
+      final response = await _updateMessageLock.synchronized(
+        () => _client.partialUpdateMessage(
+          message.id,
+          set: set,
+          unset: unset,
+          skipEnrichUrl: skipEnrichUrl,
+        ),
       );
 
-      final updatedMessage = response.message.copyWith(
-        ownReactions: message.ownReactions,
-      );
+      final updatedMessage = response.message.syncWith(message).copyWith(
+            // Update the message state to updated.
+            state: MessageState.updated,
+            ownReactions: message.ownReactions,
+          );
 
       state?.updateMessage(updatedMessage);
 
       return response;
     } catch (e) {
-      if (e is StreamChatNetworkError && e.isRetriable) {
-        state!._retryQueue.add([message]);
+      if (e is StreamChatNetworkError) {
+        if (e.isRetriable) {
+          state!._retryQueue.add([
+            message.copyWith(
+              // Update the message state to failed.
+              state: MessageState.updatingFailed,
+            ),
+          ]);
+        } else {
+          // Reset the message to original state if the update fails and is not
+          // retriable.
+          state?.updateMessage(originalMessage.copyWith(
+            state: MessageState.updatingFailed,
+          ));
+        }
       }
+
       rethrow;
     }
   }
 
-  /// Deletes the [message] from the channel.
-  Future<EmptyResponse> deleteMessage(Message message, {bool? hard}) async {
-    final hardDelete = hard ?? false;
+  final _deleteMessageLock = Lock();
 
-    // Directly deleting the local messages which are not yet sent to server
-    if (message.status == MessageSendingStatus.sending ||
-        message.status == MessageSendingStatus.failed) {
+  /// Deletes the [message] from the channel.
+  Future<EmptyResponse> deleteMessage(
+    Message message, {
+    bool hard = false,
+  }) async {
+    _checkInitialized();
+
+    // Directly deleting the local messages which are not yet sent to server.
+    if (message.remoteCreatedAt == null) {
       state!.deleteMessage(
         message.copyWith(
           type: 'deleted',
-          deletedAt: message.deletedAt ?? DateTime.now(),
-          status: MessageSendingStatus.sent,
+          localDeletedAt: DateTime.now(),
+          state: MessageState.deleted(hard: hard),
         ),
-        hardDelete: hardDelete,
+        hardDelete: hard,
       );
 
       // Removing the attachments upload completer to stop the `sendMessage`
       // waiting for attachments to complete.
       _messageAttachmentsUploadCompleter
           .remove(message.id)
-          ?.completeError(Exception('Message deleted'));
+          ?.completeError(const StreamChatError('Message deleted'));
+
+      // Returning empty response to mark the api call as success.
       return EmptyResponse();
     }
 
+    // ignore: parameter_assignments
+    message = message.copyWith(
+      type: 'deleted',
+      deletedAt: DateTime.now(),
+      state: MessageState.deleting(hard: hard),
+    );
+
+    state?.deleteMessage(message, hardDelete: hard);
+
     try {
-      // ignore: parameter_assignments
-      message = message.copyWith(
-        type: 'deleted',
-        status: MessageSendingStatus.deleting,
-        deletedAt: message.deletedAt ?? DateTime.now(),
+      // Wait for the previous delete call to finish. Otherwise, the order of
+      // messages will not be maintained.
+      final response = await _deleteMessageLock.synchronized(
+        () => _client.deleteMessage(message.id, hard: hard),
       );
 
-      state?.deleteMessage(message, hardDelete: hardDelete);
-
-      final response = await _client.deleteMessage(message.id, hard: hard);
-
-      state?.deleteMessage(
-        message.copyWith(status: MessageSendingStatus.sent),
-        hardDelete: hardDelete,
+      final deletedMessage = message.copyWith(
+        state: MessageState.deleted(hard: hard),
       );
+
+      state?.deleteMessage(deletedMessage, hardDelete: hard);
 
       return response;
     } catch (e) {
       if (e is StreamChatNetworkError && e.isRetriable) {
-        state!._retryQueue.add([message]);
+        state!._retryQueue.add([
+          message.copyWith(
+            // Update the message state to failed.
+            state: MessageState.deletingFailed(hard: hard),
+          ),
+        ]);
       }
       rethrow;
     }
+  }
+
+  /// Retry the operation on the message based on the failed state.
+  ///
+  /// For example, if the message failed to send, it will retry sending the
+  /// message and vice-versa.
+  Future<Object> retryMessage(Message message) async {
+    assert(message.state.isFailed, 'Message state is not failed');
+
+    return message.state.maybeWhen(
+      failed: (state, _) => state.when(
+        sendingFailed: () => sendMessage(message),
+        updatingFailed: () => updateMessage(message),
+        deletingFailed: (hard) => deleteMessage(message, hard: hard),
+      ),
+      orElse: () => throw StateError('Message state is not failed'),
+    );
   }
 
   /// Pins provided message
@@ -1420,15 +1527,32 @@ class Channel {
     );
   }
 
+  // Timer to keep track of mute expiration. This is used to update the channel
+  // state when the mute expires.
+  Timer? _muteExpirationTimer;
+
   /// Mutes the channel.
   Future<EmptyResponse> mute({Duration? expiration}) {
     _checkInitialized();
+
+    // If there is a expiration set, we will set a timer to automatically unmute
+    // the channel when the mute expires.
+    if (expiration != null) {
+      _muteExpirationTimer?.cancel();
+      _muteExpirationTimer = Timer(expiration, unmute);
+    }
+
     return _client.muteChannel(cid!, expiration: expiration);
   }
 
   /// Unmute the channel.
   Future<EmptyResponse> unmute() {
     _checkInitialized();
+
+    // Cancel the mute expiration timer if it is set.
+    _muteExpirationTimer?.cancel();
+    _muteExpirationTimer = null;
+
     return _client.unmuteChannel(cid!);
   }
 
@@ -1558,6 +1682,7 @@ class Channel {
   void dispose() {
     client.state.removeChannel('$cid');
     state?.dispose();
+    _muteExpirationTimer?.cancel();
     _keyStrokeHandler.cancel();
   }
 
@@ -1850,15 +1975,7 @@ class ChannelClientState {
   /// Retry failed message.
   Future<void> retryFailedMessages() async {
     final failedMessages = [...messages, ...threads.values.expand((v) => v)]
-        .where(
-          (message) =>
-              message.status != MessageSendingStatus.sent &&
-              message.createdAt.isBefore(
-                DateTime.now().subtract(const Duration(seconds: 5)),
-              ),
-        )
-        .toList();
-
+        .where((it) => it.state.isFailed);
     _retryQueue.add(failedMessages);
   }
 
@@ -1942,8 +2059,9 @@ class ChannelClientState {
     )
         .listen((event) {
       final message = event.message!;
-      if (isUpToDate ||
-          (message.parentId != null && message.showInChannel != true)) {
+      final showInChannel =
+          message.parentId != null && message.showInChannel != true;
+      if (isUpToDate || showInChannel) {
         updateMessage(message);
       }
 
@@ -1960,10 +2078,10 @@ class ChannelClientState {
       var newMessages = [...messages];
       final oldIndex = newMessages.indexWhere((m) => m.id == message.id);
       if (oldIndex != -1) {
-        var updatedMessage = message;
+        final oldMessage = newMessages[oldIndex];
+        var updatedMessage = message.syncWith(oldMessage);
         // Add quoted message to the message if it is not present.
         if (message.quotedMessageId != null && message.quotedMessage == null) {
-          final oldMessage = newMessages[oldIndex];
           updatedMessage = updatedMessage.copyWith(
             quotedMessage: oldMessage.quotedMessage,
           );
@@ -1980,7 +2098,7 @@ class ChannelClientState {
           return it.copyWith(
             quotedMessage: updatedMessage.copyWith(
               type: 'deleted',
-              deletedAt: updatedMessage.deletedAt ?? DateTime.now(),
+              deletedAt: DateTime.now(),
             ),
           );
         }).toList();
@@ -2004,7 +2122,7 @@ class ChannelClientState {
       }
 
       _channelState = _channelState.copyWith(
-        messages: newMessages..sort(_sortByCreatedAt),
+        messages: newMessages.sorted(_sortByCreatedAt),
         pinnedMessages: newPinnedMessages,
         channel: _channelState.channel?.copyWith(
           lastMessageAt: message.createdAt,
@@ -2226,7 +2344,7 @@ class ChannelClientState {
         ...newThreads[parentId]!.where(
           (newMessage) => !messages.any((m) => m.id == newMessage.id),
         ),
-      ]..sort(_sortByCreatedAt);
+      ].sorted(_sortByCreatedAt);
     } else {
       newThreads[parentId] = messages;
     }
@@ -2245,15 +2363,10 @@ class ChannelClientState {
 
   /// Update channelState with updated information.
   void updateChannelState(ChannelState updatedState) {
-    final _existingStateMessages = _channelState.messages ?? [];
-    final _updatedStateMessages = updatedState.messages ?? [];
+    final _existingStateMessages = [...messages];
     final newMessages = <Message>[
-      ..._updatedStateMessages,
-      ..._existingStateMessages
-          .where((m) =>
-              !_updatedStateMessages.any((newMessage) => newMessage.id == m.id))
-          .toList(),
-    ]..sort(_sortByCreatedAt);
+      ..._existingStateMessages.merge(updatedState.messages),
+    ].sorted(_sortByCreatedAt);
 
     final _existingStateWatchers = _channelState.watchers ?? [];
     final _updatedStateWatchers = updatedState.watchers ?? [];
@@ -2470,4 +2583,22 @@ class ChannelClientState {
 bool _pinIsValid(Message message) {
   final now = DateTime.now();
   return message.pinExpires!.isAfter(now);
+}
+
+extension on Iterable<Message> {
+  Iterable<Message> merge(Iterable<Message>? other) {
+    if (other == null) return this;
+
+    final messageMap = {for (final message in this) message.id: message};
+
+    for (final message in other) {
+      messageMap.update(
+        message.id,
+        message.syncWith,
+        ifAbsent: () => message,
+      );
+    }
+
+    return messageMap.values;
+  }
 }

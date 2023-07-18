@@ -2,7 +2,6 @@
 import 'package:drift/drift.dart';
 import 'package:stream_chat_persistence/src/converter/list_converter.dart';
 import 'package:stream_chat_persistence/src/converter/map_converter.dart';
-import 'package:stream_chat_persistence/src/converter/message_sending_status_converter.dart';
 import 'package:stream_chat_persistence/src/entity/channels.dart';
 
 /// Represents a [Messages] table in [MoorChatDatabase].
@@ -18,10 +17,8 @@ class Messages extends Table {
   /// or generated from a command or as a result of URL scraping.
   TextColumn get attachments => text().map(ListConverter<String>())();
 
-  /// The status of a sending message
-  IntColumn get status => integer()
-      .withDefault(const Constant(1))
-      .map(MessageSendingStatusConverter())();
+  /// The current state of the message.
+  TextColumn get state => text()();
 
   /// The message type
   TextColumn get type => text().withDefault(const Constant('regular'))();
@@ -53,14 +50,52 @@ class Messages extends Table {
   /// A used command name.
   TextColumn get command => text().nullable()();
 
-  /// The DateTime when the message was created.
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  /// The DateTime on which the message was created.
+  ///
+  /// Returns the latest between [localCreatedAt] and [remoteCreatedAt].
+  /// If both are null, returns [currentDateAndTime].
+  Expression<DateTime> get createdAt {
+    return coalesce<DateTime>(
+      [localCreatedAt, remoteCreatedAt, currentDateAndTime],
+    );
+  }
 
-  /// The DateTime when the message was updated last time.
-  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  /// The DateTime on which the message was created on the client.
+  DateTimeColumn get localCreatedAt => dateTime().nullable()();
 
-  /// The DateTime when the message was deleted.
-  DateTimeColumn get deletedAt => dateTime().nullable()();
+  /// The DateTime on which the message was created on the server.
+  DateTimeColumn get remoteCreatedAt => dateTime().nullable()();
+
+  /// The DateTime on which the message was updated last time.
+  ///
+  /// Returns the latest between [localUpdatedAt] and [remoteUpdatedAt].
+  /// If both are null, returns [createdAt].
+  Expression<DateTime> get updatedAt {
+    return coalesce<DateTime>(
+      [localUpdatedAt, remoteUpdatedAt, createdAt],
+    );
+  }
+
+  /// The DateTime on which the message was updated on the client.
+  DateTimeColumn get localUpdatedAt => dateTime().nullable()();
+
+  /// The DateTime on which the message was updated on the server.
+  DateTimeColumn get remoteUpdatedAt => dateTime().nullable()();
+
+  /// The DateTime on which the message was deleted.
+  ///
+  /// Returns the latest between [localDeletedAt] and [remoteDeletedAt].
+  Expression<DateTime> get deletedAt {
+    return coalesce<DateTime>(
+      [localDeletedAt, remoteDeletedAt],
+    );
+  }
+
+  /// The DateTime on which the message was deleted on the client.
+  DateTimeColumn get localDeletedAt => dateTime().nullable()();
+
+  /// The DateTime on which the message was deleted on the server.
+  DateTimeColumn get remoteDeletedAt => dateTime().nullable()();
 
   /// Id of the User who sent the message
   TextColumn get userId => text().nullable()();

@@ -20,22 +20,21 @@ class UnreadMessagesSeparator extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.h),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: StreamChatTheme.of(context).colorTheme.bgGradient,
+          color: Theme.of(context).colorScheme.onSecondary,
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 4.h,
+            horizontal: 18.w,
+            vertical: 10.h,
           ),
           child: Text(
-            context.translations
-                .unreadMessagesSeparatorText(unreadCount)
-                .toUpperCase(),
+            context.translations.unreadMessagesSeparatorText(unreadCount),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14.fzs,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade800,
+              height: 1,
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
             ),
           ),
         ),

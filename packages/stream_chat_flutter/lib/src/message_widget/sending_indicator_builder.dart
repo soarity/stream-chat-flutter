@@ -41,25 +41,21 @@ class SendingIndicatorBuilder extends StatelessWidget {
     final style = messageTheme.createdAtStyle;
     final channel = this.channel ?? StreamChannel.of(context).channel;
 
-    if (hasNonUrlAttachments &&
-        (message.status == MessageSendingStatus.sending ||
-            message.status == MessageSendingStatus.updating)) {
+    if (hasNonUrlAttachments && message.state.isOutgoing) {
       final totalAttachments = message.attachments.length;
-      final uploadRemaining =
-          message.attachments.where((it) => !it.uploadState.isSuccess).length;
-      if (uploadRemaining == 0) {
-        return StreamSvgIcon.check(
-          size: style!.fontSize! * 1.3,
-          color: IconTheme.of(context).color!.withOpacity(0.5),
+      final attachmentsToUpload = message.attachments.where((it) {
+        return !it.uploadState.isSuccess;
+      });
+
+      if (attachmentsToUpload.isNotEmpty) {
+        return Text(
+          context.translations.attachmentsUploadProgressText(
+            remaining: attachmentsToUpload.length,
+            total: totalAttachments,
+          ),
+          style: style,
         );
       }
-      return Text(
-        context.translations.attachmentsUploadProgressText(
-          remaining: uploadRemaining,
-          total: totalAttachments,
-        ),
-        style: style,
-      );
     }
 
     return BetterStreamBuilder<List<Read>>(
@@ -77,8 +73,7 @@ class SendingIndicatorBuilder extends StatelessWidget {
           isMessageRead: isMessageRead,
           size: style!.fontSize! * 1.3,
         );
-
-              },
+      },
     );
   }
 }

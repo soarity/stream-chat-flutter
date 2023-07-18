@@ -1,13 +1,13 @@
 name: stream_chat_localizations
 description: The Official localizations for Stream Chat Flutter, a service for building chat applications
-version: 5.3.0
+version: 5.7.0
 homepage: https://github.com/GetStream/stream-chat-flutter
 repository: https://github.com/GetStream/stream-chat-flutter
 issue_tracker: https://github.com/GetStream/stream-chat-flutter/issues
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
-  flutter: ">=1.20.0"
+  sdk: ">=2.19.0 <4.0.0"
+  flutter: ">=3.7.0"
 
 publish_to: "none"
 
@@ -19,22 +19,12 @@ dependencies:
   stream_chat_flutter:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: wer6/release/6.3.0
+      ref: wer6/release/6.7.0
       path: packages/stream_chat_flutter
 
 dev_dependencies:
-  dart_code_metrics: ^5.7.2
   flutter_test:
     sdk: flutter
-
-dependency_overrides:
-  # Can be removed when
-  # https://github.com/creativecreatorormaybenot/wakelock/pull/203 is merged.
-  wakelock_windows:
-    git:
-      url: https://github.com/timsneath/wakelock
-      ref: win32-v5
-      path: wakelock_windows
 
 flutter:
   plugin:

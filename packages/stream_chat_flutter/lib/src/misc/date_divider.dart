@@ -44,7 +44,7 @@ class StreamDateDivider extends StatelessWidget {
         elevation: 1,
         color: chatThemeData.colorTheme.overlayDark,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
           child: Text(
             dayInfo,
             style: chatThemeData.textTheme.footnoteBold.copyWith(

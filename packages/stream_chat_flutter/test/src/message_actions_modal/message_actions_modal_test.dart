@@ -40,7 +40,7 @@ void main() {
                     user: User(
                       id: 'user-id',
                     ),
-                    status: MessageSendingStatus.sent,
+                    state: MessageState.sent,
                   ),
                   messageWidget: const Text(
                     'test',
@@ -210,7 +210,7 @@ void main() {
                     user: User(
                       id: 'user-id',
                     ),
-                    status: MessageSendingStatus.sent,
+                    state: MessageState.sent,
                   ),
                   messageTheme: streamTheme.ownMessageTheme,
                 ),
@@ -256,7 +256,7 @@ void main() {
                     user: User(
                       id: 'user-id',
                     ),
-                    status: MessageSendingStatus.sent,
+                    state: MessageState.sent,
                   ),
                   messageTheme: streamTheme.ownMessageTheme,
                 ),
@@ -423,15 +423,23 @@ void main() {
   );
 
   testWidgets(
-    'tapping on resend should call send message',
+    'tapping on resend should call retry message',
     (WidgetTester tester) async {
       final client = MockClient();
       final clientState = MockClientState();
       final channel = MockChannel();
 
+      final message = Message(
+        state: MessageState.sendingFailed,
+        text: 'test',
+        user: User(
+          id: 'user-id',
+        ),
+      );
+
       when(() => client.state).thenReturn(clientState);
       when(() => clientState.currentUser).thenReturn(OwnUser(id: 'user-id'));
-      when(() => channel.sendMessage(any()))
+      when(() => channel.retryMessage(message))
           .thenAnswer((_) async => SendMessageResponse());
 
       final themeData = ThemeData();
@@ -451,13 +459,7 @@ void main() {
             child: SizedBox(
               child: MessageActionsModal(
                 messageWidget: const Text('test'),
-                message: Message(
-                  status: MessageSendingStatus.failed,
-                  text: 'test',
-                  user: User(
-                    id: 'user-id',
-                  ),
-                ),
+                message: message,
                 messageTheme: streamTheme.ownMessageTheme,
               ),
             ),
@@ -468,57 +470,7 @@ void main() {
 
       await tester.tap(find.text('Resend'));
 
-      verify(() => channel.sendMessage(any())).called(1);
-    },
-  );
-
-  testWidgets(
-    'tapping on resend should call update message if editing the message',
-    (WidgetTester tester) async {
-      final client = MockClient();
-      final clientState = MockClientState();
-      final channel = MockChannel();
-
-      when(() => client.state).thenReturn(clientState);
-      when(() => clientState.currentUser).thenReturn(OwnUser(id: 'user-id'));
-      when(() => channel.updateMessage(any()))
-          .thenAnswer((_) async => UpdateMessageResponse());
-
-      final themeData = ThemeData();
-      final streamTheme = StreamChatThemeData.fromTheme(themeData);
-
-      await tester.pumpWidget(
-        MaterialApp(
-          builder: (context, child) => StreamChat(
-            client: client,
-            streamChatThemeData: streamTheme,
-            child: child,
-          ),
-          theme: themeData,
-          home: StreamChannel(
-            showLoading: false,
-            channel: channel,
-            child: SizedBox(
-              child: MessageActionsModal(
-                messageWidget: const Text('test'),
-                message: Message(
-                  status: MessageSendingStatus.failed_update,
-                  text: 'test',
-                  user: User(
-                    id: 'user-id',
-                  ),
-                ),
-                messageTheme: streamTheme.ownMessageTheme,
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Resend Edited Message'));
-
-      verify(() => channel.updateMessage(any())).called(1);
+      verify(() => channel.retryMessage(message)).called(1);
     },
   );
 
