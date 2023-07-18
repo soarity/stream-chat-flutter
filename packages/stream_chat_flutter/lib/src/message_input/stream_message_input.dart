@@ -106,17 +106,12 @@ class StreamMessageInput extends StatefulWidget {
     this.textCapitalization = TextCapitalization.sentences,
     this.disableAttachments = false,
     this.messageInputController,
-<<<<<<< HEAD
-=======
-    this.actions = const [],
-    this.actionsLocation = ActionsLocation.left,
     this.attachmentListBuilder,
     this.fileAttachmentListBuilder,
     this.mediaAttachmentListBuilder,
     this.fileAttachmentBuilder,
     this.mediaAttachmentBuilder,
     @Deprecated('Use `mediaAttachmentBuilder` instead.')
->>>>>>> 162d42b8076ff85ccf1c698fea78a721b3b45c99
     this.attachmentThumbnailBuilders,
     this.focusNode,
     this.sendButtonLocation = SendButtonLocation.outside,
