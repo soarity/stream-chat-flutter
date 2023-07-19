@@ -279,7 +279,7 @@ class StreamMessageWidget extends StatefulWidget {
                         constraints: BoxConstraints(
                           maxWidth: 400,
                           minWidth: 400,
-                          maxHeight: mediaQueryData.size.height * 0.4,
+                          maxHeight: mediaQueryData.size.height * 0.3,
                         ),
                         onAttachmentTap: onAttachmentTap != null
                             ? () {

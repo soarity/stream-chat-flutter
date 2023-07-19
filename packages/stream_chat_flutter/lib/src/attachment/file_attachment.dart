@@ -53,11 +53,12 @@ class StreamFileAttachment extends StreamAttachmentWidget {
         onTap: onAttachmentTap,
         child: Container(
           constraints: constraints ?? BoxConstraints.tightFor(width: 100.w),
+          height: 56.h,
           decoration: BoxDecoration(
             color: colorTheme.barsBg,
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
-              color: colorTheme.borders,
+              color: Theme.of(context).colorScheme.outline,
             ),
           ),
           child: Row(
@@ -74,22 +75,16 @@ class StreamFileAttachment extends StreamAttachmentWidget {
                   attachment: attachment,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.w),
               Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       attachment.title ?? context.translations.fileText,
-                      style: StreamChatTheme.of(context)
-                          .textTheme
-                          .bodyBold
-                          .copyWith(
-                            fontSize: 15.fzs,
-                            fontWeight: FontWeight.w600,
-                          ),
-                      maxLines: 2,
+                      style: StreamChatTheme.of(context).textTheme.bodyBold,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 3.h),
