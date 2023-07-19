@@ -40,6 +40,7 @@ class StreamDateDivider extends StatelessWidget {
     final chatThemeData = StreamChatTheme.of(context);
     return Center(
       child: Material(
+        elevation: 1,
         shape: const StadiumBorder(),
         color: Theme.of(context).colorScheme.onInverseSurface,
         child: Padding(
