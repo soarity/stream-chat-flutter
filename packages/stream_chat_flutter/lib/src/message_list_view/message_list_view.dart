@@ -900,9 +900,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         bottomRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 16.w,
-        8.h,
-        isOnlyEmoji ? 0 : 16.w,
+        isOnlyEmoji ? 0 : 12.w,
+        4.h,
+        isOnlyEmoji ? 0 : 12.w,
         0,
       ),
       borderSide: borderSide,
@@ -1031,21 +1031,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final isNextUserSame =
         nextMessage != null && message.user!.id == nextMessage.user!.id;
 
-    final upperMessage =
-        index + 1 < messages.length ? messages[index + 1] : null;
-
-    // use to show whether to show username or not
-    final hideUsername = upperMessage != null &&
-        upperMessage.type != 'system' &&
-        message.user!.id == upperMessage.user!.id &&
-        Jiffy(upperMessage.createdAt.toLocal())
-                .diff(message.createdAt.toLocal(), Units.DAY) ==
-            0;
-
-    num timeDiff = 0;
+    var hasTimeDiff = false;
     if (nextMessage != null) {
-      timeDiff = Jiffy(nextMessage.createdAt.toLocal()).diff(
-        message.createdAt.toLocal(),
+      hasTimeDiff = !Jiffy(message.createdAt.toLocal()).isSame(
+        nextMessage.createdAt.toLocal(),
         Units.MINUTE,
       );
     }
@@ -1055,10 +1044,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     final attachmentBorderRadius = hasFileAttachment ? 12.r : 14.r;
 
-    final showUsername = !isMyMessage && (timeDiff >= 1 || !isNextUserSame);
+    final showUsername =
+        !isMyMessage && (hasTimeDiff || !isNextUserSame || hasFileAttachment);
 
-    final showUserAvatar =
-        isMyMessage ? DisplayWidget.gone : DisplayWidget.show;
+    final showUserAvatar = isMyMessage
+        ? DisplayWidget.gone
+        : (hasTimeDiff || !isNextUserSame || hasFileAttachment)
+            ? DisplayWidget.hide
+            : DisplayWidget.show;
 
     final showSendingIndicator = isMyMessage;
 
@@ -1107,19 +1100,22 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
       showFlagButton: !isMyMessage,
-      hideUsername: hideUsername,
       borderSide: borderSide,
       attachmentBorderRadiusGeometry: BorderRadius.only(
         topLeft: Radius.circular(attachmentBorderRadius),
         bottomLeft: isMyMessage
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
-                isNextUserSame ? attachmentBorderRadius : 0,
+                (hasTimeDiff || !isNextUserSame || hasFileAttachment)
+                    ? attachmentBorderRadius
+                    : 0,
               ),
         topRight: Radius.circular(attachmentBorderRadius),
         bottomRight: isMyMessage
             ? Radius.circular(
-                isNextUserSame ? attachmentBorderRadius : 0,
+                (hasTimeDiff || !isNextUserSame || hasFileAttachment)
+                    ? attachmentBorderRadius
+                    : 0,
               )
             : Radius.circular(attachmentBorderRadius),
       ),
@@ -1128,16 +1124,22 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         topLeft: Radius.circular(16.r),
         bottomLeft: isMyMessage
             ? Radius.circular(16.r)
-            : Radius.circular(isNextUserSame ? 16.r : 0),
+            : Radius.circular(
+                (hasTimeDiff || !isNextUserSame || hasFileAttachment)
+                    ? 16.r
+                    : 0),
         topRight: Radius.circular(16.r),
         bottomRight: isMyMessage
-            ? Radius.circular(isNextUserSame ? 16.r : 0)
+            ? Radius.circular(
+                (hasTimeDiff || !isNextUserSame || hasFileAttachment)
+                    ? 16.r
+                    : 0)
             : Radius.circular(16.r),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 16.w,
-        8.h,
-        isOnlyEmoji ? 0 : 16.w,
+        isOnlyEmoji ? 0 : 12.w,
+        4.h,
+        isOnlyEmoji ? 0 : 12.w,
         0,
       ),
       messageTheme: isMyMessage

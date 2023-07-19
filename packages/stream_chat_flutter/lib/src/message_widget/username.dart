@@ -25,7 +25,10 @@ class Username extends StatelessWidget {
       message.user?.name ?? '',
       maxLines: 1,
       key: key,
-      style: messageTheme.messageAuthorStyle!.copyWith(
+      style: TextStyle(
+        fontSize: 14.fzs,
+        fontWeight: FontWeight.w500,
+        height: 1,
         color: color == null
             ? Theme.of(context).colorScheme.secondary
             : Color(int.parse('0x$color')),

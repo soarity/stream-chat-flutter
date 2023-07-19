@@ -29,7 +29,6 @@ class MessageWidgetContent extends StatelessWidget {
     super.key,
     required this.isDm,
     required this.showInChannel,
-    required this.hideUsername,
     required this.botBuilder,
     required this.reverse,
     required this.isPinned,
@@ -92,9 +91,6 @@ class MessageWidgetContent extends StatelessWidget {
   ///
   /// Defaults to false
   final bool isDm;
-
-  /// checks if the username should be hidden
-  final bool hideUsername;
 
   /// Widget builder for building bot message
   final Widget Function(BuildContext, Message)? botBuilder;
@@ -267,36 +263,47 @@ class MessageWidgetContent extends StatelessWidget {
                   padding: showReactions
                       ? EdgeInsets.only(top: 10.h)
                       : EdgeInsets.zero,
-                  child: MessageCard(
-                    message: message,
-                    isDm: isDm,
-                    hideUsername: hideUsername,
-                    botBuilder: botBuilder,
-                    showInChannel: showInChannel,
-                    showUsername: showUsername,
-                    isFailedState: isFailedState,
-                    showSendingIndicator: showSendingIndicator,
-                    showUserAvatar: showUserAvatar,
-                    showTimeStamp: showTimeStamp,
-                    messageTheme: messageTheme,
-                    hasQuotedMessage: hasQuotedMessage,
-                    hasUrlAttachments: hasUrlAttachments,
-                    hasNonUrlAttachments: hasNonUrlAttachments,
-                    isOnlyEmoji: isOnlyEmoji,
-                    isGiphy: isGiphy,
-                    streamChat: streamChat,
-                    streamChatTheme: streamChatTheme,
-                    attachmentBuilders: attachmentBuilders,
-                    attachmentPadding: attachmentPadding,
-                    textPadding: textPadding,
-                    reverse: reverse,
-                    onQuotedMessageTap: onQuotedMessageTap,
-                    onMentionTap: onMentionTap,
-                    onLinkTap: onLinkTap,
-                    textBuilder: textBuilder,
-                    borderRadiusGeometry: borderRadiusGeometry,
-                    borderSide: borderSide,
-                    shape: shape,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      UserAvatar(
+                        isDm: isDm,
+                        showUserAvatar: showUserAvatar,
+                        message: message,
+                      ),
+                      Expanded(
+                        child: MessageCard(
+                          message: message,
+                          isDm: isDm,
+                          botBuilder: botBuilder,
+                          showInChannel: showInChannel,
+                          showUsername: showUsername,
+                          isFailedState: isFailedState,
+                          showSendingIndicator: showSendingIndicator,
+                          showUserAvatar: showUserAvatar,
+                          showTimeStamp: showTimeStamp,
+                          messageTheme: messageTheme,
+                          hasQuotedMessage: hasQuotedMessage,
+                          hasUrlAttachments: hasUrlAttachments,
+                          hasNonUrlAttachments: hasNonUrlAttachments,
+                          isOnlyEmoji: isOnlyEmoji,
+                          isGiphy: isGiphy,
+                          streamChat: streamChat,
+                          streamChatTheme: streamChatTheme,
+                          attachmentBuilders: attachmentBuilders,
+                          attachmentPadding: attachmentPadding,
+                          textPadding: textPadding,
+                          reverse: reverse,
+                          onQuotedMessageTap: onQuotedMessageTap,
+                          onMentionTap: onMentionTap,
+                          onLinkTap: onLinkTap,
+                          textBuilder: textBuilder,
+                          borderRadiusGeometry: borderRadiusGeometry,
+                          borderSide: borderSide,
+                          shape: shape,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (showReactionPickerTail)
@@ -319,6 +326,41 @@ class MessageWidgetContent extends StatelessWidget {
           if (isFailedState) StreamSvgIcon.error(size: 20.r),
         ],
       ),
+    );
+  }
+}
+
+/// {@template UserAvatar}
+
+class UserAvatar extends StatelessWidget {
+  ///
+  const UserAvatar({
+    super.key,
+    required this.showUserAvatar,
+    required this.message,
+    required this.isDm,
+  });
+
+  /// {@macro showUserAvatar}
+  final DisplayWidget showUserAvatar;
+
+  /// {@macro message}
+  final Message message;
+
+  /// {@macro isDm}
+  final bool isDm;
+
+  @override
+  Widget build(BuildContext context) {
+    final streamChatConfig = StreamChatConfiguration.of(context);
+    if (showUserAvatar == DisplayWidget.gone) {
+      return const Offstage();
+    } else if (showUserAvatar == DisplayWidget.hide) {
+      return SizedBox(width: 46.w);
+    }
+    return Padding(
+      padding: EdgeInsets.only(right: 6.w),
+      child: streamChatConfig.placeholderUserImage!(context, message.user!),
     );
   }
 }

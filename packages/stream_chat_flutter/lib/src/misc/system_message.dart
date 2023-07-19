@@ -37,7 +37,7 @@ class StreamSystemMessage extends StatelessWidget {
             child: Material(
               shape: const StadiumBorder(),
               elevation: 1,
-              color: Theme.of(context).colorScheme.onInverseSurface,
+              color: theme.colorTheme.overlay,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                 child: Text(
@@ -45,7 +45,7 @@ class StreamSystemMessage extends StatelessWidget {
                   textAlign: TextAlign.center,
                   softWrap: true,
                   style: theme.textTheme.footnote.copyWith(
-                    color: Theme.of(context).colorScheme.inverseSurface,
+                    color: theme.colorTheme.barsBg,
                   ),
                 ),
               ),

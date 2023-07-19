@@ -77,7 +77,6 @@ class StreamMessageWidget extends StatefulWidget {
     this.showFlagButton = true,
     this.showPinButton = true,
     this.showPinHighlight = true,
-    this.hideUsername = false,
     this.onUserAvatarTap,
     this.onLinkTap,
     this.onMessageActions,
@@ -535,9 +534,6 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@endtemplate}
   final bool showPinHighlight;
 
-  /// checks if the username should be hidden
-  final bool hideUsername;
-
   /// {@template attachmentBuilders}
   /// Builder for respective attachment types
   /// {@endtemplate}
@@ -614,7 +610,6 @@ class StreamMessageWidget extends StatefulWidget {
     Message? message,
     StreamMessageThemeData? messageTheme,
     bool? isDm,
-    bool? hideUsername,
     bool? reverse,
     ShapeBorder? shape,
     ShapeBorder? attachmentShape,
@@ -684,7 +679,6 @@ class StreamMessageWidget extends StatefulWidget {
     return StreamMessageWidget(
       key: key ?? this.key,
       isDm: isDm ?? this.isDm,
-      hideUsername: hideUsername ?? this.hideUsername,
       onMentionTap: onMentionTap ?? this.onMentionTap,
       onReplyTap: onReplyTap ?? this.onReplyTap,
       onConfirmDeleteTap: onConfirmDeleteTap ?? this.onConfirmDeleteTap,
@@ -938,7 +932,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
 
                     return MessageWidgetContent(
                       isDm: widget.isDm,
-                      hideUsername: widget.hideUsername,
                       streamChatTheme: _streamChatTheme,
                       showUsername: showUsername,
                       showTimeStamp: showTimeStamp,

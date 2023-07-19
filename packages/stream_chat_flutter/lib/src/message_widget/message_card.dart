@@ -17,7 +17,6 @@ class MessageCard extends StatefulWidget {
   const MessageCard({
     super.key,
     this.isDm = false,
-    required this.hideUsername,
     required this.botBuilder,
     required this.message,
     required this.isFailedState,
@@ -56,9 +55,6 @@ class MessageCard extends StatefulWidget {
 
   ///
   final bool isDm;
-
-  /// checks if the username should be hidden
-  final bool hideUsername;
 
   /// {@macro streamChatThemeData}
   final StreamChatThemeData streamChatTheme;
@@ -216,17 +212,24 @@ class _MessageCardState extends State<MessageCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!widget.isDm &&
-                      !widget.reverse &&
-                      widget.showUserAvatar == DisplayWidget.show &&
                       message.user != null &&
-                      !widget.hideUsername)
+                      widget.showUsername)
                     Padding(
-                      padding: EdgeInsets.only(bottom: 4.h, top: 8.h),
+                      padding: EdgeInsets.only(
+                        bottom: 2.h,
+                        top: 8.h,
+                        left: 12.w,
+                      ),
                       child: Username(
                         key: const Key('usernameKey'),
                         messageTheme: widget.messageTheme,
                         message: message,
                       ),
+                    )
+                  else
+                    Padding(
+                      padding: EdgeInsets.only(top: 4.h),
+                      child: const Offstage(),
                     ),
                   if (widget.hasQuotedMessage)
                     MouseRegion(
@@ -308,7 +311,7 @@ class _MessageCardState extends State<MessageCard> {
             if (showText)
               Padding(
                 padding: EdgeInsets.only(
-                  top: 4.h,
+                  top: 2.h,
                   right: widget.reverse ? 4.w : 8.w,
                 ),
                 child: BottomRow(
