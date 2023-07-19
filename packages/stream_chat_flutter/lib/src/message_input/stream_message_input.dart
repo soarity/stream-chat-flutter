@@ -818,7 +818,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
           if (attachments.isNotEmpty) _addAttachments(attachments);
         },
         child: Container(
-          clipBehavior: Clip.hardEdge,
           padding: EdgeInsets.all(1.5.r),
           decoration: BoxDecoration(
             borderRadius: _messageInputTheme.borderRadius,

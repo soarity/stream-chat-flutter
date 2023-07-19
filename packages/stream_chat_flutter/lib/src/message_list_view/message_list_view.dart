@@ -1107,15 +1107,15 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
                 (hasTimeDiff || !isNextUserSame || hasFileAttachment)
-                    ? attachmentBorderRadius
-                    : 0,
+                    ? 0
+                    : attachmentBorderRadius,
               ),
         topRight: Radius.circular(attachmentBorderRadius),
         bottomRight: isMyMessage
             ? Radius.circular(
                 (hasTimeDiff || !isNextUserSame || hasFileAttachment)
-                    ? attachmentBorderRadius
-                    : 0,
+                    ? 0
+                    : attachmentBorderRadius,
               )
             : Radius.circular(attachmentBorderRadius),
       ),
@@ -1126,14 +1126,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             ? Radius.circular(16.r)
             : Radius.circular(
                 (hasTimeDiff || !isNextUserSame || hasFileAttachment)
-                    ? 16.r
-                    : 0),
+                    ? 0
+                    : 16.r),
         topRight: Radius.circular(16.r),
         bottomRight: isMyMessage
             ? Radius.circular(
                 (hasTimeDiff || !isNextUserSame || hasFileAttachment)
-                    ? 16.r
-                    : 0)
+                    ? 0
+                    : 16.r)
             : Radius.circular(16.r),
       ),
       textPadding: EdgeInsets.fromLTRB(
