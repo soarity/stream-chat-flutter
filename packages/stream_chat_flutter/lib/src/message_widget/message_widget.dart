@@ -2,6 +2,7 @@ import 'package:contextmenu/contextmenu.dart';
 import 'package:flutter/material.dart' hide ButtonStyle;
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta/meta.dart';
 import 'package:stream_chat_flutter/conditional_parent_builder/conditional_parent_builder.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
@@ -101,7 +102,7 @@ class StreamMessageWidget extends StatefulWidget {
       vertical: 8,
     ),
     this.attachmentPadding = EdgeInsets.zero,
-    this.widthFactor = 0.85,
+    this.widthFactor = 0.80,
     this.onQuotedMessageTap,
     this.customActions = const [],
     this.onAttachmentTap,
@@ -912,7 +913,10 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                   alignment: widget.reverse
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
-                  widthFactor: widget.widthFactor,
+                  widthFactor: (widget.showUserAvatar == DisplayWidget.show &&
+                          !widget.isDm)
+                      ? widget.widthFactor + 46.w
+                      : widget.widthFactor,
                   child: Builder(builder: (context) {
                     var _bottomRowBuilderWithDefaultWidget =
                         widget.bottomRowBuilderWithDefaultWidget;

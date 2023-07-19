@@ -264,44 +264,41 @@ class MessageWidgetContent extends StatelessWidget {
                       ? EdgeInsets.only(top: 10.h)
                       : EdgeInsets.zero,
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       UserAvatar(
                         isDm: isDm,
                         showUserAvatar: showUserAvatar,
                         message: message,
                       ),
-                      Expanded(
-                        child: MessageCard(
-                          message: message,
-                          isDm: isDm,
-                          botBuilder: botBuilder,
-                          showInChannel: showInChannel,
-                          showUsername: showUsername,
-                          isFailedState: isFailedState,
-                          showSendingIndicator: showSendingIndicator,
-                          showUserAvatar: showUserAvatar,
-                          showTimeStamp: showTimeStamp,
-                          messageTheme: messageTheme,
-                          hasQuotedMessage: hasQuotedMessage,
-                          hasUrlAttachments: hasUrlAttachments,
-                          hasNonUrlAttachments: hasNonUrlAttachments,
-                          isOnlyEmoji: isOnlyEmoji,
-                          isGiphy: isGiphy,
-                          streamChat: streamChat,
-                          streamChatTheme: streamChatTheme,
-                          attachmentBuilders: attachmentBuilders,
-                          attachmentPadding: attachmentPadding,
-                          textPadding: textPadding,
-                          reverse: reverse,
-                          onQuotedMessageTap: onQuotedMessageTap,
-                          onMentionTap: onMentionTap,
-                          onLinkTap: onLinkTap,
-                          textBuilder: textBuilder,
-                          borderRadiusGeometry: borderRadiusGeometry,
-                          borderSide: borderSide,
-                          shape: shape,
-                        ),
+                      MessageCard(
+                        message: message,
+                        isDm: isDm,
+                        botBuilder: botBuilder,
+                        showInChannel: showInChannel,
+                        showUsername: showUsername,
+                        isFailedState: isFailedState,
+                        showSendingIndicator: showSendingIndicator,
+                        showUserAvatar: showUserAvatar,
+                        showTimeStamp: showTimeStamp,
+                        messageTheme: messageTheme,
+                        hasQuotedMessage: hasQuotedMessage,
+                        hasUrlAttachments: hasUrlAttachments,
+                        hasNonUrlAttachments: hasNonUrlAttachments,
+                        isOnlyEmoji: isOnlyEmoji,
+                        isGiphy: isGiphy,
+                        streamChat: streamChat,
+                        streamChatTheme: streamChatTheme,
+                        attachmentBuilders: attachmentBuilders,
+                        attachmentPadding: attachmentPadding,
+                        textPadding: textPadding,
+                        reverse: reverse,
+                        onQuotedMessageTap: onQuotedMessageTap,
+                        onMentionTap: onMentionTap,
+                        onLinkTap: onLinkTap,
+                        textBuilder: textBuilder,
+                        borderRadiusGeometry: borderRadiusGeometry,
+                        borderSide: borderSide,
+                        shape: shape,
                       ),
                     ],
                   ),
@@ -353,14 +350,14 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final streamChatConfig = StreamChatConfiguration.of(context);
-    if (showUserAvatar == DisplayWidget.gone) {
+    if (showUserAvatar == DisplayWidget.gone || isDm) {
       return const Offstage();
     } else if (showUserAvatar == DisplayWidget.hide) {
       return SizedBox(width: 46.w);
     }
     return Padding(
       padding: EdgeInsets.only(right: 6.w),
-      child: streamChatConfig.placeholderUserImage!(context, message.user!),
+      child: streamChatConfig.defaultUserImage(context, message.user!),
     );
   }
 }
