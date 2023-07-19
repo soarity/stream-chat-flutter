@@ -431,7 +431,6 @@ class _AttachmentPickerOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = StreamChatTheme.of(context).colorTheme;
     return ValueListenableBuilder<List<Attachment>>(
       valueListenable: controller,
       builder: (context, attachments, __) {
@@ -452,15 +451,15 @@ class _AttachmentPickerOptions extends StatelessWidget {
                             enabledTypes.any(supportedTypes.contains);
 
                         final color = isSelected
-                            ? colorTheme.accentPrimary
-                            : colorTheme.textLowEmphasis;
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.outline;
 
                         final onPressed =
                             isEnabled ? () => onOptionSelected!(option) : null;
 
                         return IconButton(
                           color: color,
-                          disabledColor: colorTheme.disabled,
+                          disabledColor: Theme.of(context).colorScheme.outline,
                           icon: option.icon,
                           onPressed: onPressed,
                         );
@@ -483,8 +482,8 @@ class _AttachmentPickerOptions extends StatelessWidget {
 
                 return IconButton(
                   iconSize: 22,
-                  color: colorTheme.accentPrimary,
-                  disabledColor: colorTheme.disabled,
+                  color: Theme.of(context).colorScheme.primary,
+                  disabledColor: Theme.of(context).colorScheme.outline,
                   icon: StreamSvgIcon.emptyCircleLeft().toIconThemeSvgIcon(),
                   onPressed: onPressed,
                 );

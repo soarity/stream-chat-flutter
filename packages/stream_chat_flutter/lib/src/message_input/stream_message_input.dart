@@ -120,6 +120,7 @@ class StreamMessageInput extends StatefulWidget {
     this.hideSendAsDm = false,
     this.idleSendButton,
     this.activeSendButton,
+    this.emojiSendButton,
     this.userMentionsTileBuilder,
     this.maxAttachmentSize = kDefaultMaxAttachmentSize,
     this.onError,
@@ -264,6 +265,9 @@ class StreamMessageInput extends StatefulWidget {
   /// Send button widget in an active state
   final Widget? activeSendButton;
 
+  /// Emoji Send button widget in an active state
+  final Widget? emojiSendButton;
+
   /// Customize the tile for the mentions overlay.
   final UserMentionTileBuilder? userMentionsTileBuilder;
 
@@ -405,8 +409,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
       _effectiveController.message.quotedMessage != null;
 
   bool get _isEditing => !_effectiveController.message.state.isInitial;
-
-  BoxBorder? _draggingBorder;
 
   FocusNode get _effectiveFocusNode =>
       widget.focusNode ?? (_focusNode ??= FocusNode());
@@ -815,71 +817,60 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
           if (attachments.isNotEmpty) _addAttachments(attachments);
         },
-        onDragEntered: (details) {
-          setState(() {
-            _draggingBorder = Border.all(
-              color: _streamChatTheme.colorTheme.accentPrimary,
-            );
-          });
-        },
-        onDragExited: (details) {
-          setState(() => _draggingBorder = null);
-        },
         child: Container(
           clipBehavior: Clip.hardEdge,
+          padding: const EdgeInsets.all(1.5),
           decoration: BoxDecoration(
+            color: _messageInputTheme.inputBackgroundColor,
             borderRadius: _messageInputTheme.borderRadius,
-            gradient: _effectiveFocusNode.hasFocus
-                ? _messageInputTheme.activeBorderGradient
-                : _messageInputTheme.idleBorderGradient,
-            border: _draggingBorder,
+            border: _effectiveFocusNode.hasFocus
+                ? Border.all(color: Theme.of(context).colorScheme.primary)
+                : null,
           ),
-          child: Padding(
-            padding: EdgeInsets.all(1.5.r),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: _messageInputTheme.borderRadius,
-                color: _messageInputTheme.inputBackgroundColor,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildReplyToMessage(),
-                  _buildAttachments(),
-                  LimitedBox(
-                    maxHeight: widget.maxHeight,
-                    child: PlatformWidgetBuilder(
-                      web: (context, child) => Focus(
-                        onKeyEvent: _handleKeyPressed,
-                        child: child!,
-                      ),
-                      desktop: (context, child) => Focus(
-                        onKeyEvent: _handleKeyPressed,
-                        child: child!,
-                      ),
-                      mobile: (context, child) => child,
-                      child: StreamMessageTextField(
-                        key: const Key('messageInputText'),
-                        maxLines: widget.maxLines,
-                        minLines: widget.minLines,
-                        textInputAction: widget.textInputAction,
-                        onSubmitted: (_) => sendMessage(),
-                        keyboardType: widget.keyboardType,
-                        controller: _effectiveController,
-                        focusNode: _effectiveFocusNode,
-                        style: _messageInputTheme.inputTextStyle,
-                        autofocus: widget.autofocus,
-                        textAlignVertical: TextAlignVertical.center,
-                        decoration: _getInputDecoration(context),
-                        textCapitalization: widget.textCapitalization,
-                        autocorrect: widget.autoCorrect,
-                      ),
-                    ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildReplyToMessage(),
+              _buildAttachments(),
+              LimitedBox(
+                maxHeight: widget.maxHeight,
+                child: PlatformWidgetBuilder(
+                  web: (context, child) => Focus(
+                    onKeyEvent: _handleKeyPressed,
+                    child: child!,
                   ),
-                ],
+                  desktop: (context, child) => Focus(
+                    onKeyEvent: _handleKeyPressed,
+                    child: child!,
+                  ),
+                  mobile: (context, child) => child,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: StreamMessageTextField(
+                          key: const Key('messageInputText'),
+                          maxLines: widget.maxLines,
+                          minLines: widget.minLines,
+                          textInputAction: widget.textInputAction,
+                          onSubmitted: (_) => sendMessage(),
+                          keyboardType: widget.keyboardType,
+                          controller: _effectiveController,
+                          focusNode: _effectiveFocusNode,
+                          style: _messageInputTheme.inputTextStyle,
+                          autofocus: widget.autofocus,
+                          textAlignVertical: TextAlignVertical.center,
+                          decoration: _getInputDecoration(context),
+                          textCapitalization: widget.textCapitalization,
+                          autocorrect: widget.autoCorrect,
+                        ),
+                      ),
+                      widget.emojiSendButton ?? const Offstage(),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
