@@ -3,7 +3,6 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta/meta.dart';
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content_components.dart';
-import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Signature for the builder function that will be called when the message
@@ -245,24 +244,6 @@ class MessageWidgetContent extends StatelessWidget {
             reverse ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (message.pinned && message.pinnedBy != null && showPinHighlight)
-            PinnedMessage(
-              pinnedBy: message.pinnedBy!,
-              currentUser: streamChat.currentUser!,
-            ),
-          if (!isDm &&
-              !reverse &&
-              showUserAvatar == DisplayWidget.show &&
-              message.user != null &&
-              !hideUsername)
-            Padding(
-              padding: EdgeInsets.only(bottom: 2.h, left: 8.w),
-              child: Username(
-                key: const Key('usernameKey'),
-                messageTheme: messageTheme,
-                message: message,
-              ),
-            ),
           PortalTarget(
             visible: isMobileDevice && showReactions,
             portalFollower: isMobileDevice && showReactions
@@ -289,6 +270,7 @@ class MessageWidgetContent extends StatelessWidget {
                   child: MessageCard(
                     message: message,
                     isDm: isDm,
+                    hideUsername: hideUsername,
                     botBuilder: botBuilder,
                     showInChannel: showInChannel,
                     showUsername: showUsername,

@@ -37,15 +37,15 @@ class StreamSystemMessage extends StatelessWidget {
             child: Material(
               shape: const StadiumBorder(),
               elevation: 1,
-              color: theme.colorTheme.overlay,
+              color: Theme.of(context).colorScheme.onInverseSurface,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                 child: Text(
                   message.text!,
                   textAlign: TextAlign.center,
                   softWrap: true,
                   style: theme.textTheme.footnote.copyWith(
-                    color: theme.colorTheme.barsBg,
+                    color: Theme.of(context).colorScheme.inverseSurface,
                   ),
                 ),
               ),

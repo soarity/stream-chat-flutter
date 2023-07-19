@@ -27,7 +27,7 @@ class Username extends StatelessWidget {
       key: key,
       style: messageTheme.messageAuthorStyle!.copyWith(
         color: color == null
-            ? const Color(0XFF0001f6)
+            ? Theme.of(context).colorScheme.secondary
             : Color(int.parse('0x$color')),
       ),
       overflow: TextOverflow.ellipsis,

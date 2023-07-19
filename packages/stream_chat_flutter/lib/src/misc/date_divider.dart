@@ -44,11 +44,11 @@ class StreamDateDivider extends StatelessWidget {
         shape: const StadiumBorder(),
         color: Theme.of(context).colorScheme.onInverseSurface,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
           child: Text(
             dayInfo,
             style: chatThemeData.textTheme.footnoteBold.copyWith(
-              color: Theme.of(context).colorScheme.outline,
+              color: Theme.of(context).colorScheme.inverseSurface,
             ),
           ),
         ),

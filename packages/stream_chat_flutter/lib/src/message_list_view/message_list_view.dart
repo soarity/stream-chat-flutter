@@ -891,18 +891,18 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       message: message,
       reverse: isMyMessage,
       showUsername: !isMyMessage,
-      padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 0),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       showSendingIndicator: false,
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: isMyMessage ? Radius.circular(16.r) : Radius.circular(2.r),
-        bottomLeft: Radius.circular(16.r),
-        topRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
-        bottomRight: Radius.circular(16.r),
+        topLeft: Radius.circular(16.r),
+        bottomLeft: isMyMessage ? Radius.circular(16.r) : Radius.circular(2.r),
+        topRight: Radius.circular(16.r),
+        bottomRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 12.w,
-        6.h,
-        isOnlyEmoji ? 0 : 12.w,
+        isOnlyEmoji ? 0 : 16.w,
+        8.h,
+        isOnlyEmoji ? 0 : 16.w,
         0,
       ),
       borderSide: borderSide,
@@ -1082,7 +1082,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
-      padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 0),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       showUsername: showUsername,
       showSendingIndicator: showSendingIndicator,
       showUserAvatar: showUserAvatar,
@@ -1110,34 +1110,34 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       hideUsername: hideUsername,
       borderSide: borderSide,
       attachmentBorderRadiusGeometry: BorderRadius.only(
-        topLeft: isMyMessage
+        topLeft: Radius.circular(attachmentBorderRadius),
+        bottomLeft: isMyMessage
             ? Radius.circular(attachmentBorderRadius)
             : Radius.circular(
                 isNextUserSame ? attachmentBorderRadius : 0,
               ),
-        bottomLeft: Radius.circular(attachmentBorderRadius),
-        topRight: isMyMessage
+        topRight: Radius.circular(attachmentBorderRadius),
+        bottomRight: isMyMessage
             ? Radius.circular(
                 isNextUserSame ? attachmentBorderRadius : 0,
               )
             : Radius.circular(attachmentBorderRadius),
-        bottomRight: Radius.circular(attachmentBorderRadius),
       ),
       attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4.r : 2.r),
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: isMyMessage
+        topLeft: Radius.circular(16.r),
+        bottomLeft: isMyMessage
             ? Radius.circular(16.r)
             : Radius.circular(isNextUserSame ? 16.r : 0),
-        bottomLeft: Radius.circular(16.r),
-        topRight: isMyMessage
+        topRight: Radius.circular(16.r),
+        bottomRight: isMyMessage
             ? Radius.circular(isNextUserSame ? 16.r : 0)
             : Radius.circular(16.r),
-        bottomRight: Radius.circular(16.r),
       ),
       textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 12.w,
-        6.h,
-        isOnlyEmoji ? 0 : 12.w,
+        isOnlyEmoji ? 0 : 16.w,
+        8.h,
+        isOnlyEmoji ? 0 : 16.w,
         0,
       ),
       messageTheme: isMyMessage

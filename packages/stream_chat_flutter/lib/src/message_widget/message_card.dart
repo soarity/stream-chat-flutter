@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_widget/bottom_row.dart';
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content.dart';
+import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template messageCard}
@@ -16,6 +17,7 @@ class MessageCard extends StatefulWidget {
   const MessageCard({
     super.key,
     this.isDm = false,
+    required this.hideUsername,
     required this.botBuilder,
     required this.message,
     required this.isFailedState,
@@ -54,6 +56,9 @@ class MessageCard extends StatefulWidget {
 
   ///
   final bool isDm;
+
+  /// checks if the username should be hidden
+  final bool hideUsername;
 
   /// {@macro streamChatThemeData}
   final StreamChatThemeData streamChatTheme;
@@ -210,6 +215,19 @@ class _MessageCardState extends State<MessageCard> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (!widget.isDm &&
+                      !widget.reverse &&
+                      widget.showUserAvatar == DisplayWidget.show &&
+                      message.user != null &&
+                      !widget.hideUsername)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 4.h, top: 8.h),
+                      child: Username(
+                        key: const Key('usernameKey'),
+                        messageTheme: widget.messageTheme,
+                        message: message,
+                      ),
+                    ),
                   if (widget.hasQuotedMessage)
                     MouseRegion(
                       cursor: SystemMouseCursors.click,
@@ -290,7 +308,7 @@ class _MessageCardState extends State<MessageCard> {
             if (showText)
               Padding(
                 padding: EdgeInsets.only(
-                  top: 2.h,
+                  top: 4.h,
                   right: widget.reverse ? 4.w : 8.w,
                 ),
                 child: BottomRow(
