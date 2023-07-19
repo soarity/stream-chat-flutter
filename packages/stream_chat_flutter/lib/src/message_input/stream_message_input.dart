@@ -822,8 +822,14 @@ class StreamMessageInputState extends State<StreamMessageInput>
           decoration: BoxDecoration(
             borderRadius: _messageInputTheme.borderRadius,
             border: _effectiveFocusNode.hasFocus
-                ? Border.all(color: Theme.of(context).colorScheme.primary)
-                : Border.all(color: Theme.of(context).colorScheme.outline),
+                ? Border.all(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 1.5.r,
+                  )
+                : Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1.5.r,
+                  ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

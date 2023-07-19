@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -263,35 +264,46 @@ class MessageWidgetContent extends StatelessWidget {
                   padding: showReactions
                       ? EdgeInsets.only(top: 10.h)
                       : EdgeInsets.zero,
-                  child: MessageCard(
-                    message: message,
-                    isDm: isDm,
-                    botBuilder: botBuilder,
-                    showInChannel: showInChannel,
-                    showUsername: showUsername,
-                    isFailedState: isFailedState,
-                    showSendingIndicator: showSendingIndicator,
-                    showUserAvatar: showUserAvatar,
-                    showTimeStamp: showTimeStamp,
-                    messageTheme: messageTheme,
-                    hasQuotedMessage: hasQuotedMessage,
-                    hasUrlAttachments: hasUrlAttachments,
-                    hasNonUrlAttachments: hasNonUrlAttachments,
-                    isOnlyEmoji: isOnlyEmoji,
-                    isGiphy: isGiphy,
-                    streamChat: streamChat,
-                    streamChatTheme: streamChatTheme,
-                    attachmentBuilders: attachmentBuilders,
-                    attachmentPadding: attachmentPadding,
-                    textPadding: textPadding,
-                    reverse: reverse,
-                    onQuotedMessageTap: onQuotedMessageTap,
-                    onMentionTap: onMentionTap,
-                    onLinkTap: onLinkTap,
-                    textBuilder: textBuilder,
-                    borderRadiusGeometry: borderRadiusGeometry,
-                    borderSide: borderSide,
-                    shape: shape,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      UserAvatar(
+                        showUserAvatar: showUserAvatar,
+                        message: message,
+                        isDm: isDm,
+                      ),
+                      MessageCard(
+                        message: message,
+                        isDm: isDm,
+                        botBuilder: botBuilder,
+                        showInChannel: showInChannel,
+                        showUsername: showUsername,
+                        isFailedState: isFailedState,
+                        showSendingIndicator: showSendingIndicator,
+                        showUserAvatar: showUserAvatar,
+                        showTimeStamp: showTimeStamp,
+                        messageTheme: messageTheme,
+                        hasQuotedMessage: hasQuotedMessage,
+                        hasUrlAttachments: hasUrlAttachments,
+                        hasNonUrlAttachments: hasNonUrlAttachments,
+                        isOnlyEmoji: isOnlyEmoji,
+                        isGiphy: isGiphy,
+                        streamChat: streamChat,
+                        streamChatTheme: streamChatTheme,
+                        attachmentBuilders: attachmentBuilders,
+                        attachmentPadding: attachmentPadding,
+                        textPadding: textPadding,
+                        reverse: reverse,
+                        onQuotedMessageTap: onQuotedMessageTap,
+                        onMentionTap: onMentionTap,
+                        onLinkTap: onLinkTap,
+                        textBuilder: textBuilder,
+                        borderRadiusGeometry: borderRadiusGeometry,
+                        borderSide: borderSide,
+                        shape: shape,
+                      ),
+                    ],
                   ),
                 ),
                 if (showReactionPickerTail)
@@ -340,15 +352,124 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final streamChatConfig = StreamChatConfiguration.of(context);
     if (showUserAvatar == DisplayWidget.gone || isDm) {
       return const Offstage();
     } else if (showUserAvatar == DisplayWidget.hide) {
       return SizedBox(width: 46.w);
     }
-    return Padding(
-      padding: EdgeInsets.only(right: 6.w),
-      child: streamChatConfig.defaultUserImage(context, message.user!),
+
+    final user = message.user!;
+    return SizedBox(
+      width: 46.w,
+      child: Padding(
+        padding: EdgeInsets.only(right: 6.w),
+        child: ProfilePicture(
+          showBorder: true,
+          picURL: user.image ?? '',
+          fullName: user.name,
+          radius: 20.r,
+        ),
+      ),
     );
+  }
+}
+
+///
+class ProfilePicture extends StatelessWidget {
+  ///
+  const ProfilePicture({
+    super.key,
+    required this.picURL,
+    this.radius,
+    this.backgroundColor,
+    this.fullName = '',
+    this.style,
+    this.border,
+    this.showBorder = false,
+  });
+
+  ///
+  final String picURL;
+
+  ///
+  final double? radius;
+
+  ///
+  final Color? backgroundColor;
+
+  ///
+  final String fullName;
+
+  ///
+  final TextStyle? style;
+
+  ///
+  final bool showBorder;
+
+  ///
+  final BorderSide? border;
+
+  @override
+  Widget build(BuildContext context) {
+    final background =
+        backgroundColor ?? Theme.of(context).colorScheme.secondaryContainer;
+    final diameter = (radius ?? 26.r) * 2;
+    ImageProvider<Object>? image;
+    Widget? child;
+
+    // show profile image if available
+    if (picURL.isNotEmpty) {
+      image = CachedNetworkImageProvider(picURL);
+    } else {
+      // show Initials of name if available
+      if (fullName.isNotEmpty) {
+        child = Center(
+          child: Text(
+            parseName(fullName),
+            textScaleFactor: 1,
+            style: style ??
+                TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: (diameter / 2.2).fzs,
+                  color: Theme.of(context).primaryColor,
+                ),
+          ),
+        );
+      } else {
+        // show default image
+        image = const AssetImage('assets/images/avatar.png');
+      }
+    }
+
+    return Container(
+      width: diameter,
+      height: diameter,
+      decoration: ShapeDecoration(
+        color: background,
+        image: image != null
+            ? DecorationImage(image: image, fit: BoxFit.cover)
+            : null,
+        shape: CircleBorder(
+          side: showBorder
+              ? border ??
+                  BorderSide(
+                    width: diameter / (2 * 24.0),
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  )
+              : BorderSide.none,
+        ),
+      ),
+      child: child,
+    );
+  }
+
+  ///
+  String parseName(String fullName) {
+    final parts = fullName.split(' ');
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    } else {
+      return parts[0][0].toUpperCase();
+    }
   }
 }

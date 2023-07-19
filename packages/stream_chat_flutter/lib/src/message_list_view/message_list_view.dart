@@ -1035,7 +1035,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     if (nextMessage != null) {
       hasTimeDiff = !Jiffy(message.createdAt.toLocal()).isSame(
         nextMessage.createdAt.toLocal(),
-        Units.MINUTE,
+        Units.HOUR,
       );
     }
 
@@ -1075,7 +1075,12 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.fromLTRB(
+        16.w,
+        0,
+        12.w,
+        (hasTimeDiff || !isNextUserSame || hasFileAttachment) ? 12.h : 2.h,
+      ),
       showUsername: showUsername,
       showSendingIndicator: showSendingIndicator,
       showUserAvatar: showUserAvatar,
