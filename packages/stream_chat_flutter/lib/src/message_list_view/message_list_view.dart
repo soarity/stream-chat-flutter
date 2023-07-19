@@ -1047,11 +1047,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final showUsername =
         !isMyMessage && (hasTimeDiff || !isNextUserSame || hasFileAttachment);
 
-    final showUserAvatar = isMyMessage
+    final showUserAvatar = (isMyMessage || widget.isDm)
         ? DisplayWidget.gone
         : (hasTimeDiff || !isNextUserSame || hasFileAttachment)
-            ? DisplayWidget.hide
-            : DisplayWidget.show;
+            ? DisplayWidget.show
+            : DisplayWidget.hide;
 
     final showSendingIndicator = isMyMessage;
 

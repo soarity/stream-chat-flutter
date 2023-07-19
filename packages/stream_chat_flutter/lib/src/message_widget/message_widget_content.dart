@@ -269,7 +269,7 @@ class MessageWidgetContent extends StatelessWidget {
                         reverse ? Alignment.bottomRight : Alignment.bottomLeft,
                     children: [
                       Padding(
-                        padding: isDm || showUserAvatar == DisplayWidget.gone
+                        padding: showUserAvatar == DisplayWidget.gone
                             ? EdgeInsets.zero
                             : EdgeInsets.only(left: 46.w),
                         child: MessageCard(
@@ -358,7 +358,7 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (showUserAvatar == DisplayWidget.gone || isDm) {
+    if (showUserAvatar == DisplayWidget.gone) {
       return const Offstage();
     } else if (showUserAvatar == DisplayWidget.hide) {
       return SizedBox(width: 46.w);

@@ -53,7 +53,6 @@ class StreamFileAttachment extends StreamAttachmentWidget {
         onTap: onAttachmentTap,
         child: Container(
           constraints: constraints ?? BoxConstraints.tightFor(width: 100.w),
-          height: 56.h,
           decoration: BoxDecoration(
             color: colorTheme.barsBg,
             borderRadius: BorderRadius.circular(12.r),

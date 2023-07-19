@@ -101,7 +101,7 @@ class StreamMessageWidget extends StatefulWidget {
       vertical: 8,
     ),
     this.attachmentPadding = EdgeInsets.zero,
-    this.widthFactor = 0.82,
+    this.widthFactor = 0.85,
     this.onQuotedMessageTap,
     this.customActions = const [],
     this.onAttachmentTap,
@@ -279,7 +279,7 @@ class StreamMessageWidget extends StatefulWidget {
                         constraints: BoxConstraints(
                           maxWidth: 400,
                           minWidth: 400,
-                          maxHeight: mediaQueryData.size.height * 0.3,
+                          maxHeight: mediaQueryData.size.height * 0.4,
                         ),
                         onAttachmentTap: onAttachmentTap != null
                             ? () {
@@ -912,10 +912,9 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                   alignment: widget.reverse
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
-                  widthFactor: (widget.showUserAvatar == DisplayWidget.show &&
-                          !widget.isDm)
-                      ? widget.widthFactor + 0.05
-                      : widget.widthFactor,
+                  widthFactor: widget.showUserAvatar == DisplayWidget.gone
+                      ? widget.widthFactor
+                      : widget.widthFactor + 0.05,
                   child: Builder(builder: (context) {
                     var _bottomRowBuilderWithDefaultWidget =
                         widget.bottomRowBuilderWithDefaultWidget;
