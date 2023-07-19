@@ -264,6 +264,8 @@ class MessageWidgetContent extends StatelessWidget {
                       ? EdgeInsets.only(top: 10.h)
                       : EdgeInsets.zero,
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       UserAvatar(
                         isDm: isDm,
