@@ -915,7 +915,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       : Alignment.centerLeft,
                   widthFactor: (widget.showUserAvatar == DisplayWidget.show &&
                           !widget.isDm)
-                      ? widget.widthFactor + 46.w
+                      ? widget.widthFactor + 0.05
                       : widget.widthFactor,
                   child: Builder(builder: (context) {
                     var _bottomRowBuilderWithDefaultWidget =
