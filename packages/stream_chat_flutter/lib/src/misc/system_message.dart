@@ -20,7 +20,6 @@ class StreamSystemMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = StreamChatTheme.of(context);
     final message = this.message.replaceMentions(linkify: false);
 
     final messageText = message.text;
@@ -37,15 +36,17 @@ class StreamSystemMessage extends StatelessWidget {
             child: Material(
               shape: const StadiumBorder(),
               elevation: 1,
-              color: theme.colorTheme.overlay,
+              color: Colors.white,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                 child: Text(
                   message.text!,
                   textAlign: TextAlign.center,
                   softWrap: true,
-                  style: theme.textTheme.footnote.copyWith(
-                    color: theme.colorTheme.barsBg,
+                  style: TextStyle(
+                    fontSize: 14.fzs,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

@@ -428,7 +428,7 @@ class ProfilePicture extends StatelessWidget {
       image = CachedNetworkImageProvider(picURL);
     } else {
       // show Initials of name if available
-      if (fullName.isNotEmpty) {
+      if (fullName.trim().isNotEmpty) {
         child = Center(
           child: Text(
             parseName(fullName),
@@ -474,8 +474,10 @@ class ProfilePicture extends StatelessWidget {
     final parts = fullName.split(' ');
     if (parts.length > 1) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
-    } else {
+    } else if (parts.isNotEmpty && parts.first.isNotEmpty) {
       return parts[0][0].toUpperCase();
+    } else {
+      return 'CP';
     }
   }
 }
