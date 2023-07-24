@@ -989,10 +989,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         ),
                         child: Text(
                           '${unreadCount > 99 ? '99+' : unreadCount}',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.white,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(color: Colors.white),
                         ),
                       ),
                     ),

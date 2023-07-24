@@ -35,11 +35,9 @@ class PinnedMessage extends StatelessWidget {
               pinnedBy: pinnedBy,
               currentUser: currentUser,
             ),
-            style: TextStyle(
-              color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
-              fontSize: 14.fzs,
-              fontWeight: FontWeight.w400,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
+                ),
           ),
         ],
       ),

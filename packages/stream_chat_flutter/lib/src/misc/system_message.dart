@@ -43,11 +43,10 @@ class StreamSystemMessage extends StatelessWidget {
                   message.text!,
                   textAlign: TextAlign.center,
                   softWrap: true,
-                  style: TextStyle(
-                    fontSize: 14.fzs,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
+                      ),
                 ),
               ),
             ),

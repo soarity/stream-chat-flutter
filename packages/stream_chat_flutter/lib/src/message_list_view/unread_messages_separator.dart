@@ -30,12 +30,9 @@ class UnreadMessagesSeparator extends StatelessWidget {
           child: Text(
             context.translations.unreadMessagesSeparatorText(unreadCount),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14.fzs,
-              fontWeight: FontWeight.w500,
-              height: 1,
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-            ),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                ),
           ),
         ),
       ),

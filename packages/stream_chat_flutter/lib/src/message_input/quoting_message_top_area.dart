@@ -44,10 +44,10 @@ class QuotingMessageTopArea extends StatelessWidget {
             ),
             Text(
               context.translations.replyToMessageLabel,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14.fzs,
-              ),
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14.fzs,
+                  ),
             ),
             IconButton(
               visualDensity: VisualDensity.compact,

@@ -79,19 +79,25 @@ class StreamGiphyAttachment extends StreamAttachmentWidget {
                       const SizedBox(width: 8),
                       Text(
                         context.translations.giphyLabel,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       const SizedBox(width: 8),
                       if (attachment.title != null)
                         Flexible(
                           child: Text(
                             attachment.title!,
-                            style: TextStyle(
-                              color: StreamChatTheme.of(context)
-                                  .colorTheme
-                                  .textHighEmphasis
-                                  .withOpacity(0.5),
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: StreamChatTheme.of(context)
+                                      .colorTheme
+                                      .textHighEmphasis
+                                      .withOpacity(0.5),
+                                ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -224,12 +230,15 @@ class StreamGiphyAttachment extends StreamAttachmentWidget {
                           },
                           child: Text(
                             context.translations.sendLabel,
-                            style: TextStyle(
-                              color: StreamChatTheme.of(context)
-                                  .colorTheme
-                                  .accentPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: StreamChatTheme.of(context)
+                                      .colorTheme
+                                      .accentPrimary,
+                                ),
                           ),
                         ),
                       ),
@@ -328,11 +337,10 @@ class StreamGiphyAttachment extends StreamAttachmentWidget {
                     ),
                     Text(
                       context.translations.giphyLabel.toUpperCase(),
-                      style: TextStyle(
-                        color: StreamChatTheme.of(context).colorTheme.barsBg,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color:
+                                StreamChatTheme.of(context).colorTheme.barsBg,
+                          ),
                     ),
                   ],
                 ),

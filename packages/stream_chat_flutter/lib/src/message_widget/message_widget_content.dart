@@ -434,11 +434,11 @@ class ProfilePicture extends StatelessWidget {
             parseName(fullName),
             textScaleFactor: 1,
             style: style ??
-                TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: (diameter / 2.2).fzs,
-                  color: Theme.of(context).primaryColor,
-                ),
+                Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: (diameter / 2.2).fzs,
+                      color: Theme.of(context).primaryColor,
+                    ),
           ),
         );
       } else {

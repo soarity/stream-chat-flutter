@@ -116,10 +116,12 @@ class StreamImageGroup extends StatelessWidget {
                                       child: Center(
                                         child: Text(
                                           '+ ${images.length - 4}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 26,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.copyWith(
+                                                color: Colors.white,
+                                              ),
                                         ),
                                       ),
                                     ),

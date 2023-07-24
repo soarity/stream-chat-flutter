@@ -33,9 +33,9 @@ class AttachmentModalSheet extends StatelessWidget {
         ListTile(
           title: Text(
             context.translations.addAFileLabel,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ),
         ListTile(

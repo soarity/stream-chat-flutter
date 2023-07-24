@@ -64,7 +64,9 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
                     ),
                     Text(
                       context.translations.editMessageLabel,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     IconButton(
                       visualDensity: VisualDensity.compact,
