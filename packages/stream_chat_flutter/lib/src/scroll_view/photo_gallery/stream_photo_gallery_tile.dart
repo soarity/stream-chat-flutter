@@ -132,9 +132,10 @@ class StreamPhotoGalleryTile extends StatelessWidget {
             bottom: 10,
             child: Text(
               media.videoDuration.format(),
-              style: TextStyle(
-                color: chatThemeData.colorTheme.barsBg,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: chatThemeData.colorTheme.barsBg,
+                  ),
             ),
           ),
         ],
