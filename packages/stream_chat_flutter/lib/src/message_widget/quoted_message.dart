@@ -45,10 +45,10 @@ class QuotedMessage extends StatelessWidget {
       reverse: reverse,
       showBorder: false,
       padding: EdgeInsets.only(
-        right: 3.w,
-        left: 3.w,
-        top: 3.h,
-        bottom: hasNonUrlAttachments ? 3.h : 0,
+        right: 4.w,
+        left: 4.w,
+        top: 4.h,
+        bottom: hasNonUrlAttachments ? 4.h : 0,
       ),
     );
   }
