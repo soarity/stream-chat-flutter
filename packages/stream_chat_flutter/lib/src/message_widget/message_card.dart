@@ -210,6 +210,7 @@ class _MessageCardState extends State<MessageCard> {
             else
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   if (!widget.isDm &&
                       message.user != null &&
@@ -250,8 +251,12 @@ class _MessageCardState extends State<MessageCard> {
                               message: widget.message,
                               showBorder: widget.hasUrlAttachments ||
                                   widget.hasNonUrlAttachments ||
-                                  (widget.message.text != null &&
-                                      message.text!.length > 20),
+                                  ((widget.message.text
+                                                  ?.replaceAll('\n', '\n\n')
+                                                  .trim() ??
+                                              '')
+                                          .length >
+                                      20),
                               hasNonUrlAttachments: widget.hasNonUrlAttachments,
                             ),
                       ),
