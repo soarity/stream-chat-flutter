@@ -221,7 +221,7 @@ class _MessageCardState extends State<MessageCard> {
                   maxWidth: widthLimit > 0 ? widthLimit : double.infinity,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (!widget.isDm &&
