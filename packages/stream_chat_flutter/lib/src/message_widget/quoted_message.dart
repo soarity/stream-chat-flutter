@@ -15,6 +15,7 @@ class QuotedMessage extends StatelessWidget {
     required this.message,
     required this.reverse,
     this.isDm = false,
+    this.showBorder = true,
     required this.hasNonUrlAttachments,
   });
 
@@ -23,6 +24,9 @@ class QuotedMessage extends StatelessWidget {
 
   /// {@macro reverse}
   final bool reverse;
+
+  /// {@macro showBorder}
+  final bool showBorder;
 
   ///
   final bool isDm;
@@ -43,6 +47,7 @@ class QuotedMessage extends StatelessWidget {
           ? chatThemeData.otherMessageTheme
           : chatThemeData.ownMessageTheme,
       reverse: reverse,
+      showBorder: showBorder,
       padding: EdgeInsets.only(
         right: 3.w,
         left: 3.w,

@@ -1127,14 +1127,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
       );
     }
 
-    final containsUrl = quotedMessage.attachments.any((it) {
-      return it.titleLink != null;
-    });
-
     return StreamQuotedMessageWidget(
       reverse: true,
       isDm: widget.isDm,
-      showBorder: !containsUrl,
       message: quotedMessage,
       messageTheme: _streamChatTheme.otherMessageTheme,
       padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),

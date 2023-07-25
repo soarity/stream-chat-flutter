@@ -248,6 +248,10 @@ class _MessageCardState extends State<MessageCard> {
                               isDm: widget.isDm,
                               reverse: widget.reverse,
                               message: widget.message,
+                              showBorder: widget.hasUrlAttachments ||
+                                  widget.hasNonUrlAttachments ||
+                                  (widget.message.text != null &&
+                                      message.text!.length > 20),
                               hasNonUrlAttachments: widget.hasNonUrlAttachments,
                             ),
                       ),

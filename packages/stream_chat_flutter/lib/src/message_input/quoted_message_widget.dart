@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/clear_input_item_button.dart';
+import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:video_player/video_player.dart';
 
@@ -17,7 +18,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     required this.messageTheme,
     this.reverse = false,
     this.isDm = false,
-    this.showBorder = false,
+    this.showBorder = true,
     this.textLimit = 170,
     this.attachmentThumbnailBuilders,
     this.padding = const EdgeInsets.all(8),
@@ -54,37 +55,54 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = [
-      Flexible(
-        child: _QuotedMessage(
-          message: message,
-          textLimit: textLimit,
-          messageTheme: messageTheme,
-          showBorder: showBorder,
-          reverse: reverse,
-          onQuotedMessageClear: onQuotedMessageClear,
-          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-        ),
-      ),
-      if (message.user != null && !isDm)
-        Padding(
-          padding: EdgeInsets.only(left: 8.w),
-          child: StreamUserAvatar(
-            user: message.user!,
-            constraints: const BoxConstraints.tightFor(
-              height: 24,
-              width: 24,
-            ),
-            showOnlineStatus: false,
-          ),
-        ),
-    ];
+    final color = message.user?.extraData['color'];
     return Padding(
       padding: padding,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: reverse ? children.reversed.toList() : children,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6.r),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: messageTheme.messageBackgroundColor?.withOpacity(0.7),
+            border: Border(
+              left: BorderSide(
+                color: color == null
+                    ? Theme.of(context).colorScheme.tertiary
+                    : Color(int.parse('0x$color')),
+                width: 4.w,
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(8.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: showBorder
+                  ? CrossAxisAlignment.stretch
+                  : reverse
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+              children: [
+                if (!isDm)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 4.h),
+                    child: Username(
+                      messageTheme: messageTheme,
+                      message: message,
+                    ),
+                  ),
+                _QuotedMessage(
+                  message: message,
+                  textLimit: textLimit,
+                  onQuotedMessageClear: onQuotedMessageClear,
+                  messageTheme: messageTheme,
+                  showBorder: showBorder,
+                  reverse: reverse,
+                  attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
