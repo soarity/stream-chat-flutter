@@ -272,7 +272,7 @@ class MessageWidgetContent extends StatelessWidget {
                     Padding(
                       padding: showUserAvatar == DisplayWidget.gone
                           ? EdgeInsets.zero
-                          : EdgeInsets.only(left: 46.w),
+                          : EdgeInsets.only(left: 40.w),
                       child: MessageCard(
                         message: message,
                         isDm: isDm,
@@ -362,21 +362,15 @@ class UserAvatar extends StatelessWidget {
     if (showUserAvatar == DisplayWidget.gone) {
       return const Offstage();
     } else if (showUserAvatar == DisplayWidget.hide) {
-      return SizedBox(width: 46.w);
+      return SizedBox(width: 40.w);
     }
 
     final user = message.user!;
-    return SizedBox(
-      width: 46.w,
-      child: Padding(
-        padding: EdgeInsets.only(right: 6.w),
-        child: ProfilePicture(
-          showBorder: true,
-          picURL: user.image ?? '',
-          fullName: user.name,
-          radius: 20.r,
-        ),
-      ),
+    return ProfilePicture(
+      showBorder: true,
+      picURL: user.image ?? '',
+      fullName: user.name,
+      radius: 20.r,
     );
   }
 }
