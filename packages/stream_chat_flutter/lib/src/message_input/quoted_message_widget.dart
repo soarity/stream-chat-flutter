@@ -74,35 +74,30 @@ class StreamQuotedMessageWidget extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.all(8.r),
-            child: ConstrainedBox(
-              constraints: BoxConstraints.loose(
-                const Size(double.maxFinite, double.maxFinite),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: showBorder
-                    ? CrossAxisAlignment.stretch
-                    : CrossAxisAlignment.start,
-                children: [
-                  if (!isDm)
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 4.h),
-                      child: Username(
-                        messageTheme: messageTheme,
-                        message: message,
-                      ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: showBorder
+                  ? CrossAxisAlignment.stretch
+                  : CrossAxisAlignment.start,
+              children: [
+                if (!isDm)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 4.h),
+                    child: Username(
+                      messageTheme: messageTheme,
+                      message: message,
                     ),
-                  _QuotedMessage(
-                    message: message,
-                    textLimit: textLimit,
-                    onQuotedMessageClear: onQuotedMessageClear,
-                    messageTheme: messageTheme,
-                    showBorder: showBorder,
-                    reverse: reverse,
-                    attachmentThumbnailBuilders: attachmentThumbnailBuilders,
                   ),
-                ],
-              ),
+                _QuotedMessage(
+                  message: message,
+                  textLimit: textLimit,
+                  onQuotedMessageClear: onQuotedMessageClear,
+                  messageTheme: messageTheme,
+                  showBorder: showBorder,
+                  reverse: reverse,
+                  attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+                ),
+              ],
             ),
           ),
         ),
@@ -163,6 +158,7 @@ class _QuotedMessage extends StatelessWidget {
           context.translations.messageDeletedLabel,
           style: messageTheme.messageTextStyle?.copyWith(
             fontStyle: FontStyle.italic,
+            fontSize: 14.fzs,
             color: messageTheme.createdAtStyle?.color,
           ),
         ),
@@ -182,7 +178,7 @@ class _QuotedMessage extends StatelessWidget {
                     )
                   : messageTheme.copyWith(
                       messageTextStyle: messageTheme.messageTextStyle?.copyWith(
-                        fontSize: 12.fzs,
+                        fontSize: 14.fzs,
                       ),
                     ),
             ),
