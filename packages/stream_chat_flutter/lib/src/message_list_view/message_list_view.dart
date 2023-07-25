@@ -900,7 +900,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         topRight: Radius.circular(16.r),
         bottomRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
       ),
-      textPadding: EdgeInsets.fromLTRB(0, 8.h, 0, 0),
+      textPadding: EdgeInsets.zero,
       borderSide: borderSide,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
       messageTheme: isMyMessage
@@ -1105,7 +1105,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       borderSide: borderSide,
       attachmentBorderRadiusGeometry:
           BorderRadius.circular(attachmentBorderRadius),
-      attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4.r : 2.r),
+      attachmentPadding: EdgeInsets.only(bottom: 6.h),
       borderRadiusGeometry: BorderRadius.only(
         topLeft: Radius.circular(16.r),
         bottomLeft: isMyMessage

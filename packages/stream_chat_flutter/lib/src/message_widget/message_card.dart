@@ -191,10 +191,6 @@ class _MessageCardState extends State<MessageCard> {
     final onQuotedMessageTap = widget.onQuotedMessageTap;
     final quotedMessageBuilder = widget.quotedMessageBuilder;
     final message = widget.message;
-    final showText = message.attachments.where((it) {
-          return it.type == 'image' || it.type == 'giphy' || it.type == 'video';
-        }).isEmpty ||
-        (message.text != null && message.text!.trim().isNotEmpty);
     return BubbleChat(
       isMyMessage: widget.reverse,
       tail: !widget.isGiphy && widget.showTailBubble,
@@ -250,44 +246,12 @@ class _MessageCardState extends State<MessageCard> {
                           ),
                     ),
                   if (widget.hasNonUrlAttachments)
-                    if (showText)
-                      ParseAttachments(
-                        key: attachmentsKey,
-                        message: widget.message,
-                        attachmentBuilders: widget.attachmentBuilders,
-                        attachmentPadding: widget.attachmentPadding,
-                      )
-                    else
-                      Stack(
-                        children: [
-                          ParseAttachments(
-                            key: attachmentsKey,
-                            message: widget.message,
-                            attachmentBuilders: widget.attachmentBuilders,
-                            attachmentPadding: widget.attachmentPadding,
-                          ),
-                          Positioned(
-                            right: 8.w,
-                            bottom: 4.h,
-                            child: BottomRow(
-                              message: widget.message,
-                              showInChannel: widget.showInChannel,
-                              showUsername: widget.showUsername,
-                              messageTheme: widget.messageTheme,
-                              reverse: widget.reverse,
-                              hasUrlAttachments: widget.hasUrlAttachments,
-                              isOnlyEmoji: widget.isOnlyEmoji,
-                              isDeleted: widget.message.isDeleted,
-                              isGiphy: widget.isGiphy,
-                              showSendingIndicator: widget.showSendingIndicator,
-                              showTimeStamp: widget.showTimeStamp,
-                              streamChatTheme: widget.streamChatTheme,
-                              streamChat: widget.streamChat,
-                              hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                            ),
-                          ),
-                        ],
-                      ),
+                    ParseAttachments(
+                      key: attachmentsKey,
+                      message: widget.message,
+                      attachmentBuilders: widget.attachmentBuilders,
+                      attachmentPadding: widget.attachmentPadding,
+                    ),
                   if (!widget.isGiphy)
                     TextBubble(
                       key: textBubbleKey,
@@ -307,29 +271,28 @@ class _MessageCardState extends State<MessageCard> {
                 ],
               ),
             ),
-          if (showText)
-            Padding(
-              padding: EdgeInsets.only(
-                top: 4.h,
-                right: 8.w,
-              ),
-              child: BottomRow(
-                message: widget.message,
-                showInChannel: widget.showInChannel,
-                showUsername: widget.showUsername,
-                reverse: widget.reverse,
-                messageTheme: widget.messageTheme,
-                hasUrlAttachments: widget.hasUrlAttachments,
-                isOnlyEmoji: widget.isOnlyEmoji,
-                isDeleted: widget.message.isDeleted,
-                isGiphy: widget.isGiphy,
-                showSendingIndicator: widget.showSendingIndicator,
-                showTimeStamp: widget.showTimeStamp,
-                streamChatTheme: widget.streamChatTheme,
-                streamChat: widget.streamChat,
-                hasNonUrlAttachments: widget.hasNonUrlAttachments,
-              ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 2.h,
+              left: 8.w,
             ),
+            child: BottomRow(
+              message: widget.message,
+              showInChannel: widget.showInChannel,
+              showUsername: widget.showUsername,
+              reverse: widget.reverse,
+              messageTheme: widget.messageTheme,
+              hasUrlAttachments: widget.hasUrlAttachments,
+              isOnlyEmoji: widget.isOnlyEmoji,
+              isDeleted: widget.message.isDeleted,
+              isGiphy: widget.isGiphy,
+              showSendingIndicator: widget.showSendingIndicator,
+              showTimeStamp: widget.showTimeStamp,
+              streamChatTheme: widget.streamChatTheme,
+              streamChat: widget.streamChat,
+              hasNonUrlAttachments: widget.hasNonUrlAttachments,
+            ),
+          ),
         ],
       ),
     );
@@ -374,7 +337,7 @@ class _MessageCardState extends State<MessageCard> {
     }
 
     if (widget.message.user!.id == 'wer6bot') {
-      return widget.messageTheme.botBackgroundColor;
+      return widget.messageTheme.messageBackgroundColor;
     }
 
     return widget.messageTheme.messageBackgroundColor;

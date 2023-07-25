@@ -44,7 +44,7 @@ class QuotedMessage extends StatelessWidget {
           : chatThemeData.ownMessageTheme,
       reverse: reverse,
       showBorder: false,
-      padding: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.only(bottom: 6.h),
     );
   }
 }
