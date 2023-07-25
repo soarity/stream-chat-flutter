@@ -149,6 +149,7 @@ class _MessageCardState extends State<MessageCard> {
   final GlobalKey linksKey = GlobalKey();
   final GlobalKey quotedWidgetKey = GlobalKey();
   final GlobalKey textBubbleKey = GlobalKey();
+  final GlobalKey usernameKey = GlobalKey();
   double widthLimit = 0;
 
   @override
@@ -170,11 +171,15 @@ class _MessageCardState extends State<MessageCard> {
           textBubbleKey.currentContext?.findRenderObject() as RenderBox?;
       final textBubbleWidth = textBubbleRenderBox?.size.width ?? 0;
 
+      final usernameRenderBox =
+          usernameKey.currentContext?.findRenderObject() as RenderBox?;
+      final usernameWidth = usernameRenderBox?.size.width ?? 0;
+
       if (mounted) {
         final widthLimit1 = max(attachmentsWidth, linkWidth);
         final widthLimit2 = max(quotedWidth, textBubbleWidth);
         setState(() {
-          widthLimit = max(widthLimit1, widthLimit2);
+          widthLimit = max(usernameWidth, max(widthLimit1, widthLimit2));
         });
       }
     });
@@ -220,7 +225,7 @@ class _MessageCardState extends State<MessageCard> {
                     Padding(
                       padding: EdgeInsets.only(bottom: 4.h),
                       child: Username(
-                        key: const Key('usernameKey'),
+                        key: usernameKey,
                         messageTheme: widget.messageTheme,
                         message: message,
                       ),
