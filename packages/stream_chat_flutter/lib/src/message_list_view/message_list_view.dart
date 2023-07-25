@@ -1027,12 +1027,12 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final isNextUserSame =
         nextMessage != null && message.user!.id == nextMessage.user!.id;
 
-    var hasTimeDiff = false;
+    var hasTimeDiff = true;
     if (nextMessage != null) {
-      hasTimeDiff = !Jiffy(message.createdAt.toLocal()).isSame(
-        nextMessage.createdAt.toLocal(),
-        Units.HOUR,
-      );
+      final duration = message.createdAt
+          .toLocal()
+          .difference(nextMessage.createdAt.toLocal());
+      hasTimeDiff = duration.inMinutes > 10;
     }
 
     final hasFileAttachment =
@@ -1075,7 +1075,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       padding: EdgeInsets.fromLTRB(
         16.w,
         0,
-        12.w,
+        16.w,
         (hasTimeDiff || !isNextUserSame || hasFileAttachment) ? 12.h : 2.h,
       ),
       showUsername: showUsername,
