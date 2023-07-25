@@ -257,7 +257,6 @@ class _MessageCardState extends State<MessageCard> {
                               widget.message.quotedMessage!,
                             ) ??
                             QuotedMessage(
-                              key: quotedWidgetKey,
                               isDm: widget.isDm,
                               reverse: widget.reverse,
                               message: widget.message,

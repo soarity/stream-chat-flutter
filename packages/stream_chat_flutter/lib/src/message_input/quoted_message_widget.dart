@@ -62,7 +62,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(6.r),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: messageTheme.messageBackgroundColor?.withOpacity(0.5),
+            color: messageTheme.messageBackgroundColor?.withOpacity(0.4),
             border: Border(
               left: BorderSide(
                 color: color == null
