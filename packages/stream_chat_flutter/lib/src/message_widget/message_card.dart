@@ -165,10 +165,9 @@ class _MessageCardState extends State<MessageCard> {
       final textBubbleWidth = textBubbleRenderBox?.size.width ?? 0;
 
       if (mounted) {
+        final widthLimit1 = max(attachmentsWidth, linkWidth);
+        final widthLimit2 = max(quotedWidth, textBubbleWidth);
         setState(() {
-          final widthLimit1 = max(attachmentsWidth, linkWidth);
-          final widthLimit2 = max(quotedWidth, textBubbleWidth);
-
           widthLimit = max(widthLimit1, widthLimit2);
         });
       }
