@@ -76,7 +76,9 @@ class StreamQuotedMessageWidget extends StatelessWidget {
             padding: EdgeInsets.all(8.r),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: showBorder
+                  ? CrossAxisAlignment.stretch
+                  : CrossAxisAlignment.start,
               children: [
                 if (!isDm)
                   Padding(
