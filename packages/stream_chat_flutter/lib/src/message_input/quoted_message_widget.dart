@@ -56,46 +56,53 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = message.user?.extraData['color'];
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.r),
-      child: Container(
-        margin: padding,
-        padding: EdgeInsets.all(8.r),
-        decoration: BoxDecoration(
-          color: messageTheme.messageBackgroundColor?.withOpacity(0.4),
-          border: Border(
-            left: BorderSide(
-              color: color == null
-                  ? Theme.of(context).colorScheme.tertiary
-                  : Color(int.parse('0x$color')),
-              width: 4.w,
+    return Padding(
+      padding: padding,
+      child: ClipRRect(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(12.r),
+          bottom: Radius.circular(6.r),
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: messageTheme.messageBackgroundColor?.withOpacity(0.4),
+            border: Border(
+              left: BorderSide(
+                color: color == null
+                    ? Theme.of(context).colorScheme.tertiary
+                    : Color(int.parse('0x$color')),
+                width: 4.w,
+              ),
             ),
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: showBorder
-              ? CrossAxisAlignment.stretch
-              : CrossAxisAlignment.start,
-          children: [
-            if (!isDm)
-              Padding(
-                padding: EdgeInsets.only(bottom: 4.h),
-                child: Username(
-                  messageTheme: messageTheme,
+          child: Padding(
+            padding: EdgeInsets.all(8.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: showBorder
+                  ? CrossAxisAlignment.stretch
+                  : CrossAxisAlignment.start,
+              children: [
+                if (!isDm)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 4.h),
+                    child: Username(
+                      messageTheme: messageTheme,
+                      message: message,
+                    ),
+                  ),
+                _QuotedMessage(
                   message: message,
+                  textLimit: textLimit,
+                  onQuotedMessageClear: onQuotedMessageClear,
+                  messageTheme: messageTheme,
+                  showBorder: showBorder,
+                  reverse: reverse,
+                  attachmentThumbnailBuilders: attachmentThumbnailBuilders,
                 ),
-              ),
-            _QuotedMessage(
-              message: message,
-              textLimit: textLimit,
-              onQuotedMessageClear: onQuotedMessageClear,
-              messageTheme: messageTheme,
-              showBorder: showBorder,
-              reverse: reverse,
-              attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
