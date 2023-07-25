@@ -889,6 +889,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showDeleteMessage: false,
       showEditMessage: false,
       message: message,
+      showTailBubble: false,
       reverse: isMyMessage,
       showUsername: !isMyMessage,
       padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -899,12 +900,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         topRight: Radius.circular(16.r),
         bottomRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
       ),
-      textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 12.w,
-        4.h,
-        isOnlyEmoji ? 0 : 12.w,
-        0,
-      ),
+      textPadding: EdgeInsets.fromLTRB(0, 4.h, 0, 0),
       borderSide: borderSide,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
       messageTheme: isMyMessage
@@ -1072,6 +1068,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     Widget messageWidget = StreamMessageWidget(
       isDm: widget.isDm,
+      showTailBubble: hasTimeDiff || !isNextUserSame || hasFileAttachment,
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
@@ -1106,24 +1103,8 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showDeleteMessage: isMyMessage,
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
-      attachmentBorderRadiusGeometry: BorderRadius.only(
-        topLeft: Radius.circular(attachmentBorderRadius),
-        bottomLeft: isMyMessage
-            ? Radius.circular(attachmentBorderRadius)
-            : Radius.circular(
-                (hasTimeDiff || !isNextUserSame || hasFileAttachment)
-                    ? 0
-                    : attachmentBorderRadius,
-              ),
-        topRight: Radius.circular(attachmentBorderRadius),
-        bottomRight: isMyMessage
-            ? Radius.circular(
-                (hasTimeDiff || !isNextUserSame || hasFileAttachment)
-                    ? 0
-                    : attachmentBorderRadius,
-              )
-            : Radius.circular(attachmentBorderRadius),
-      ),
+      attachmentBorderRadiusGeometry:
+          BorderRadius.circular(attachmentBorderRadius),
       attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4.r : 2.r),
       borderRadiusGeometry: BorderRadius.only(
         topLeft: Radius.circular(16.r),
@@ -1141,12 +1122,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                     : 16.r)
             : Radius.circular(16.r),
       ),
-      textPadding: EdgeInsets.fromLTRB(
-        isOnlyEmoji ? 0 : 12.w,
-        4.h,
-        isOnlyEmoji ? 0 : 12.w,
-        0,
-      ),
+      textPadding: EdgeInsets.zero,
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme
           : _streamTheme.otherMessageTheme,

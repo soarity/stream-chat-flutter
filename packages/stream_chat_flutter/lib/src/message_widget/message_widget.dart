@@ -45,6 +45,7 @@ class StreamMessageWidget extends StatefulWidget {
     super.key,
     required this.message,
     required this.messageTheme,
+    required this.showTailBubble,
     this.botBuilder,
     this.isDm = false,
     this.reverse = false,
@@ -307,6 +308,10 @@ class StreamMessageWidget extends StatefulWidget {
   ///
   /// Defaults to false
   final bool isDm;
+
+  ///  Whether the widget should show bubble on left or right
+  ///
+  final bool showTailBubble;
 
   /// Widget builder for building bot message
   final Widget Function(BuildContext, Message)? botBuilder;
@@ -610,6 +615,7 @@ class StreamMessageWidget extends StatefulWidget {
     Message? message,
     StreamMessageThemeData? messageTheme,
     bool? isDm,
+    bool? showTailBubble,
     bool? reverse,
     ShapeBorder? shape,
     ShapeBorder? attachmentShape,
@@ -679,6 +685,7 @@ class StreamMessageWidget extends StatefulWidget {
     return StreamMessageWidget(
       key: key ?? this.key,
       isDm: isDm ?? this.isDm,
+      showTailBubble: showTailBubble ?? this.showTailBubble,
       onMentionTap: onMentionTap ?? this.onMentionTap,
       onReplyTap: onReplyTap ?? this.onReplyTap,
       onConfirmDeleteTap: onConfirmDeleteTap ?? this.onConfirmDeleteTap,
@@ -934,6 +941,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
 
                     return MessageWidgetContent(
                       isDm: widget.isDm,
+                      showTailBubble: widget.showTailBubble,
                       streamChatTheme: _streamChatTheme,
                       showUsername: showUsername,
                       showTimeStamp: showTimeStamp,

@@ -28,6 +28,7 @@ class MessageWidgetContent extends StatelessWidget {
   /// {@macro messageWidgetContent}
   const MessageWidgetContent({
     super.key,
+    required this.showTailBubble,
     required this.isDm,
     required this.showInChannel,
     required this.botBuilder,
@@ -92,6 +93,10 @@ class MessageWidgetContent extends StatelessWidget {
   ///
   /// Defaults to false
   final bool isDm;
+
+  ///  Whether the widget should show bubble on left or right
+  ///
+  final bool showTailBubble;
 
   /// Widget builder for building bot message
   final Widget Function(BuildContext, Message)? botBuilder;
@@ -232,106 +237,102 @@ class MessageWidgetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: isPinned && showPinHighlight
-          ? EdgeInsets.symmetric(vertical: 10.h)
-          : EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment:
-            reverse ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          PortalTarget(
-            visible: isMobileDevice && showReactions,
-            portalFollower: isMobileDevice && showReactions
-                ? ReactionIndicator(
-                    message: message,
-                    messageTheme: messageTheme,
-                    ownId: streamChat.currentUser!.id,
-                    reverse: reverse,
-                    shouldShowReactions: shouldShowReactions,
-                    onTap: onReactionsTap,
-                  )
-                : null,
-            anchor: Aligned(
-              follower: Alignment(reverse ? 1 : -1, -1),
-              target: Alignment(reverse ? -1 : 1, -1),
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Padding(
-                  padding: showReactions
-                      ? EdgeInsets.only(top: 10.h)
-                      : EdgeInsets.zero,
-                  child: Stack(
-                    alignment:
-                        reverse ? Alignment.bottomRight : Alignment.bottomLeft,
-                    children: [
-                      Padding(
-                        padding: showUserAvatar == DisplayWidget.gone
-                            ? EdgeInsets.zero
-                            : EdgeInsets.only(left: 46.w),
-                        child: MessageCard(
-                          message: message,
-                          isDm: isDm,
-                          botBuilder: botBuilder,
-                          showInChannel: showInChannel,
-                          showUsername: showUsername,
-                          isFailedState: isFailedState,
-                          showSendingIndicator: showSendingIndicator,
-                          showUserAvatar: showUserAvatar,
-                          showTimeStamp: showTimeStamp,
-                          messageTheme: messageTheme,
-                          hasQuotedMessage: hasQuotedMessage,
-                          hasUrlAttachments: hasUrlAttachments,
-                          hasNonUrlAttachments: hasNonUrlAttachments,
-                          isOnlyEmoji: isOnlyEmoji,
-                          isGiphy: isGiphy,
-                          streamChat: streamChat,
-                          streamChatTheme: streamChatTheme,
-                          attachmentBuilders: attachmentBuilders,
-                          attachmentPadding: attachmentPadding,
-                          textPadding: textPadding,
-                          reverse: reverse,
-                          onQuotedMessageTap: onQuotedMessageTap,
-                          onMentionTap: onMentionTap,
-                          onLinkTap: onLinkTap,
-                          textBuilder: textBuilder,
-                          borderRadiusGeometry: borderRadiusGeometry,
-                          borderSide: borderSide,
-                          shape: shape,
-                        ),
-                      ),
-                      if (!isDm || showUserAvatar == DisplayWidget.show)
-                        UserAvatar(
-                          showUserAvatar: showUserAvatar,
-                          message: message,
-                          isDm: isDm,
-                        ),
-                    ],
-                  ),
-                ),
-                if (showReactionPickerTail)
-                  Positioned(
-                    right: reverse ? null : 4,
-                    left: reverse ? 4 : null,
-                    top: -8,
-                    child: CustomPaint(
-                      painter: ReactionBubblePainter(
-                        streamChatTheme.colorTheme.barsBg,
-                        Colors.transparent,
-                        Colors.transparent,
-                        tailCirclesSpace: 1,
+    return Column(
+      crossAxisAlignment:
+          reverse ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PortalTarget(
+          visible: isMobileDevice && showReactions,
+          portalFollower: isMobileDevice && showReactions
+              ? ReactionIndicator(
+                  message: message,
+                  messageTheme: messageTheme,
+                  ownId: streamChat.currentUser!.id,
+                  reverse: reverse,
+                  shouldShowReactions: shouldShowReactions,
+                  onTap: onReactionsTap,
+                )
+              : null,
+          anchor: Aligned(
+            follower: Alignment(reverse ? 1 : -1, -1),
+            target: Alignment(reverse ? -1 : 1, -1),
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: showReactions
+                    ? EdgeInsets.only(top: 10.h)
+                    : EdgeInsets.zero,
+                child: Stack(
+                  alignment:
+                      reverse ? Alignment.bottomRight : Alignment.bottomLeft,
+                  children: [
+                    Padding(
+                      padding: showUserAvatar == DisplayWidget.gone
+                          ? EdgeInsets.zero
+                          : EdgeInsets.only(left: 46.w),
+                      child: MessageCard(
+                        message: message,
+                        isDm: isDm,
+                        showTailBubble: showTailBubble,
+                        botBuilder: botBuilder,
+                        showInChannel: showInChannel,
+                        showUsername: showUsername,
+                        isFailedState: isFailedState,
+                        showSendingIndicator: showSendingIndicator,
+                        showUserAvatar: showUserAvatar,
+                        showTimeStamp: showTimeStamp,
+                        messageTheme: messageTheme,
+                        hasQuotedMessage: hasQuotedMessage,
+                        hasUrlAttachments: hasUrlAttachments,
+                        hasNonUrlAttachments: hasNonUrlAttachments,
+                        isOnlyEmoji: isOnlyEmoji,
+                        isGiphy: isGiphy,
+                        streamChat: streamChat,
+                        streamChatTheme: streamChatTheme,
+                        attachmentBuilders: attachmentBuilders,
+                        attachmentPadding: attachmentPadding,
+                        textPadding: textPadding,
+                        reverse: reverse,
+                        onQuotedMessageTap: onQuotedMessageTap,
+                        onMentionTap: onMentionTap,
+                        onLinkTap: onLinkTap,
+                        textBuilder: textBuilder,
+                        borderRadiusGeometry: borderRadiusGeometry,
+                        borderSide: borderSide,
+                        shape: shape,
                       ),
                     ),
+                    if (!isDm || showUserAvatar == DisplayWidget.show)
+                      UserAvatar(
+                        showUserAvatar: showUserAvatar,
+                        message: message,
+                        isDm: isDm,
+                      ),
+                  ],
+                ),
+              ),
+              if (showReactionPickerTail)
+                Positioned(
+                  right: reverse ? null : 4,
+                  left: reverse ? 4 : null,
+                  top: -8,
+                  child: CustomPaint(
+                    painter: ReactionBubblePainter(
+                      streamChatTheme.colorTheme.barsBg,
+                      Colors.transparent,
+                      Colors.transparent,
+                      tailCirclesSpace: 1,
+                    ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
-          if (isFailedState) StreamSvgIcon.error(size: 20.r),
-        ],
-      ),
+        ),
+        if (isFailedState) StreamSvgIcon.error(size: 20.r),
+      ],
     );
   }
 }

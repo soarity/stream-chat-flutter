@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_widget/bottom_row.dart';
+import 'package:stream_chat_flutter/src/message_widget/chat_bubble.dart';
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content.dart';
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -17,6 +18,7 @@ class MessageCard extends StatefulWidget {
   const MessageCard({
     super.key,
     this.isDm = false,
+    this.showTailBubble = false,
     required this.botBuilder,
     required this.message,
     required this.isFailedState,
@@ -55,6 +57,10 @@ class MessageCard extends StatefulWidget {
 
   ///
   final bool isDm;
+
+  ///  Whether the widget should show bubble on left or right
+  ///
+  final bool showTailBubble;
 
   /// {@macro streamChatThemeData}
   final StreamChatThemeData streamChatTheme;
@@ -184,170 +190,148 @@ class _MessageCardState extends State<MessageCard> {
           return it.type == 'image' || it.type == 'giphy' || it.type == 'video';
         }).isEmpty ||
         (message.text != null && message.text!.trim().isNotEmpty);
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      shape: widget.isGiphy
-          ? null
-          : widget.shape ??
-              RoundedRectangleBorder(
-                side: widget.borderSide ??
-                    BorderSide(
-                      color: widget.messageTheme.messageBorderColor ??
-                          Colors.transparent,
-                    ),
-                borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
+    return BubbleChat(
+      isMyMessage: widget.reverse,
+      tail: !widget.isGiphy && widget.showTailBubble,
+      color: _getBackgroundColor ?? Colors.transparent,
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        crossAxisAlignment: WrapCrossAlignment.end,
+        children: [
+          if (widget.message.isDeleted && !widget.isFailedState)
+            StreamDeletedMessage(
+              borderRadiusGeometry: widget.borderRadiusGeometry,
+              borderSide: widget.borderSide,
+              shape: widget.shape,
+              messageTheme: widget.messageTheme,
+            )
+          else
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: widthLimit > 0 ? widthLimit : double.infinity,
               ),
-      color: _getBackgroundColor,
-      child: Padding(
-        padding: showText ? EdgeInsets.only(bottom: 5.h) : EdgeInsets.zero,
-        child: Wrap(
-          alignment: WrapAlignment.end,
-          crossAxisAlignment: WrapCrossAlignment.end,
-          children: [
-            if (widget.message.isDeleted && !widget.isFailedState)
-              Padding(
-                padding: widget.textPadding,
-                child: StreamDeletedMessage(
-                  borderRadiusGeometry: widget.borderRadiusGeometry,
-                  borderSide: widget.borderSide,
-                  shape: widget.shape,
-                  messageTheme: widget.messageTheme,
-                ),
-              )
-            else
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: widthLimit > 0 ? widthLimit : double.infinity,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!widget.isDm &&
-                        message.user != null &&
-                        widget.showUsername)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          bottom: 2.h,
-                          top: 8.h,
-                          left: 12.w,
-                        ),
-                        child: Username(
-                          key: const Key('usernameKey'),
-                          messageTheme: widget.messageTheme,
-                          message: message,
-                        ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!widget.isDm &&
+                      message.user != null &&
+                      widget.showUsername)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        bottom: 2.h,
+                        top: 8.h,
+                        left: 12.w,
+                      ),
+                      child: Username(
+                        key: const Key('usernameKey'),
+                        messageTheme: widget.messageTheme,
+                        message: message,
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: EdgeInsets.only(top: 4.h),
+                      child: const Offstage(),
+                    ),
+                  if (widget.hasQuotedMessage)
+                    InkWell(
+                      key: quotedWidgetKey,
+                      onTap: !widget.message.quotedMessage!.isDeleted &&
+                              onQuotedMessageTap != null
+                          ? () =>
+                              onQuotedMessageTap(widget.message.quotedMessageId)
+                          : null,
+                      child: quotedMessageBuilder?.call(
+                            context,
+                            widget.message.quotedMessage!,
+                          ) ??
+                          QuotedMessage(
+                            isDm: widget.isDm,
+                            reverse: widget.reverse,
+                            message: widget.message,
+                            hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                          ),
+                    ),
+                  if (widget.hasNonUrlAttachments)
+                    if (showText)
+                      ParseAttachments(
+                        key: attachmentsKey,
+                        message: widget.message,
+                        attachmentBuilders: widget.attachmentBuilders,
+                        attachmentPadding: widget.attachmentPadding,
                       )
                     else
-                      Padding(
-                        padding: EdgeInsets.only(top: 4.h),
-                        child: const Offstage(),
-                      ),
-                    if (widget.hasQuotedMessage)
-                      InkWell(
-                        key: quotedWidgetKey,
-                        onTap: !widget.message.quotedMessage!.isDeleted &&
-                                onQuotedMessageTap != null
-                            ? () => onQuotedMessageTap(
-                                widget.message.quotedMessageId)
-                            : null,
-                        child: quotedMessageBuilder?.call(
-                              context,
-                              widget.message.quotedMessage!,
-                            ) ??
-                            QuotedMessage(
-                              isDm: widget.isDm,
-                              reverse: widget.reverse,
+                      Stack(
+                        children: [
+                          ParseAttachments(
+                            key: attachmentsKey,
+                            message: widget.message,
+                            attachmentBuilders: widget.attachmentBuilders,
+                            attachmentPadding: widget.attachmentPadding,
+                          ),
+                          Positioned(
+                            right: 0,
+                            bottom: 4.h,
+                            child: BottomRow(
                               message: widget.message,
+                              showInChannel: widget.showInChannel,
+                              showUsername: widget.showUsername,
+                              messageTheme: widget.messageTheme,
+                              reverse: widget.reverse,
+                              hasUrlAttachments: widget.hasUrlAttachments,
+                              isOnlyEmoji: widget.isOnlyEmoji,
+                              isDeleted: widget.message.isDeleted,
+                              isGiphy: widget.isGiphy,
+                              showSendingIndicator: widget.showSendingIndicator,
+                              showTimeStamp: widget.showTimeStamp,
+                              streamChatTheme: widget.streamChatTheme,
+                              streamChat: widget.streamChat,
                               hasNonUrlAttachments: widget.hasNonUrlAttachments,
                             ),
+                          ),
+                        ],
                       ),
-                    if (widget.hasNonUrlAttachments)
-                      if (showText)
-                        ParseAttachments(
-                          key: attachmentsKey,
-                          message: widget.message,
-                          attachmentBuilders: widget.attachmentBuilders,
-                          attachmentPadding: widget.attachmentPadding,
-                        )
-                      else
-                        Stack(
-                          children: [
-                            ParseAttachments(
-                              key: attachmentsKey,
-                              message: widget.message,
-                              attachmentBuilders: widget.attachmentBuilders,
-                              attachmentPadding: widget.attachmentPadding,
-                            ),
-                            Positioned(
-                              right: 8.w,
-                              bottom: 6.h,
-                              child: BottomRow(
-                                message: widget.message,
-                                showInChannel: widget.showInChannel,
-                                showUsername: widget.showUsername,
-                                messageTheme: widget.messageTheme,
-                                reverse: widget.reverse,
-                                hasUrlAttachments: widget.hasUrlAttachments,
-                                isOnlyEmoji: widget.isOnlyEmoji,
-                                isDeleted: widget.message.isDeleted,
-                                isGiphy: widget.isGiphy,
-                                showSendingIndicator:
-                                    widget.showSendingIndicator,
-                                showTimeStamp: widget.showTimeStamp,
-                                streamChatTheme: widget.streamChatTheme,
-                                streamChat: widget.streamChat,
-                                hasNonUrlAttachments:
-                                    widget.hasNonUrlAttachments,
-                              ),
-                            ),
-                          ],
-                        ),
-                    if (!widget.isGiphy)
-                      TextBubble(
-                        key: textBubbleKey,
-                        messageTheme: widget.messageTheme,
-                        botBuilder: widget.botBuilder,
-                        message: widget.message,
-                        textPadding: widget.textPadding,
-                        textBuilder: widget.textBuilder,
-                        isOnlyEmoji: widget.isOnlyEmoji,
-                        hasQuotedMessage: widget.hasQuotedMessage,
-                        hasUrlAttachments: widget.hasUrlAttachments,
-                        onLinkTap: widget.onLinkTap,
-                        onMentionTap: widget.onMentionTap,
-                      ),
-                    if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
-                      _buildUrlAttachment(),
-                  ],
-                ),
+                  if (!widget.isGiphy)
+                    TextBubble(
+                      key: textBubbleKey,
+                      messageTheme: widget.messageTheme,
+                      botBuilder: widget.botBuilder,
+                      message: widget.message,
+                      textPadding: widget.textPadding,
+                      textBuilder: widget.textBuilder,
+                      isOnlyEmoji: widget.isOnlyEmoji,
+                      hasQuotedMessage: widget.hasQuotedMessage,
+                      hasUrlAttachments: widget.hasUrlAttachments,
+                      onLinkTap: widget.onLinkTap,
+                      onMentionTap: widget.onMentionTap,
+                    ),
+                  if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
+                    _buildUrlAttachment(),
+                ],
               ),
-            if (showText)
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 2.h,
-                  right: widget.reverse ? 4.w : 8.w,
-                ),
-                child: BottomRow(
-                  message: widget.message,
-                  showInChannel: widget.showInChannel,
-                  showUsername: widget.showUsername,
-                  reverse: widget.reverse,
-                  messageTheme: widget.messageTheme,
-                  hasUrlAttachments: widget.hasUrlAttachments,
-                  isOnlyEmoji: widget.isOnlyEmoji,
-                  isDeleted: widget.message.isDeleted,
-                  isGiphy: widget.isGiphy,
-                  showSendingIndicator: widget.showSendingIndicator,
-                  showTimeStamp: widget.showTimeStamp,
-                  streamChatTheme: widget.streamChatTheme,
-                  streamChat: widget.streamChat,
-                  hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                ),
+            ),
+          if (showText)
+            Padding(
+              padding: EdgeInsets.only(top: 4.h),
+              child: BottomRow(
+                message: widget.message,
+                showInChannel: widget.showInChannel,
+                showUsername: widget.showUsername,
+                reverse: widget.reverse,
+                messageTheme: widget.messageTheme,
+                hasUrlAttachments: widget.hasUrlAttachments,
+                isOnlyEmoji: widget.isOnlyEmoji,
+                isDeleted: widget.message.isDeleted,
+                isGiphy: widget.isGiphy,
+                showSendingIndicator: widget.showSendingIndicator,
+                showTimeStamp: widget.showTimeStamp,
+                streamChatTheme: widget.streamChatTheme,
+                streamChat: widget.streamChat,
+                hasNonUrlAttachments: widget.hasNonUrlAttachments,
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
