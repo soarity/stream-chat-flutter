@@ -900,7 +900,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         topRight: Radius.circular(16.r),
         bottomRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
       ),
-      textPadding: EdgeInsets.fromLTRB(0, 4.h, 0, 0),
+      textPadding: EdgeInsets.fromLTRB(0, 8.h, 0, 0),
       borderSide: borderSide,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
       messageTheme: isMyMessage

@@ -218,21 +218,12 @@ class _MessageCardState extends State<MessageCard> {
                       message.user != null &&
                       widget.showUsername)
                     Padding(
-                      padding: EdgeInsets.only(
-                        bottom: 2.h,
-                        top: 8.h,
-                        left: 12.w,
-                      ),
+                      padding: EdgeInsets.only(bottom: 4.h),
                       child: Username(
                         key: const Key('usernameKey'),
                         messageTheme: widget.messageTheme,
                         message: message,
                       ),
-                    )
-                  else
-                    Padding(
-                      padding: EdgeInsets.only(top: 4.h),
-                      child: const Offstage(),
                     ),
                   if (widget.hasQuotedMessage)
                     InkWell(
@@ -271,7 +262,7 @@ class _MessageCardState extends State<MessageCard> {
                             attachmentPadding: widget.attachmentPadding,
                           ),
                           Positioned(
-                            right: 0,
+                            right: 8.w,
                             bottom: 4.h,
                             child: BottomRow(
                               message: widget.message,
@@ -313,7 +304,10 @@ class _MessageCardState extends State<MessageCard> {
             ),
           if (showText)
             Padding(
-              padding: EdgeInsets.only(top: 4.h),
+              padding: EdgeInsets.only(
+                top: 4.h,
+                right: 8.w,
+              ),
               child: BottomRow(
                 message: widget.message,
                 showInChannel: widget.showInChannel,
