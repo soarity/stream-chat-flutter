@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -60,7 +59,7 @@ class StreamUrlAttachment extends StatelessWidget {
               if (urlAttachment.imageUrl != null)
                 Container(
                   clipBehavior: Clip.hardEdge,
-                  margin: EdgeInsets.symmetric(horizontal: 8.w),
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -101,11 +100,11 @@ class StreamUrlAttachment extends StatelessWidget {
                             color: messageTheme.urlAttachmentBackgroundColor,
                           ),
                           child: Padding(
-                            padding: EdgeInsets.only(
-                              top: 6.h,
-                              left: 8.w,
-                              right: 8.w,
-                              bottom: 2.h,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              left: 8,
+                              right: 12,
+                              bottom: 4,
                             ),
                             child: Text(
                               hostDisplayName,

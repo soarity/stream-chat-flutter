@@ -17,16 +17,13 @@ class UnreadMessagesSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.symmetric(vertical: 12.h),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.onSecondary,
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 18.w,
-            vertical: 10.h,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
           child: Text(
             context.translations.unreadMessagesSeparatorText(unreadCount),
             textAlign: TextAlign.center,

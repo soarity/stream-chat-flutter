@@ -37,19 +37,18 @@ class StreamDateDivider extends StatelessWidget {
 
     if (uppercase) dayInfo = dayInfo.toUpperCase();
 
-    final chatThemeData = StreamChatTheme.of(context);
     return Center(
       child: Material(
         elevation: 1,
-        shape: const StadiumBorder(),
-        color: Theme.of(context).colorScheme.onInverseSurface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+        color: Theme.of(context).colorScheme.onSecondary,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
           child: Text(
             dayInfo,
-            style: chatThemeData.textTheme.footnoteBold.copyWith(
-              color: Theme.of(context).colorScheme.inverseSurface,
-            ),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                ),
           ),
         ),
       ),

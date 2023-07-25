@@ -26,9 +26,9 @@ class StreamSystemMessage extends StatelessWidget {
     if (messageText == null) return const SizedBox.shrink();
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h),
+      padding: EdgeInsets.symmetric(vertical: 12.h),
       child: SizedBox(
-        width: 240.w,
+        width: 280.w,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: onMessageTap == null ? null : () => onMessageTap!(message),
@@ -36,9 +36,9 @@ class StreamSystemMessage extends StatelessWidget {
             child: Material(
               shape: const StadiumBorder(),
               elevation: 1,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSecondary,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
                 child: Text(
                   message.text!,
                   textAlign: TextAlign.center,
