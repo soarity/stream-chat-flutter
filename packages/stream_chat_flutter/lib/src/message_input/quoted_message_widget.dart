@@ -20,6 +20,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     this.isDm = false,
     this.showBorder = true,
     this.textLimit = 170,
+    this.minimumWidth = 0,
     this.attachmentThumbnailBuilders,
     this.padding = const EdgeInsets.all(8),
     this.onQuotedMessageClear,
@@ -53,6 +54,9 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   /// Callback for clearing quoted messages.
   final VoidCallback? onQuotedMessageClear;
 
+  /// Callback for declaring minimum width
+  final double minimumWidth;
+
   @override
   Widget build(BuildContext context) {
     final color = message.user?.extraData['color'];
@@ -63,44 +67,50 @@ class StreamQuotedMessageWidget extends StatelessWidget {
           top: Radius.circular(12.r),
           bottom: Radius.circular(6.r),
         ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-            border: Border(
-              left: BorderSide(
-                color: color == null
-                    ? Theme.of(context).colorScheme.tertiary
-                    : Color(int.parse('0x$color')),
-                width: 4.w,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: minimumWidth,
+            maxWidth: minimumWidth > 0 ? minimumWidth : double.infinity,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.outlineVariant,
+              border: Border(
+                left: BorderSide(
+                  color: color == null
+                      ? Theme.of(context).colorScheme.tertiary
+                      : Color(int.parse('0x$color')),
+                  width: 4.w,
+                ),
               ),
             ),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(8.r),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: showBorder
-                  ? CrossAxisAlignment.stretch
-                  : CrossAxisAlignment.start,
-              children: [
-                if (!isDm)
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 4.h),
-                    child: Username(
-                      messageTheme: messageTheme,
-                      message: message,
+            child: Padding(
+              padding: EdgeInsets.all(8.r),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: showBorder
+                    ? CrossAxisAlignment.stretch
+                    : CrossAxisAlignment.start,
+                children: [
+                  if (!isDm)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 4.h),
+                      child: Username(
+                        messageTheme: messageTheme,
+                        message: message,
+                      ),
                     ),
+                  _QuotedMessage(
+                    message: message,
+                    textLimit: textLimit,
+                    onQuotedMessageClear: onQuotedMessageClear,
+                    messageTheme: messageTheme,
+                    showBorder: showBorder,
+                    reverse: reverse,
+                    attachmentThumbnailBuilders: attachmentThumbnailBuilders,
                   ),
-                _QuotedMessage(
-                  message: message,
-                  textLimit: textLimit,
-                  onQuotedMessageClear: onQuotedMessageClear,
-                  messageTheme: messageTheme,
-                  showBorder: showBorder,
-                  reverse: reverse,
-                  attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

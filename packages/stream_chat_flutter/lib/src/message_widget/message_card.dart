@@ -240,6 +240,7 @@ class _MessageCardState extends State<MessageCard> {
                           ) ??
                           QuotedMessage(
                             isDm: widget.isDm,
+                            minimumWidth: widthLimit,
                             reverse: widget.reverse,
                             message: widget.message,
                             hasNonUrlAttachments: widget.hasNonUrlAttachments,

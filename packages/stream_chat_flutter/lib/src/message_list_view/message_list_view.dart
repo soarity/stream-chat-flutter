@@ -1032,7 +1032,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       final duration = message.createdAt
           .toLocal()
           .difference(nextMessage.createdAt.toLocal());
-      hasTimeDiff = duration.inMinutes > 10;
+      hasTimeDiff = duration.inMinutes.abs() > 10;
     }
 
     final hasFileAttachment =
