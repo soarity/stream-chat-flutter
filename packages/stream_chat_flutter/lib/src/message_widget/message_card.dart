@@ -154,6 +154,7 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final attachmentsRenderBox =
           attachmentsKey.currentContext?.findRenderObject() as RenderBox?;
@@ -183,7 +184,6 @@ class _MessageCardState extends State<MessageCard> {
         });
       }
     });
-    super.initState();
   }
 
   @override
@@ -228,7 +228,6 @@ class _MessageCardState extends State<MessageCard> {
                     ),
                   if (widget.hasQuotedMessage)
                     InkWell(
-                      key: quotedWidgetKey,
                       onTap: !widget.message.quotedMessage!.isDeleted &&
                               onQuotedMessageTap != null
                           ? () =>
@@ -239,6 +238,7 @@ class _MessageCardState extends State<MessageCard> {
                             widget.message.quotedMessage!,
                           ) ??
                           QuotedMessage(
+                            key: quotedWidgetKey,
                             isDm: widget.isDm,
                             minimumWidth: widthLimit,
                             reverse: widget.reverse,
