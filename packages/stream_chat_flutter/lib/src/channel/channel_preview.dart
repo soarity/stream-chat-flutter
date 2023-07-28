@@ -461,7 +461,7 @@ class _LastMessage extends StatelessWidget {
                 fontStyle: (lastMessage.isSystem || lastMessage.isDeleted)
                     ? FontStyle.italic
                     : FontStyle.normal,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             maxLines: 1,
