@@ -311,12 +311,12 @@ class _MessageCardState extends State<MessageCard> {
                   ),
                 ),
               Padding(
+                key: bottomRowKey,
                 padding: EdgeInsets.only(
                   top: 2.h,
                   left: 8.w,
                 ),
                 child: BottomRow(
-                  key: bottomRowKey,
                   message: widget.message,
                   showInChannel: widget.showInChannel,
                   showUsername: widget.showUsername,
