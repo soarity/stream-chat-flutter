@@ -80,7 +80,7 @@ class StreamMessagePreviewText extends StatelessWidget {
 
     final mentionsTextStyle = textStyle?.copyWith(
       fontStyle: fontStyle,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w600,
     );
 
     final spans = [
