@@ -211,7 +211,6 @@ class _QuotedMessage extends StatelessWidget {
     }
 
     return Row(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,
     );

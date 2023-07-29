@@ -232,21 +232,18 @@ class _MessageCardState extends State<MessageCard> {
                           ? () =>
                               onQuotedMessageTap(widget.message.quotedMessageId)
                           : null,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: widthLimit),
-                        child: quotedMessageBuilder?.call(
-                              context,
-                              widget.message.quotedMessage!,
-                            ) ??
-                            QuotedMessage(
-                              key: quotedWidgetKey,
-                              isDm: widget.isDm,
-                              minimumWidth: widthLimit,
-                              reverse: widget.reverse,
-                              message: widget.message,
-                              hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                            ),
-                      ),
+                      child: quotedMessageBuilder?.call(
+                            context,
+                            widget.message.quotedMessage!,
+                          ) ??
+                          QuotedMessage(
+                            key: quotedWidgetKey,
+                            isDm: widget.isDm,
+                            minimumWidth: widthLimit,
+                            reverse: widget.reverse,
+                            message: widget.message,
+                            hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                          ),
                     ),
                   if (widget.hasNonUrlAttachments)
                     ParseAttachments(
