@@ -1127,15 +1127,17 @@ class StreamMessageInputState extends State<StreamMessageInput>
       );
     }
 
-    return StreamQuotedMessageWidget(
-      reverse: true,
-      isDm: widget.isDm,
-      message: quotedMessage,
-      messageTheme: _streamChatTheme.otherMessageTheme,
+    return Padding(
       padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
-      onQuotedMessageClear: widget.onQuotedMessageCleared,
-      attachmentThumbnailBuilders:
-          widget.quotedMessageAttachmentThumbnailBuilders,
+      child: StreamQuotedMessageWidget(
+        reverse: true,
+        isDm: widget.isDm,
+        message: quotedMessage,
+        messageTheme: _streamChatTheme.otherMessageTheme,
+        onQuotedMessageClear: widget.onQuotedMessageCleared,
+        attachmentThumbnailBuilders:
+            widget.quotedMessageAttachmentThumbnailBuilders,
+      ),
     );
   }
 

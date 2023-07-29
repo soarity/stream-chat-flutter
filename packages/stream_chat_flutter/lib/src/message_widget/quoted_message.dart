@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_input/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -49,7 +48,6 @@ class QuotedMessage extends StatelessWidget {
       reverse: reverse,
       showBorder: false,
       minimumWidth: minimumWidth,
-      padding: EdgeInsets.only(bottom: 6.h),
     );
   }
 }

@@ -151,6 +151,7 @@ class _MessageCardState extends State<MessageCard> {
   final GlobalKey textBubbleKey = GlobalKey();
   final GlobalKey usernameKey = GlobalKey();
   double widthLimit = 0;
+  double quotedMessageHeight = 0;
 
   @override
   void initState() {
@@ -167,6 +168,7 @@ class _MessageCardState extends State<MessageCard> {
       final quotedRenderBox =
           quotedWidgetKey.currentContext?.findRenderObject() as RenderBox?;
       final quotedWidth = quotedRenderBox?.size.width ?? 0;
+      quotedMessageHeight = quotedRenderBox?.size.height ?? 0;
 
       final textBubbleRenderBox =
           textBubbleKey.currentContext?.findRenderObject() as RenderBox?;
@@ -188,7 +190,6 @@ class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
     final onQuotedMessageTap = widget.onQuotedMessageTap;
-    final quotedMessageBuilder = widget.quotedMessageBuilder;
     final message = widget.message;
     return BubbleChat(
       isMyMessage: widget.reverse,
@@ -232,18 +233,52 @@ class _MessageCardState extends State<MessageCard> {
                           ? () =>
                               onQuotedMessageTap(widget.message.quotedMessageId)
                           : null,
-                      child: quotedMessageBuilder?.call(
-                            context,
-                            widget.message.quotedMessage!,
-                          ) ??
-                          QuotedMessage(
-                            key: quotedWidgetKey,
-                            isDm: widget.isDm,
-                            minimumWidth: widthLimit,
-                            reverse: widget.reverse,
-                            message: widget.message,
-                            hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                          ),
+                      child: widthLimit > 0 && quotedMessageHeight > 0
+                          ? Padding(
+                              padding: EdgeInsets.only(bottom: 6.h),
+                              child: SizedBox(
+                                width: widthLimit,
+                                height: quotedMessageHeight,
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(12.r),
+                                          bottom: Radius.circular(6.r),
+                                        ),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .outlineVariant
+                                            .withOpacity(0.5),
+                                      ),
+                                    ),
+                                    QuotedMessage(
+                                      key: quotedWidgetKey,
+                                      isDm: widget.isDm,
+                                      minimumWidth: widthLimit,
+                                      reverse: widget.reverse,
+                                      message: widget.message,
+                                      hasNonUrlAttachments:
+                                          widget.hasNonUrlAttachments,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: EdgeInsets.only(bottom: 6.h),
+                              child: QuotedMessage(
+                                key: quotedWidgetKey,
+                                isDm: widget.isDm,
+                                minimumWidth: widthLimit,
+                                reverse: widget.reverse,
+                                message: widget.message,
+                                hasNonUrlAttachments:
+                                    widget.hasNonUrlAttachments,
+                              ),
+                            ),
                     ),
                   if (widget.hasNonUrlAttachments)
                     ParseAttachments(
