@@ -150,6 +150,7 @@ class _MessageCardState extends State<MessageCard> {
   final GlobalKey quotedWidgetKey = GlobalKey();
   final GlobalKey textBubbleKey = GlobalKey();
   final GlobalKey usernameKey = GlobalKey();
+  final GlobalKey bottomRowKey = GlobalKey();
   double widthLimit = 0;
   double quotedMessageHeight = 0;
 
@@ -178,10 +179,18 @@ class _MessageCardState extends State<MessageCard> {
           usernameKey.currentContext?.findRenderObject() as RenderBox?;
       final usernameWidth = usernameRenderBox?.size.width ?? 0;
 
+      final bottomRowRenderBox =
+          bottomRowKey.currentContext?.findRenderObject() as RenderBox?;
+      final bottomRowWidth = bottomRowRenderBox?.size.width ?? 0;
+
       if (mounted) {
         final widthLimit1 = max(attachmentsWidth, linkWidth);
         final widthLimit2 = max(quotedWidth, textBubbleWidth);
         widthLimit = max(usernameWidth, max(widthLimit1, widthLimit2));
+
+        if (widthLimit > 0) {
+          widthLimit = widthLimit + bottomRowWidth;
+        }
         setState(() {});
       }
     });
@@ -207,104 +216,96 @@ class _MessageCardState extends State<MessageCard> {
               messageTheme: widget.messageTheme,
             )
           else
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: widthLimit > 0 ? widthLimit : double.infinity,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (!widget.isDm &&
-                      message.user != null &&
-                      widget.showUsername)
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 4.h),
-                      child: Username(
-                        key: usernameKey,
-                        messageTheme: widget.messageTheme,
-                        message: message,
-                      ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!widget.isDm && message.user != null && widget.showUsername)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 4.h),
+                    child: Username(
+                      key: usernameKey,
+                      messageTheme: widget.messageTheme,
+                      message: message,
                     ),
-                  if (widget.hasQuotedMessage)
-                    InkWell(
-                      onTap: !widget.message.quotedMessage!.isDeleted &&
-                              onQuotedMessageTap != null
-                          ? () =>
-                              onQuotedMessageTap(widget.message.quotedMessageId)
-                          : null,
-                      child: widthLimit > 0 && quotedMessageHeight > 0
-                          ? Padding(
-                              padding: EdgeInsets.only(bottom: 6.h),
-                              child: SizedBox(
-                                width: widthLimit,
-                                height: quotedMessageHeight,
-                                child: Stack(
-                                  fit: StackFit.expand,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(12.r),
-                                          bottom: Radius.circular(6.r),
-                                        ),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .outlineVariant
-                                            .withOpacity(0.5),
+                  ),
+                if (widget.hasQuotedMessage)
+                  InkWell(
+                    onTap: !widget.message.quotedMessage!.isDeleted &&
+                            onQuotedMessageTap != null
+                        ? () =>
+                            onQuotedMessageTap(widget.message.quotedMessageId)
+                        : null,
+                    child: widthLimit > 0 && quotedMessageHeight > 0
+                        ? Padding(
+                            padding: EdgeInsets.only(bottom: 6.h),
+                            child: SizedBox(
+                              width: widthLimit,
+                              height: quotedMessageHeight,
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(12.r),
+                                        bottom: Radius.circular(6.r),
                                       ),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .outlineVariant
+                                          .withOpacity(0.5),
                                     ),
-                                    QuotedMessage(
-                                      key: quotedWidgetKey,
-                                      isDm: widget.isDm,
-                                      minimumWidth: widthLimit,
-                                      reverse: widget.reverse,
-                                      message: widget.message,
-                                      hasNonUrlAttachments:
-                                          widget.hasNonUrlAttachments,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          : Padding(
-                              padding: EdgeInsets.only(bottom: 6.h),
-                              child: QuotedMessage(
-                                key: quotedWidgetKey,
-                                isDm: widget.isDm,
-                                minimumWidth: widthLimit,
-                                reverse: widget.reverse,
-                                message: widget.message,
-                                hasNonUrlAttachments:
-                                    widget.hasNonUrlAttachments,
+                                  ),
+                                  QuotedMessage(
+                                    key: quotedWidgetKey,
+                                    isDm: widget.isDm,
+                                    minimumWidth: widthLimit,
+                                    reverse: widget.reverse,
+                                    message: widget.message,
+                                    hasNonUrlAttachments:
+                                        widget.hasNonUrlAttachments,
+                                  ),
+                                ],
                               ),
                             ),
-                    ),
-                  if (widget.hasNonUrlAttachments)
-                    ParseAttachments(
-                      key: attachmentsKey,
-                      message: widget.message,
-                      attachmentBuilders: widget.attachmentBuilders,
-                      attachmentPadding: widget.attachmentPadding,
-                    ),
-                  if (!widget.isGiphy)
-                    TextBubble(
-                      key: textBubbleKey,
-                      messageTheme: widget.messageTheme,
-                      botBuilder: widget.botBuilder,
-                      message: widget.message,
-                      textPadding: widget.textPadding,
-                      textBuilder: widget.textBuilder,
-                      isOnlyEmoji: widget.isOnlyEmoji,
-                      hasQuotedMessage: widget.hasQuotedMessage,
-                      hasUrlAttachments: widget.hasUrlAttachments,
-                      onLinkTap: widget.onLinkTap,
-                      onMentionTap: widget.onMentionTap,
-                    ),
-                  if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
-                    _buildUrlAttachment(),
-                ],
-              ),
+                          )
+                        : Padding(
+                            padding: EdgeInsets.only(bottom: 6.h),
+                            child: QuotedMessage(
+                              key: quotedWidgetKey,
+                              isDm: widget.isDm,
+                              minimumWidth: widthLimit,
+                              reverse: widget.reverse,
+                              message: widget.message,
+                              hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                            ),
+                          ),
+                  ),
+                if (widget.hasNonUrlAttachments)
+                  ParseAttachments(
+                    key: attachmentsKey,
+                    message: widget.message,
+                    attachmentBuilders: widget.attachmentBuilders,
+                    attachmentPadding: widget.attachmentPadding,
+                  ),
+                if (!widget.isGiphy)
+                  TextBubble(
+                    key: textBubbleKey,
+                    messageTheme: widget.messageTheme,
+                    botBuilder: widget.botBuilder,
+                    message: widget.message,
+                    textPadding: widget.textPadding,
+                    textBuilder: widget.textBuilder,
+                    isOnlyEmoji: widget.isOnlyEmoji,
+                    hasQuotedMessage: widget.hasQuotedMessage,
+                    hasUrlAttachments: widget.hasUrlAttachments,
+                    onLinkTap: widget.onLinkTap,
+                    onMentionTap: widget.onMentionTap,
+                  ),
+                if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
+                  _buildUrlAttachment(),
+              ],
             ),
           Padding(
             padding: EdgeInsets.only(
@@ -312,6 +313,7 @@ class _MessageCardState extends State<MessageCard> {
               left: 8.w,
             ),
             child: BottomRow(
+              key: bottomRowKey,
               message: widget.message,
               showInChannel: widget.showInChannel,
               showUsername: widget.showUsername,
