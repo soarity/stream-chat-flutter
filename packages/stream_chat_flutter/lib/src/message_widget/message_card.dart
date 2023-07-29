@@ -225,7 +225,7 @@ class _MessageCardState extends State<MessageCard> {
                   ? Padding(
                       padding: EdgeInsets.only(bottom: 6.h),
                       child: SizedBox(
-                        width: widthLimit,
+                        width: widthLimit + bottomRowWidth,
                         height: quotedMessageHeight,
                         child: Stack(
                           fit: StackFit.expand,
