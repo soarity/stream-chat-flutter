@@ -14,7 +14,6 @@ class QuotedMessage extends StatelessWidget {
     required this.message,
     required this.reverse,
     this.isDm = false,
-    this.minimumWidth = 0,
     required this.hasNonUrlAttachments,
   });
 
@@ -29,9 +28,6 @@ class QuotedMessage extends StatelessWidget {
 
   /// {@macro hasNonUrlAttachments}
   final bool hasNonUrlAttachments;
-
-  /// {@macro minimumWidth}
-  final double minimumWidth;
 
   @override
   Widget build(BuildContext context) {

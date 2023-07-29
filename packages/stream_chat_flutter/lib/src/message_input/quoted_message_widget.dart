@@ -72,7 +72,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(8.r),
+          padding: EdgeInsets.fromLTRB(8.w, 8.h, 0, 8.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: showBorder

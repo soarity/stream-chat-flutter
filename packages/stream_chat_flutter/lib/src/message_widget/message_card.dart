@@ -245,7 +245,6 @@ class _MessageCardState extends State<MessageCard> {
                             QuotedMessage(
                               key: quotedWidgetKey,
                               isDm: widget.isDm,
-                              minimumWidth: widthLimit,
                               reverse: widget.reverse,
                               message: widget.message,
                               hasNonUrlAttachments: widget.hasNonUrlAttachments,
@@ -259,7 +258,6 @@ class _MessageCardState extends State<MessageCard> {
                       child: QuotedMessage(
                         key: quotedWidgetKey,
                         isDm: widget.isDm,
-                        minimumWidth: widthLimit,
                         reverse: widget.reverse,
                         message: widget.message,
                         hasNonUrlAttachments: widget.hasNonUrlAttachments,
