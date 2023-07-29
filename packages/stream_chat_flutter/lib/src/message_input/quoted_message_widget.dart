@@ -20,7 +20,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     this.isDm = false,
     this.showBorder = true,
     this.textLimit = 170,
-    this.minimumWidth = 0,
     this.attachmentThumbnailBuilders,
     this.onQuotedMessageClear,
   });
@@ -50,9 +49,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   /// Callback for clearing quoted messages.
   final VoidCallback? onQuotedMessageClear;
 
-  /// Callback for declaring minimum width
-  final double minimumWidth;
-
   @override
   Widget build(BuildContext context) {
     final color = message.user?.extraData['color'];
@@ -63,7 +59,9 @@ class StreamQuotedMessageWidget extends StatelessWidget {
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+          color: showBorder
+              ? Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)
+              : null,
           border: Border(
             left: BorderSide(
               color: color == null
@@ -79,9 +77,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: showBorder
                 ? CrossAxisAlignment.stretch
-                : minimumWidth > 0
-                    ? CrossAxisAlignment.stretch
-                    : CrossAxisAlignment.start,
+                : CrossAxisAlignment.start,
             children: [
               if (!isDm)
                 Padding(
