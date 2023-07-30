@@ -1024,10 +1024,13 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final userId = StreamChat.of(context).currentUser!.id;
     final isMyMessage = message.user?.id == userId;
     final nextMessage = index - 1 >= 0 ? messages[index - 1] : null;
+    final prevMessage = index + 1 > 0 ? messages[index + 1] : null;
     final isNextUserSame =
         nextMessage != null && message.user!.id == nextMessage.user!.id;
+    final isPrevUserSame =
+        prevMessage != null && message.user!.id == prevMessage.user!.id;
 
-    var hasTimeDiff = true;
+    var hasTimeDiff = false;
     if (nextMessage != null) {
       final duration = message.createdAt
           .toLocal()
@@ -1035,13 +1038,21 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       hasTimeDiff = duration.inMinutes.abs() > 10;
     }
 
+    var prevMsghasTimeDiff = false;
+    if (prevMessage != null) {
+      final duration = prevMessage.createdAt
+          .toLocal()
+          .difference(message.createdAt.toLocal());
+      prevMsghasTimeDiff = duration.inMinutes.abs() > 10;
+    }
+
     final hasFileAttachment =
         message.attachments.any((it) => it.type == 'file');
 
     final attachmentBorderRadius = hasFileAttachment ? 12.r : 14.r;
 
-    final showUsername =
-        !isMyMessage && (hasTimeDiff || !isNextUserSame || hasFileAttachment);
+    final showUsername = !isMyMessage &&
+        (prevMsghasTimeDiff || !isPrevUserSame || hasFileAttachment);
 
     final showUserAvatar = (isMyMessage || widget.isDm)
         ? DisplayWidget.gone
