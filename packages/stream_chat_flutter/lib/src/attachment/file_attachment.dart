@@ -62,7 +62,6 @@ class StreamFileAttachment extends StreamAttachmentWidget {
             ),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: 40.h,
@@ -79,6 +78,7 @@ class StreamFileAttachment extends StreamAttachmentWidget {
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
