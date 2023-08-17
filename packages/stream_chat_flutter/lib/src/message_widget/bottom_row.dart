@@ -146,7 +146,7 @@ class BottomRow extends StatelessWidget {
               child: MediaQuery(
                 data: mediaQueryData.copyWith(textScaleFactor: 1),
                 child: Text(
-                  Jiffy(message.createdAt.toLocal()).jm,
+                  Jiffy.parseFromDateTime(message.createdAt.toLocal()).jm,
                   style: messageTheme.createdAtStyle,
                 ),
               ),

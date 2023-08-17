@@ -639,17 +639,28 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
                     Widget separator;
 
-                    if (!Jiffy(message.createdAt.toLocal()).isSame(
+                    final createdAt = Jiffy.parseFromDateTime(
+                      message.createdAt.toLocal(),
+                    );
+
+                    final nextCreatedAt = Jiffy.parseFromDateTime(
                       nextMessage.createdAt.toLocal(),
-                      Units.DAY,
-                    )) {
+                    );
+
+                    if (!createdAt.isSame(nextCreatedAt, unit: Unit.day)) {
                       separator = _buildDateDivider(nextMessage);
                     } else {
+                      final hasTimeDiff = !createdAt.isSame(
+                        nextCreatedAt,
+                        unit: Unit.minute,
+                      );
+
                       final isNextUserSame =
                           message.user!.id == nextMessage.user?.id;
                       final isDeleted = message.isDeleted;
 
                       final spacingRules = [
+                        if (hasTimeDiff) SpacingType.timeDiff,
                         if (!isNextUserSame) SpacingType.otherUser,
                         if (isDeleted) SpacingType.deleted,
                       ];
@@ -1033,16 +1044,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     var hasTimeDiff = false;
     if (nextMessage != null) {
-      final duration = message.createdAt
-          .toLocal()
+      final duration = Jiffy.parseFromDateTime(message.createdAt.toLocal())
           .difference(nextMessage.createdAt.toLocal());
       hasTimeDiff = duration.inMinutes.abs() > 10;
     }
 
     var prevMsghasTimeDiff = false;
     if (prevMessage != null) {
-      final duration = prevMessage.createdAt
-          .toLocal()
+      final duration = Jiffy.parseFromDateTime(prevMessage.createdAt.toLocal())
           .difference(message.createdAt.toLocal());
       prevMsghasTimeDiff = duration.inMinutes.abs() > 10;
     }

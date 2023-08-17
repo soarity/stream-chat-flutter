@@ -149,6 +149,7 @@ class StreamMessageInput extends StatefulWidget {
         _defaultClearQuotedMessageKeyPredicate,
     this.ogPreviewFilter = _defaultOgPreviewFilter,
     this.hintGetter = _defaultHintGetter,
+    this.contentInsertionConfiguration,
   });
 
   /// The predicate used to send a message on desktop/web
@@ -347,6 +348,9 @@ class StreamMessageInput extends StatefulWidget {
 
   /// Returns the hint text for the message input.
   final HintGetter hintGetter;
+
+  /// {@macro flutter.widgets.editableText.contentInsertionConfiguration}
+  final ContentInsertionConfiguration? contentInsertionConfiguration;
 
   static String? _defaultHintGetter(
     BuildContext context,
@@ -795,6 +799,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
   Future<void> _onAttachmentButtonPressed() async {
     final attachments = await showStreamAttachmentPickerModalBottomSheet(
       context: context,
+      onError: widget.onError,
       allowedTypes: widget.allowedAttachmentPickerTypes,
       initialAttachments: _effectiveController.attachments,
     );
@@ -821,6 +826,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
           padding: EdgeInsets.all(1.5.r),
           decoration: BoxDecoration(
             borderRadius: _messageInputTheme.borderRadius,
+<<<<<<< HEAD
             border: _effectiveFocusNode.hasFocus
                 ? Border.all(
                     color: Theme.of(context).colorScheme.primary,
@@ -829,6 +835,57 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 : Border.all(
                     color: Theme.of(context).colorScheme.outline,
                     width: 1.5.r,
+=======
+            gradient: _effectiveFocusNode.hasFocus
+                ? _messageInputTheme.activeBorderGradient
+                : _messageInputTheme.idleBorderGradient,
+            border: _draggingBorder,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(1.5),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: _messageInputTheme.borderRadius,
+                color: _messageInputTheme.inputBackgroundColor,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildReplyToMessage(),
+                  _buildAttachments(),
+                  LimitedBox(
+                    maxHeight: widget.maxHeight,
+                    child: PlatformWidgetBuilder(
+                      web: (context, child) => Focus(
+                        onKeyEvent: _handleKeyPressed,
+                        child: child!,
+                      ),
+                      desktop: (context, child) => Focus(
+                        onKeyEvent: _handleKeyPressed,
+                        child: child!,
+                      ),
+                      mobile: (context, child) => child,
+                      child: StreamMessageTextField(
+                        key: const Key('messageInputText'),
+                        maxLines: widget.maxLines,
+                        minLines: widget.minLines,
+                        textInputAction: widget.textInputAction,
+                        onSubmitted: (_) => sendMessage(),
+                        keyboardType: widget.keyboardType,
+                        controller: _effectiveController,
+                        focusNode: _effectiveFocusNode,
+                        style: _messageInputTheme.inputTextStyle,
+                        autofocus: widget.autofocus,
+                        textAlignVertical: TextAlignVertical.center,
+                        decoration: _getInputDecoration(context),
+                        textCapitalization: widget.textCapitalization,
+                        autocorrect: widget.autoCorrect,
+                        contentInsertionConfiguration:
+                            widget.contentInsertionConfiguration,
+                      ),
+                    ),
+>>>>>>> 329be247326bf065eea5983a497a5af8199831cd
                   ),
           ),
           child: Column(
