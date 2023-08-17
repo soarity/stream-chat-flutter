@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template editMessageSheet}
@@ -80,6 +81,34 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
                 widget.editMessageInputBuilder!(context, widget.message)
               else
                 StreamMessageInput(
+                  activeSendButton: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10.w),
+                    padding: EdgeInsets.all(8.r),
+                    decoration: ShapeDecoration(
+                      color: Theme.of(context).primaryColor,
+                      shape: const CircleBorder(),
+                    ),
+                    child: ImageIcon(
+                      const AssetImage('assets/icons/send.png'),
+                      size: 24.r,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  idleSendButton: const Offstage(),
+                  attachmentButtonBuilder: (context, button) {
+                    return InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: button.onPressed,
+                      child: Container(
+                        padding: EdgeInsets.all(8.r),
+                        child: ImageIcon(
+                          const AssetImage('assets/icons/attachment.png'),
+                          size: 24.r,
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                    );
+                  },
                   messageInputController: controller,
                   preMessageSending: (m) {
                     FocusScope.of(context).unfocus();

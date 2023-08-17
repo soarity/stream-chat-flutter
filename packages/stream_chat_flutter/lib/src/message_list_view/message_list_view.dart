@@ -1044,14 +1044,16 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     var hasTimeDiff = false;
     if (nextMessage != null) {
-      final duration = Jiffy.parseFromDateTime(message.createdAt.toLocal())
+      final duration = message.createdAt
+          .toLocal()
           .difference(nextMessage.createdAt.toLocal());
       hasTimeDiff = duration.inMinutes.abs() > 10;
     }
 
     var prevMsghasTimeDiff = false;
     if (prevMessage != null) {
-      final duration = Jiffy.parseFromDateTime(prevMessage.createdAt.toLocal())
+      final duration = prevMessage.createdAt
+          .toLocal()
           .difference(message.createdAt.toLocal());
       prevMsghasTimeDiff = duration.inMinutes.abs() > 10;
     }
