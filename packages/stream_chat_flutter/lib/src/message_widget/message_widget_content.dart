@@ -466,7 +466,7 @@ class ProfilePicture extends StatelessWidget {
 
   ///
   String parseName(String fullName) {
-    final parts = fullName.split(' ');
+    final parts = fullName.trim().split(' ');
     if (parts.length > 1) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     } else if (parts.isNotEmpty && parts.first.isNotEmpty) {
