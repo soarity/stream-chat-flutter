@@ -35,8 +35,6 @@ class StreamChannel extends StatefulWidget {
     required this.child,
     required this.channel,
     this.showLoading = true,
-    this.loadingWidget,
-    this.errorWidget,
     this.initialMessageId,
     this.errorBuilder = _defaultErrorBuilder,
     this.loadingBuilder = _defaultLoadingBuilder,
@@ -50,12 +48,6 @@ class StreamChannel extends StatefulWidget {
 
   /// Shows a loading indicator
   final bool showLoading;
-
-  /// Shows a loading indicator
-  final Widget? loadingWidget;
-
-  /// shows an error widget
-  final Widget? errorWidget;
 
   /// If passed the channel will load from this particular message.
   final String? initialMessageId;
