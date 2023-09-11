@@ -41,8 +41,8 @@ class MessageWidgetContent extends StatelessWidget {
     required this.avatarWidth,
     required this.showReactions,
     required this.onReactionsTap,
+    required this.onReactionsHover,
     required this.messageTheme,
-    required this.shouldShowReactions,
     required this.streamChatTheme,
     required this.isFailedState,
     required this.hasQuotedMessage,
@@ -125,16 +125,14 @@ class MessageWidgetContent extends StatelessWidget {
   /// {@macro showReactions}
   final bool showReactions;
 
-  /// Callback called when the reactions icon is tapped.
-  ///
-  /// Do not confuse this with the tap action on the reactions picker.
+  /// {@macro onReactionsTap}
   final VoidCallback onReactionsTap;
+
+  /// {@macro onReactionsHover}
+  final OnReactionsHover? onReactionsHover;
 
   /// {@macro messageTheme}
   final StreamMessageThemeData messageTheme;
-
-  /// {@macro shouldShowReactions}
-  final bool shouldShowReactions;
 
   /// {@macro onUserAvatarTap}
   final void Function(User)? onUserAvatarTap;
@@ -250,7 +248,6 @@ class MessageWidgetContent extends StatelessWidget {
                   messageTheme: messageTheme,
                   ownId: streamChat.currentUser!.id,
                   reverse: reverse,
-                  shouldShowReactions: shouldShowReactions,
                   onTap: onReactionsTap,
                 )
               : null,
@@ -432,7 +429,7 @@ class ProfilePicture extends StatelessWidget {
                 Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       fontSize: (diameter / 2.2).fzs,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
           ),
         );
@@ -446,9 +443,12 @@ class ProfilePicture extends StatelessWidget {
       width: diameter,
       height: diameter,
       decoration: ShapeDecoration(
-        color: background,
+        color: image != null ? background : Theme.of(context).primaryColor,
         image: image != null
-            ? DecorationImage(image: image, fit: BoxFit.cover)
+            ? DecorationImage(
+                image: image,
+                fit: image is AssetImage ? BoxFit.contain : BoxFit.cover,
+              )
             : null,
         shape: CircleBorder(
           side: showBorder

@@ -798,7 +798,7 @@ Widget mobileAttachmentPickerBuilder({
             );
           },
         ),
-      }..where((option) => option.supportedTypes.every(allowedTypes.contains)),
+      }.where((option) => option.supportedTypes.every(allowedTypes.contains)),
     },
   );
 }
