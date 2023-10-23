@@ -614,7 +614,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                       },
                     ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4.h),
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
                     child: _buildTextField(context),
                   ),
                   if (_effectiveController.message.parentId != null &&
@@ -723,28 +723,21 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   Widget _buildTextField(BuildContext context) {
     final channel = StreamChannel.of(context).channel;
-    return AnimatedCrossFade(
-      crossFadeState: widget.isRecording
-          ? CrossFadeState.showFirst
-          : CrossFadeState.showSecond,
-      firstCurve: Curves.easeOut,
-      secondCurve: Curves.easeIn,
-      firstChild: widget.microphone ?? const Offstage(),
-      secondChild: Flex(
-        direction: Axis.horizontal,
-        children: <Widget>[
-          if (!widget.disableAttachments &&
-              channel.ownCapabilities.contains(PermissionType.uploadFile))
-            _buildAttachmentButton(context),
-          _buildTextInput(context),
-          if (_isEditing || _effectiveController.attachments.isNotEmpty)
-            _buildSendButton(context)
-          else
-            _buildExpandActionsButton(context),
-        ],
-      ),
-      duration: const Duration(milliseconds: 300),
-      alignment: Alignment.center,
+    if (widget.isRecording) {
+      return widget.microphone ?? const Offstage();
+    }
+    return Flex(
+      direction: Axis.horizontal,
+      children: <Widget>[
+        if (!widget.disableAttachments &&
+            channel.ownCapabilities.contains(PermissionType.uploadFile))
+          _buildAttachmentButton(context),
+        _buildTextInput(context),
+        if (_isEditing || _effectiveController.attachments.isNotEmpty)
+          _buildSendButton(context)
+        else
+          _buildExpandActionsButton(context),
+      ],
     );
   }
 

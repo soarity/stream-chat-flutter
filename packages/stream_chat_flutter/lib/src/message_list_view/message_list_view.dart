@@ -1099,7 +1099,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         16.w,
         0,
         16.w,
-        (hasTimeDiff || !isNextUserSame || hasFileAttachment) ? 10.h : 2.h,
+        (hasTimeDiff || !isNextUserSame || hasFileAttachment) ? 12.h : 4.h,
       ),
       showUsername: showUsername,
       showSendingIndicator: showSendingIndicator,
