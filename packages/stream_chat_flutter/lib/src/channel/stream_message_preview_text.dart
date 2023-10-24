@@ -57,7 +57,7 @@ class StreamMessagePreviewText extends StatelessWidget {
         } else if (it.type == 'video') {
           return '🎬';
         } else if (it.type == 'voicenote') {
-          return '🔊';
+          return '\u{1F399}';
         } else if (it.type == 'giphy') {
           return '[GIF]';
         }
