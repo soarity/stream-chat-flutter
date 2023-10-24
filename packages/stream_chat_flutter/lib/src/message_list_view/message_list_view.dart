@@ -1128,7 +1128,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       borderSide: borderSide,
       attachmentBorderRadiusGeometry:
           BorderRadius.circular(attachmentBorderRadius),
-      attachmentPadding: EdgeInsets.only(bottom: 6.h),
+      attachmentPadding: (message.text ?? '').isNotEmpty
+          ? EdgeInsets.only(bottom: 6.h)
+          : EdgeInsets.only(bottom: 2.h),
       borderRadiusGeometry: BorderRadius.only(
         topLeft: Radius.circular(16.r),
         bottomLeft: isMyMessage
