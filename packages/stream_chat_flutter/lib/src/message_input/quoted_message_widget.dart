@@ -333,7 +333,12 @@ class _ParseAttachmentsState extends State<_ParseAttachments> {
             if (text.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(left: 4.w),
-                child: Text(text),
+                child: Text(
+                  text,
+                  style: widget.messageTheme.messageTextStyle?.copyWith(
+                    fontSize: 14.fzs,
+                  ),
+                ),
               ),
           ],
         );
