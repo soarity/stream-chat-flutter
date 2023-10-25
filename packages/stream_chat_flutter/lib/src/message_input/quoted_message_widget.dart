@@ -206,7 +206,7 @@ class _QuotedMessage extends StatelessWidget {
   }
 }
 
-class _ParseAttachments extends StatelessWidget {
+class _ParseAttachments extends StatefulWidget {
   const _ParseAttachments({
     required this.message,
     required this.messageTheme,
@@ -218,23 +218,30 @@ class _ParseAttachments extends StatelessWidget {
   final Map<String, QuotedMessageAttachmentThumbnailBuilder>?
       attachmentThumbnailBuilders;
 
+  @override
+  State<_ParseAttachments> createState() => _ParseAttachmentsState();
+}
+
+class _ParseAttachmentsState extends State<_ParseAttachments> {
   bool get _containsLinkAttachment =>
-      message.attachments.any((element) => element.titleLink != null);
+      widget.message.attachments.any((element) => element.titleLink != null);
 
   @override
   Widget build(BuildContext context) {
     Widget child;
     Attachment attachment;
     if (_containsLinkAttachment) {
-      attachment = message.attachments.firstWhere(
+      attachment = widget.message.attachments.firstWhere(
         (element) => element.ogScrapeUrl != null || element.titleLink != null,
       );
       child = _UrlAttachment(attachment: attachment);
     } else {
       QuotedMessageAttachmentThumbnailBuilder? attachmentBuilder;
-      attachment = message.attachments.last;
-      if (attachmentThumbnailBuilders?.containsKey(attachment.type) == true) {
-        attachmentBuilder = attachmentThumbnailBuilders![attachment.type];
+      attachment = widget.message.attachments.last;
+      if (widget.attachmentThumbnailBuilders?.containsKey(attachment.type) ==
+          true) {
+        attachmentBuilder =
+            widget.attachmentThumbnailBuilders![attachment.type];
       }
       attachmentBuilder = _defaultAttachmentBuilder[attachment.type];
       if (attachmentBuilder == null) {
@@ -266,8 +273,8 @@ class _ParseAttachments extends StatelessWidget {
       'image': (_, attachment) {
         return StreamImageAttachment(
           attachment: attachment,
-          message: message,
-          messageTheme: messageTheme,
+          message: widget.message,
+          messageTheme: widget.messageTheme,
           constraints: BoxConstraints.loose(Size(32.r, 32.r)),
         );
       },
@@ -304,7 +311,32 @@ class _ParseAttachments extends StatelessWidget {
         );
       },
       'voicenote': (_, attachment) {
-        return Icon(Icons.mic, size: 20.r);
+        final durationInInt = attachment.extraData['duration'] as int?;
+        var text = '';
+        if (durationInInt != null) {
+          final duration = Duration(milliseconds: durationInInt);
+          final minuteLeft = duration.inMinutes.remainder(60);
+          final minutes =
+              minuteLeft.toString().padLeft(minuteLeft >= 10 ? 2 : 1, '0');
+          final seconds =
+              duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+          text = '$minutes:$seconds';
+        }
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ImageIcon(
+              const AssetImage('assets/icons/microphone.png'),
+              size: 20.r,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+            if (text.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.only(left: 4.w),
+                child: Text(text),
+              ),
+          ],
+        );
       },
       'file': (_, attachment) {
         return SizedBox(

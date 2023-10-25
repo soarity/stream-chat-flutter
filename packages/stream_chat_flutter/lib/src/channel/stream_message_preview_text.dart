@@ -57,7 +57,19 @@ class StreamMessagePreviewText extends StatelessWidget {
         } else if (it.type == 'video') {
           return '🎬';
         } else if (it.type == 'voicenote') {
-          return '\u{1F399}';
+          var text = '🎙️';
+          final durationInInt = it.extraData['duration'] as int?;
+          if (durationInInt != null) {
+            final duration = Duration(milliseconds: durationInInt);
+            final minuteLeft = duration.inMinutes.remainder(60);
+            final minutes =
+                minuteLeft.toString().padLeft(minuteLeft >= 10 ? 2 : 1, '0');
+            final seconds =
+                duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+            text = '$text $minutes:$seconds';
+          }
+
+          return text;
         } else if (it.type == 'giphy') {
           return '[GIF]';
         }
