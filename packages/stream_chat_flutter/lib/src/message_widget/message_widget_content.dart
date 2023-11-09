@@ -466,12 +466,19 @@ class ProfilePicture extends StatelessWidget {
 
   ///
   String parseName(String fullName) {
-    final parts = fullName.trim().split(' ');
-    if (parts.length > 1) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    } else if (parts.isNotEmpty && parts.first.isNotEmpty) {
-      return parts[0][0].toUpperCase();
-    } else {
+    try {
+      final parts = fullName.trim().split(' ')
+        // remove from the list where text is empty
+        ..removeWhere((p) => p.trim().isEmpty);
+
+      if (parts.length > 1) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      } else if (parts.isNotEmpty && parts.first.isNotEmpty) {
+        return parts[0][0].toUpperCase();
+      } else {
+        return 'CP';
+      }
+    } catch (_) {
       return 'CP';
     }
   }
