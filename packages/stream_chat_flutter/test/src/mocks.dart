@@ -13,6 +13,13 @@ class MockClient extends Mock implements StreamChatClient {
 class MockClientState extends Mock implements ClientState {}
 
 class MockChannel extends Mock implements Channel {
+  MockChannel({
+    this.ownCapabilities = const ['send-message'],
+  });
+
+  @override
+  final List<String> ownCapabilities;
+
   @override
   Future<bool> get initialized async => true;
 
@@ -21,9 +28,6 @@ class MockChannel extends Mock implements Channel {
   Future<void> keyStroke([String? parentId]) async {
     return;
   }
-
-  @override
-  List<String> get ownCapabilities => ['send-message'];
 }
 
 class MockChannelState extends Mock implements ChannelClientState {

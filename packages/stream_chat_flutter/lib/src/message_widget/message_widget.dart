@@ -63,7 +63,9 @@ class StreamMessageWidget extends StatefulWidget {
     bool? showReactionPicker,
     @Deprecated('Use `showReactionPicker` instead')
     bool showReactionPickerIndicator = true,
-    @internal this.showReactionPickerTail = false,
+    @internal
+    @Deprecated('Use `showReactionPicker` instead')
+    this.showReactionPickerTail,
     this.showUserAvatar = DisplayWidget.show,
     this.showSendingIndicator = true,
     this.showInChannelIndicator = false,
@@ -485,7 +487,8 @@ class StreamMessageWidget extends StatefulWidget {
   /// Whether or not to show the reaction picker tail
   /// {@endtemplate}
   @internal
-  final bool showReactionPickerTail;
+  @Deprecated('Use `showReactionPicker` instead')
+  final bool? showReactionPickerTail;
 
   /// {@template onShowMessage}
   /// Callback when show message is tapped
@@ -737,8 +740,6 @@ class StreamMessageWidget extends StatefulWidget {
       showReactionPicker: showReactionPicker ??
           showReactionPickerIndicator ??
           this.showReactionPicker,
-      showReactionPickerTail:
-          showReactionPickerTail ?? this.showReactionPickerTail,
       onShowMessage: onShowMessage ?? this.onShowMessage,
       showUsername: showUsername ?? this.showUsername,
       showTimestamp: showTimestamp ?? this.showTimestamp,
@@ -985,7 +986,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       messageWidget: widget,
                       showBottomRow: showBottomRow,
                       showPinHighlight: widget.showPinHighlight,
-                      showReactionPickerTail: widget.showReactionPickerTail,
+                      showReactionPickerTail: widget.showReactionPicker,
                       showReactions: showReactions,
                       onReactionsTap: () {
                         widget.onReactionsTap != null
@@ -1191,7 +1192,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             translateUserAvatar: false,
             showSendingIndicator: false,
             padding: EdgeInsets.zero,
-            // Show the tail if the reaction picker is visible.
+            // Show both the tail if the picker is shown.
+            showReactionPicker: widget.showReactionPicker,
             showReactionPickerTail: widget.showReactionPicker,
             showPinHighlight: false,
             showUserAvatar:
@@ -1232,6 +1234,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
         return StreamChannel(
           channel: channel,
           child: MessageActionsModal(
+            showReactionPicker: widget.showReactionPicker,
             messageWidget: widget.copyWith(
               key: const Key('MessageWidget'),
               message: widget.message.copyWith(
@@ -1245,9 +1248,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
               translateUserAvatar: false,
               showSendingIndicator: false,
               padding: EdgeInsets.zero,
-              // Show both the tail if the picker is shown.
-              showReactionPicker: widget.showReactionPicker,
-              showReactionPickerTail: widget.showReactionPicker,
               showPinHighlight: false,
               showUserAvatar: widget.message.user!.id ==
                       channel.client.state.currentUser!.id
