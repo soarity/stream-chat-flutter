@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_widget/bottom_row.dart';
@@ -163,7 +165,6 @@ class MessageCard extends StatefulWidget {
 }
 
 class _MessageCardState extends State<MessageCard> {
-<<<<<<< HEAD
   final GlobalKey attachmentsKey = GlobalKey();
   final GlobalKey linksKey = GlobalKey();
   final GlobalKey quotedWidgetKey = GlobalKey();
@@ -173,29 +174,12 @@ class _MessageCardState extends State<MessageCard> {
   double widthLimit = 0;
   double quotedMessageHeight = 0;
   double bottomRowWidth = 0;
-=======
-  final attachmentsKey = GlobalKey();
-  double? widthLimit;
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
 
   bool get hasAttachments {
     return widget.hasUrlAttachments || widget.hasNonUrlAttachments;
   }
 
-  void _updateWidthLimit() {
-    final attachmentContext = attachmentsKey.currentContext;
-    final renderBox = attachmentContext?.findRenderObject() as RenderBox?;
-    final attachmentsWidth = renderBox?.size.width;
-
-    if (attachmentsWidth == null || attachmentsWidth == 0) return;
-
-    if (mounted) {
-      setState(() => widthLimit = attachmentsWidth);
-    }
-  }
-
   @override
-<<<<<<< HEAD
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -232,24 +216,11 @@ class _MessageCardState extends State<MessageCard> {
         setState(() {});
       }
     });
-=======
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // If there is an attachment, we need to wait for the attachment to be
-    // rendered to get the width of the attachment and set it as the width
-    // limit of the message card.
-    if (hasAttachments) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _updateWidthLimit();
-      });
-    }
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
   }
 
   @override
   Widget build(BuildContext context) {
     final onQuotedMessageTap = widget.onQuotedMessageTap;
-<<<<<<< HEAD
     final message = widget.message;
     return BubbleChat(
       isMyMessage: widget.reverse,
@@ -268,40 +239,11 @@ class _MessageCardState extends State<MessageCard> {
               ),
             ),
           if (widget.hasQuotedMessage && !widget.message.isDeleted)
-=======
-    final quotedMessageBuilder = widget.quotedMessageBuilder;
-
-    return Container(
-      constraints: const BoxConstraints().copyWith(maxWidth: widthLimit),
-      margin: EdgeInsets.symmetric(
-        horizontal: (widget.isFailedState ? 15.0 : 0.0) +
-            (widget.showUserAvatar == DisplayWidget.gone ? 0 : 4.0),
-      ),
-      clipBehavior: Clip.hardEdge,
-      decoration: ShapeDecoration(
-        color: _getBackgroundColor(),
-        shape: widget.shape ??
-            RoundedRectangleBorder(
-              side: widget.borderSide ??
-                  BorderSide(
-                    color: widget.messageTheme.messageBorderColor ??
-                        Colors.transparent,
-                  ),
-              borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
-            ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.hasQuotedMessage)
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
             InkWell(
               onTap: !widget.message.quotedMessage!.isDeleted &&
                       onQuotedMessageTap != null
                   ? () => onQuotedMessageTap(widget.message.quotedMessageId)
                   : null,
-<<<<<<< HEAD
               child: (widthLimit + bottomRowWidth) > 0 &&
                       quotedMessageHeight > 0
                   ? Padding(
@@ -327,7 +269,6 @@ class _MessageCardState extends State<MessageCard> {
                             QuotedMessage(
                               key: quotedWidgetKey,
                               isDm: widget.isDm,
-                              reverse: widget.reverse,
                               message: widget.message,
                               hasNonUrlAttachments: widget.hasNonUrlAttachments,
                             ),
@@ -340,7 +281,6 @@ class _MessageCardState extends State<MessageCard> {
                       child: QuotedMessage(
                         key: quotedWidgetKey,
                         isDm: widget.isDm,
-                        reverse: widget.reverse,
                         message: widget.message,
                         hasNonUrlAttachments: widget.hasNonUrlAttachments,
                       ),
@@ -370,6 +310,12 @@ class _MessageCardState extends State<MessageCard> {
                           message: widget.message,
                           attachmentBuilders: widget.attachmentBuilders,
                           attachmentPadding: widget.attachmentPadding,
+                          attachmentShape: widget.attachmentShape,
+                          onAttachmentTap: widget.onAttachmentTap,
+                          onShowMessage: widget.onShowMessage,
+                          onReplyTap: widget.onReplyTap,
+                          attachmentActionsModalBuilder:
+                              widget.attachmentActionsModalBuilder,
                         ),
                       if (!widget.isGiphy)
                         TextBubble(
@@ -385,8 +331,6 @@ class _MessageCardState extends State<MessageCard> {
                           onLinkTap: widget.onLinkTap,
                           onMentionTap: widget.onMentionTap,
                         ),
-                      if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
-                        _buildUrlAttachment(),
                     ],
                   ),
                 ),
@@ -414,41 +358,6 @@ class _MessageCardState extends State<MessageCard> {
                 ),
               ),
             ],
-=======
-              child: quotedMessageBuilder?.call(
-                    context,
-                    widget.message.quotedMessage!,
-                  ) ??
-                  QuotedMessage(
-                    message: widget.message,
-                    textBuilder: widget.textBuilder,
-                    hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                  ),
-            ),
-          if (hasAttachments)
-            ParseAttachments(
-              key: attachmentsKey,
-              message: widget.message,
-              attachmentBuilders: widget.attachmentBuilders,
-              attachmentPadding: widget.attachmentPadding,
-              attachmentShape: widget.attachmentShape,
-              onAttachmentTap: widget.onAttachmentTap,
-              onShowMessage: widget.onShowMessage,
-              onReplyTap: widget.onReplyTap,
-              attachmentActionsModalBuilder:
-                  widget.attachmentActionsModalBuilder,
-            ),
-          TextBubble(
-            messageTheme: widget.messageTheme,
-            message: widget.message,
-            textPadding: widget.textPadding,
-            textBuilder: widget.textBuilder,
-            isOnlyEmoji: widget.isOnlyEmoji,
-            hasQuotedMessage: widget.hasQuotedMessage,
-            hasUrlAttachments: widget.hasUrlAttachments,
-            onLinkTap: widget.onLinkTap,
-            onMentionTap: widget.onMentionTap,
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
           ),
         ],
       ),
@@ -471,7 +380,6 @@ class _MessageCardState extends State<MessageCard> {
       return Colors.transparent;
     }
 
-<<<<<<< HEAD
     if (widget.isGiphy) {
       return Colors.transparent;
     }
@@ -480,8 +388,6 @@ class _MessageCardState extends State<MessageCard> {
       return widget.messageTheme.messageBackgroundColor;
     }
 
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     return widget.messageTheme.messageBackgroundColor;
   }
 }

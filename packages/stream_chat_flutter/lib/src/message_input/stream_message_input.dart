@@ -1119,33 +1119,22 @@ class StreamMessageInputState extends State<StreamMessageInput>
       );
     }
 
-<<<<<<< HEAD
+    final containsUrl = quotedMessage.attachments.any((it) {
+      return it.type == AttachmentType.urlPreview;
+    });
+
     return Padding(
       padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
       child: StreamQuotedMessageWidget(
         reverse: true,
         isDm: widget.isDm,
+        showBorder: !containsUrl,
         message: quotedMessage,
         messageTheme: _streamChatTheme.otherMessageTheme,
         onQuotedMessageClear: widget.onQuotedMessageCleared,
         attachmentThumbnailBuilders:
             widget.quotedMessageAttachmentThumbnailBuilders,
       ),
-=======
-    final containsUrl = quotedMessage.attachments.any((it) {
-      return it.type == AttachmentType.urlPreview;
-    });
-
-    return StreamQuotedMessageWidget(
-      reverse: true,
-      showBorder: !containsUrl,
-      message: quotedMessage,
-      messageTheme: _streamChatTheme.otherMessageTheme,
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-      onQuotedMessageClear: widget.onQuotedMessageCleared,
-      attachmentThumbnailBuilders:
-          widget.quotedMessageAttachmentThumbnailBuilders,
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     );
   }
 

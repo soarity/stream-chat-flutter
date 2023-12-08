@@ -10,11 +10,8 @@ import 'package:stream_chat_flutter/src/message_list_view/floating_date_divider.
 import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart';
 import 'package:stream_chat_flutter/src/message_list_view/mlv_utils.dart';
 import 'package:stream_chat_flutter/src/message_list_view/unread_messages_separator.dart';
-<<<<<<< HEAD
-import 'package:stream_chat_flutter/src/progress_indicator.dart';
-=======
 import 'package:stream_chat_flutter/src/message_widget/ephemeral_message.dart';
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
+import 'package:stream_chat_flutter/src/progress_indicator.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Spacing Types (These are properties of a message to help inform the decision
@@ -775,14 +772,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             ),
           ),
         if (widget.showFloatingDateDivider)
-<<<<<<< HEAD
-          FloatingDateDivider(
-            itemCount: itemCount,
-            reverse: widget.reverse,
-            itemPositionListener: _itemPositionListener,
-            messages: messages,
-            dateDividerBuilder: widget.dateDividerBuilder,
-=======
           Positioned(
             top: 20,
             left: 0,
@@ -793,9 +782,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
               itemPositionListener: _itemPositionListener.itemPositions,
               messages: messages,
               dateDividerBuilder: widget.dateDividerBuilder,
-              isThreadConversation: _isThreadConversation,
             ),
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
           ),
       ],
     );
@@ -948,21 +935,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         ),
       ),
       borderRadiusGeometry: BorderRadius.only(
-<<<<<<< HEAD
         topLeft: Radius.circular(16.r),
         bottomLeft: isMyMessage ? Radius.circular(16.r) : Radius.circular(2.r),
         topRight: Radius.circular(16.r),
         bottomRight: isMyMessage ? Radius.circular(2.r) : Radius.circular(16.r),
-=======
-        topLeft: const Radius.circular(16),
-        bottomLeft: isMyMessage ? const Radius.circular(16) : Radius.zero,
-        topRight: const Radius.circular(16),
-        bottomRight: isMyMessage ? Radius.zero : const Radius.circular(16),
-      ),
-      textPadding: EdgeInsets.symmetric(
-        vertical: 8,
-        horizontal: isOnlyEmoji ? 0 : 16.0,
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
       ),
       textPadding: EdgeInsets.zero,
       borderSide: borderSide,
@@ -1078,17 +1054,16 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
           );
     }
 
-<<<<<<< HEAD
     // Video Meeting message
     if (message.attachments.isNotEmpty &&
         message.attachments.first.type == 'videomeeting') {
       return widget.videoMessageBuilder?.call(context, message) ??
           const Offstage();
-=======
+    }
+
     if (message.isEphemeral) {
       return widget.ephemeralMessageBuilder?.call(context, message) ??
           StreamEphemeralMessage(message: message);
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     }
 
     final userId = StreamChat.of(context).currentUser!.id;
@@ -1120,27 +1095,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final hasFileAttachment =
         message.attachments.any((it) => it.type == AttachmentType.file);
 
-    final hasUrlAttachment =
-        message.attachments.any((it) => it.type == AttachmentType.urlPreview);
-
-<<<<<<< HEAD
     final attachmentBorderRadius = hasFileAttachment ? 12.r : 14.r;
-=======
-    final isThreadMessage =
-        message.parentId != null && message.showInChannel == true;
-
-    final hasReplies = message.replyCount! > 0;
-
-    final attachmentBorderRadius = hasUrlAttachment
-        ? 8.0
-        : hasFileAttachment
-            ? 12.0
-            : 14.0;
-
-    final showTimeStamp = (!isThreadMessage || _isThreadConversation) &&
-        !hasReplies &&
-        (hasTimeDiff || !isNextUserSame);
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
 
     final showUsername = !isMyMessage &&
         (prevMsghasTimeDiff || !isPrevUserSame || hasFileAttachment);
@@ -1155,17 +1110,13 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
 
-<<<<<<< HEAD
     final hasUrlAttachment =
-        message.attachments.any((it) => it.ogScrapeUrl != null);
+        message.attachments.any((it) => it.type == AttachmentType.urlPreview);
 
     final borderSide =
         isOnlyEmoji || hasUrlAttachment || (isMyMessage && !hasFileAttachment)
             ? BorderSide.none
             : null;
-=======
-    final borderSide = isOnlyEmoji ? BorderSide.none : null;
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
 
     final currentUser = StreamChat.of(context).currentUser;
     final members = StreamChannel.of(context).channel.state?.members ?? [];
@@ -1209,14 +1160,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showDeleteMessage: isMyMessage,
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
-<<<<<<< HEAD
-      attachmentBorderRadiusGeometry:
-          BorderRadius.circular(attachmentBorderRadius),
-      attachmentPadding: (message.text ?? '').isNotEmpty
-          ? EdgeInsets.only(bottom: 6.h)
-          : EdgeInsets.only(bottom: 2.h),
-=======
-      onThreadTap: _onThreadTap,
       attachmentShape: RoundedRectangleBorder(
         side: BorderSide(
           color: _streamTheme.colorTheme.borders,
@@ -1226,31 +1169,16 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
           topLeft: Radius.circular(attachmentBorderRadius),
           bottomLeft: isMyMessage
               ? Radius.circular(attachmentBorderRadius)
-              : Radius.circular(
-                  (hasTimeDiff || !isNextUserSame) &&
-                          !(hasReplies || isThreadMessage || hasFileAttachment)
-                      ? 0
-                      : attachmentBorderRadius,
-                ),
+              : Radius.zero,
           topRight: Radius.circular(attachmentBorderRadius),
           bottomRight: isMyMessage
-              ? Radius.circular(
-                  (hasTimeDiff || !isNextUserSame) &&
-                          !(hasReplies || isThreadMessage || hasFileAttachment)
-                      ? 0
-                      : attachmentBorderRadius,
-                )
+              ? Radius.zero
               : Radius.circular(attachmentBorderRadius),
         ),
       ),
-      attachmentPadding: EdgeInsets.all(
-        hasUrlAttachment
-            ? 8
-            : hasFileAttachment
-                ? 4
-                : 2,
-      ),
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
+      attachmentPadding: (message.text ?? '').isNotEmpty
+          ? EdgeInsets.only(bottom: 6.h)
+          : EdgeInsets.only(bottom: 2.h),
       borderRadiusGeometry: BorderRadius.only(
         topLeft: Radius.circular(16.r),
         bottomLeft: isMyMessage

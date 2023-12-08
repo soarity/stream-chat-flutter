@@ -44,7 +44,7 @@ class QuotingMessageTopArea extends StatelessWidget {
               context.translations.replyToMessageLabel,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    fontSize: 14.fzs,
+                    fontSize: 14,
                   ),
             ),
             IconButton(

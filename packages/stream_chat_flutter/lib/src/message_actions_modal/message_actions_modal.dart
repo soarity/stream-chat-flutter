@@ -164,13 +164,6 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
                                 }
                               },
                             ),
-                          if (widget.showThreadReplyMessage &&
-                              (widget.message.state.isCompleted) &&
-                              widget.message.parentId == null)
-                            ThreadReplyButton(
-                              message: widget.message,
-                              onThreadReplyTap: widget.onThreadReplyTap,
-                            ),
                           if (widget.showResendMessage)
                             ResendMessageButton(
                               message: widget.message,
@@ -215,52 +208,6 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
                             height: 1,
                             color: streamChatThemeData.colorTheme.borders,
                           ),
-<<<<<<< HEAD
-                        if (widget.showResendMessage)
-                          ResendMessageButton(
-                            message: widget.message,
-                            channel: channel,
-                          ),
-                        if (widget.showEditMessage)
-                          EditMessageButton(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              _showEditBottomSheet(context);
-                            },
-                          ),
-                        if (widget.showCopyMessage)
-                          CopyMessageButton(
-                            onTap: () {
-                              widget.onCopyTap?.call(widget.message);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        if (widget.showFlagButton)
-                          FlagMessageButton(
-                            onTap: _showFlagDialog,
-                          ),
-                        if (widget.showPinButton)
-                          PinMessageButton(
-                            onTap: _togglePin,
-                            pinned: widget.message.pinned,
-                          ),
-                        if (widget.showDeleteMessage)
-                          DeleteMessageButton(
-                            isDeleteFailed:
-                                widget.message.state.isDeletingFailed,
-                            onTap: _showDeleteBottomSheet,
-                          ),
-                        ...widget.customActions
-                            .map((action) => _buildCustomAction(
-                                  context,
-                                  action,
-                                )),
-                      ].insertBetween(
-                        Container(
-                          height: 1,
-                          color: streamChatThemeData.colorTheme.borders,
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
                         ),
                       ),
                     ),

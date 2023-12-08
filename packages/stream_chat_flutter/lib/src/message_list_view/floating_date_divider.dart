@@ -49,9 +49,7 @@ class FloatingDateDivider extends StatelessWidget {
           index = getBottomElementIndex(positions);
         }
 
-        if ((index == null) ||
-            (!isThreadConversation && index == itemCount - 2) ||
-            (isThreadConversation && index == itemCount - 1)) {
+        if (index == null) {
           return const Offstage();
         }
 
@@ -63,38 +61,10 @@ class FloatingDateDivider extends StatelessWidget {
           }
         }
 
-<<<<<<< HEAD
-          int? index;
-          if (reverse) {
-            index = getTopElementIndex(values);
-          } else {
-            index = getBottomElementIndex(values);
-          }
-
-          if (index == null) {
-            return const Offstage();
-          }
-
-          if (index <= 2 || index >= itemCount - 3) {
-            if (reverse) {
-              index = itemCount - 4;
-            } else {
-              index = 2;
-            }
-          }
-
-          final message = messages[index - 2];
-          return dateDividerBuilder != null
-              ? dateDividerBuilder!(message.createdAt.toLocal())
-              : StreamDateDivider(dateTime: message.createdAt.toLocal());
-        },
-      ),
-=======
         final message = messages[index - 2];
         return dateDividerBuilder?.call(message.createdAt.toLocal()) ??
             StreamDateDivider(dateTime: message.createdAt.toLocal());
       },
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     );
   }
 }

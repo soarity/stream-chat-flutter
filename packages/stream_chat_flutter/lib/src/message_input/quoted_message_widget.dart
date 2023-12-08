@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
-=======
 import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/image_attachment_thumbnail.dart';
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
-import 'package:stream_chat_flutter/src/message_input/clear_input_item_button.dart';
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -27,6 +22,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     this.textLimit = 170,
     this.textBuilder,
     this.attachmentThumbnailBuilders,
+    this.padding = const EdgeInsets.all(8),
     this.onQuotedMessageClear,
   });
 
@@ -49,7 +45,11 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   final int textLimit;
 
   /// Map that defines a thumbnail builder for an attachment type
-  final _Builders? attachmentThumbnailBuilders;
+  final Map<String, QuotedMessageAttachmentThumbnailBuilder>?
+      attachmentThumbnailBuilders;
+
+  /// Padding around the widget
+  final EdgeInsetsGeometry padding;
 
   /// Callback for clearing quoted messages.
   final VoidCallback? onQuotedMessageClear;
@@ -59,26 +59,11 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final color = message.user?.extraData['color'];
     return ClipRRect(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(12.r),
         bottom: Radius.circular(6.r),
-=======
-    final children = [
-      Flexible(
-        child: _QuotedMessage(
-          message: message,
-          textLimit: textLimit,
-          messageTheme: messageTheme,
-          showBorder: showBorder,
-          reverse: reverse,
-          textBuilder: textBuilder,
-          onQuotedMessageClear: onQuotedMessageClear,
-          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-        ),
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -113,10 +98,11 @@ class StreamQuotedMessageWidget extends StatelessWidget {
               _QuotedMessage(
                 message: message,
                 textLimit: textLimit,
-                onQuotedMessageClear: onQuotedMessageClear,
                 messageTheme: messageTheme,
                 showBorder: showBorder,
                 reverse: reverse,
+                textBuilder: textBuilder,
+                onQuotedMessageClear: onQuotedMessageClear,
                 attachmentThumbnailBuilders: attachmentThumbnailBuilders,
               ),
             ],
@@ -147,22 +133,15 @@ class _QuotedMessage extends StatelessWidget {
   final bool reverse;
   final Widget Function(BuildContext, Message)? textBuilder;
 
+  /// Map that defines a thumbnail builder for an attachment type
   final _Builders? attachmentThumbnailBuilders;
 
   bool get _hasAttachments => message.attachments.isNotEmpty;
 
   bool get _containsText => message.text?.isNotEmpty == true;
 
-<<<<<<< HEAD
   bool get _isGiphy =>
       message.attachments.any((element) => element.type == 'giphy');
-=======
-  bool get _containsLinkAttachment =>
-      message.attachments.any((it) => it.type == AttachmentType.urlPreview);
-
-  bool get _isGiphy => message.attachments
-      .any((element) => element.type == AttachmentType.giphy);
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
 
   bool get _isVoiceNote =>
       message.attachments.any((element) => element.type == 'voicenote');
@@ -187,7 +166,7 @@ class _QuotedMessage extends StatelessWidget {
           context.translations.messageDeletedLabel,
           style: messageTheme.messageTextStyle?.copyWith(
             fontStyle: FontStyle.italic,
-            fontSize: 14.fzs,
+            fontSize: 14,
             color: messageTheme.createdAtStyle?.color,
           ),
         ),
@@ -195,50 +174,13 @@ class _QuotedMessage extends StatelessWidget {
     } else {
       // Show quoted message
       children = [
-<<<<<<< HEAD
-        if (msg.text!.isNotEmpty && !_isGiphy && !_isVoiceNote)
-          Flexible(
-            child: StreamMessageText(
-              message: msg,
-              messageTheme: isOnlyEmoji && _containsText
-                  ? messageTheme.copyWith(
-                      messageTextStyle: messageTheme.messageTextStyle?.copyWith(
-                        fontSize: 32.fzs,
-                      ),
-                    )
-                  : messageTheme.copyWith(
-                      messageTextStyle: messageTheme.messageTextStyle?.copyWith(
-                        fontSize: 14.fzs,
-                      ),
-                    ),
-            ),
-          ),
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
         if (_hasAttachments)
           _ParseAttachments(
             message: message,
             messageTheme: messageTheme,
             attachmentThumbnailBuilders: attachmentThumbnailBuilders,
           ),
-<<<<<<< HEAD
-        if (onQuotedMessageClear != null)
-          PlatformWidgetBuilder(
-            web: (context, child) => child,
-            desktop: (context, child) => child,
-            child: ClearInputItemButton(
-              onTap: onQuotedMessageClear,
-            ),
-          ),
-      ].insertBetween(SizedBox(width: 8.w));
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
-=======
-        if (msg.text!.isNotEmpty && !_isGiphy)
+        if (msg.text!.isNotEmpty && !_isGiphy && !_isVoiceNote)
           Flexible(
             child: textBuilder?.call(context, msg) ??
                 StreamMessageText(
@@ -253,53 +195,23 @@ class _QuotedMessage extends StatelessWidget {
                       : messageTheme.copyWith(
                           messageTextStyle:
                               messageTheme.messageTextStyle?.copyWith(
-                            fontSize: 12,
+                            fontSize: 14,
                           ),
                         ),
                 ),
           ),
-      ];
+      ].insertBetween(SizedBox(width: 8.w));
     }
 
-    // Add clear button if needed.
-    if (isDesktopDeviceOrWeb && onQuotedMessageClear != null) {
-      children.insert(
-        0,
-        ClearInputItemButton(onTap: onQuotedMessageClear),
-      );
-    }
-
-    // Add some spacing between the children.
-    children = children.insertBetween(const SizedBox(width: 8));
-
-    return Container(
-      decoration: BoxDecoration(
-        color: _getBackgroundColor(context),
-        border: showBorder
-            ? Border.all(
-                color: StreamChatTheme.of(context).colorTheme.disabled,
-              )
-            : null,
-        borderRadius: BorderRadius.only(
-          topRight: const Radius.circular(12),
-          topLeft: const Radius.circular(12),
-          bottomRight: reverse ? const Radius.circular(12) : Radius.zero,
-          bottomLeft: reverse ? Radius.zero : const Radius.circular(12),
-        ),
-      ),
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment:
-            reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: reverse ? children.reversed.toList() : children,
-      ),
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
     );
   }
 }
 
-class _ParseAttachments extends StatefulWidget {
+class _ParseAttachments extends StatelessWidget {
   const _ParseAttachments({
     required this.message,
     required this.messageTheme,
@@ -308,42 +220,6 @@ class _ParseAttachments extends StatefulWidget {
 
   final Message message;
   final StreamMessageThemeData messageTheme;
-<<<<<<< HEAD
-  final Map<String, QuotedMessageAttachmentThumbnailBuilder>?
-      attachmentThumbnailBuilders;
-
-  @override
-  State<_ParseAttachments> createState() => _ParseAttachmentsState();
-}
-
-class _ParseAttachmentsState extends State<_ParseAttachments> {
-  bool get _containsLinkAttachment =>
-      widget.message.attachments.any((element) => element.titleLink != null);
-
-  @override
-  Widget build(BuildContext context) {
-    Widget child;
-    Attachment attachment;
-    if (_containsLinkAttachment) {
-      attachment = widget.message.attachments.firstWhere(
-        (element) => element.ogScrapeUrl != null || element.titleLink != null,
-      );
-      child = _UrlAttachment(attachment: attachment);
-    } else {
-      QuotedMessageAttachmentThumbnailBuilder? attachmentBuilder;
-      attachment = widget.message.attachments.last;
-      if (widget.attachmentThumbnailBuilders?.containsKey(attachment.type) ==
-          true) {
-        attachmentBuilder =
-            widget.attachmentThumbnailBuilders![attachment.type];
-      }
-      attachmentBuilder = _defaultAttachmentBuilder[attachment.type];
-      if (attachmentBuilder == null) {
-        child = const Offstage();
-      } else {
-        child = attachmentBuilder(context, attachment);
-      }
-=======
   final _Builders? attachmentThumbnailBuilders;
 
   @override
@@ -377,7 +253,6 @@ class _ParseAttachmentsState extends State<_ParseAttachments> {
           borderRadius: BorderRadius.circular(8),
         ),
       );
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     }
 
     return Container(
@@ -431,203 +306,47 @@ class _ParseAttachmentsState extends State<_ParseAttachments> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
-<<<<<<< HEAD
-      child: AbsorbPointer(child: child),
-    );
-  }
-
-  Map<String, QuotedMessageAttachmentThumbnailBuilder>
-      get _defaultAttachmentBuilder {
-    final builders = <String, QuotedMessageAttachmentThumbnailBuilder>{
-      'image': (_, attachment) {
-        return StreamImageAttachment(
-          attachment: attachment,
-          message: widget.message,
-          messageTheme: widget.messageTheme,
-          constraints: BoxConstraints.loose(Size(32.r, 32.r)),
-        );
-      },
-      'video': (_, attachment) {
-        return StreamVideoThumbnailImage(
-          key: ValueKey(attachment.assetUrl),
-          video: attachment.file?.path ?? attachment.assetUrl,
-          constraints: BoxConstraints.loose(Size(32.r, 32.r)),
-          errorBuilder: (_, __) => AttachmentError(
-            constraints: BoxConstraints.loose(Size(32.r, 32.r)),
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
           ),
           child: thumbnail,
         );
-<<<<<<< HEAD
-      },
-      'giphy': (_, attachment) {
-        final size = Size(32.r, 32.r);
-        return CachedNetworkImage(
-          height: size.height,
-          width: size.width,
-          placeholder: (_, __) {
-            return SizedBox(
-              width: size.width,
-              height: size.height,
-              child: const Center(
-                child: CircularProgressIndicator.adaptive(),
-              ),
-            );
-          },
-          imageUrl: attachment.thumbUrl ??
-              attachment.imageUrl ??
-              attachment.assetUrl!,
-          errorWidget: (context, url, error) =>
-              AttachmentError(constraints: BoxConstraints.loose(size)),
-          fit: BoxFit.cover,
-        );
-      },
-      'voicenote': (_, attachment) {
-        final durationInInt = attachment.extraData['duration'] as int?;
-        var text = '';
-        if (durationInInt != null) {
-          final duration = Duration(milliseconds: durationInInt);
-          final minuteLeft = duration.inMinutes.remainder(60);
-          final minutes =
-              minuteLeft.toString().padLeft(minuteLeft >= 10 ? 2 : 1, '0');
-          final seconds =
-              duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-          text = '$minutes:$seconds';
-        }
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ImageIcon(
-              const AssetImage('assets/icons/microphone.png'),
-              size: 20.r,
-              color: Theme.of(context).colorScheme.outline,
-            ),
-            if (text.isNotEmpty)
-              Padding(
-                padding: EdgeInsets.only(left: 4.w),
-                child: Text(
-                  text,
-                  style: widget.messageTheme.messageTextStyle?.copyWith(
-                    fontSize: 14.fzs,
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
-      'file': (_, attachment) {
-        return SizedBox(
-          height: 32.r,
-          width: 32.r,
-          child: getFileTypeImage(
-            attachment.extraData['mime_type'] as String?,
-          ),
-        );
-      },
-    };
-
-    builders['file'] = (_, attachment) {
-      return SizedBox(
-        height: 32,
-        width: 32,
-        child: Builder(
-          builder: (context) {
-            final isImageFile = attachment.title?.mimeType?.type == 'image';
-            if (isImageFile) {
-              return builders['image']!(context, attachment);
-            }
-
-            final isVideoFile = attachment.title?.mimeType?.type == 'video';
-            if (isVideoFile) {
-              return builders['video']!(context, attachment);
-            }
-
-            return getFileTypeImage(
-              attachment.extraData['mime_type'] as String?,
-            );
-          },
-        ),
-      );
-    };
-
-    return builders;
-  }
-}
-
-class _UrlAttachment extends StatelessWidget {
-  const _UrlAttachment({
-    required this.attachment,
-  });
-
-  final Attachment attachment;
-
-  @override
-  Widget build(BuildContext context) {
-    final size = Size(32.r, 32.r);
-    if (attachment.thumbUrl != null) {
-      return Container(
-        height: size.height,
-        width: size.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: CachedNetworkImageProvider(
-              attachment.thumbUrl!,
-            ),
-          ),
-        ),
-      );
-    }
-    return AttachmentError(constraints: BoxConstraints.loose(size));
-  }
-}
-
-class _VideoAttachmentThumbnail extends StatefulWidget {
-  const _VideoAttachmentThumbnail({
-    required this.attachment,
-  });
-
-  final Attachment attachment;
-
-  @override
-  _VideoAttachmentThumbnailState createState() =>
-      _VideoAttachmentThumbnailState();
-}
-
-class _VideoAttachmentThumbnailState extends State<_VideoAttachmentThumbnail> {
-  late VideoPlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(widget.attachment.assetUrl!),
-    )..initialize().then((_) {
-        // ignore: no-empty-block
-        setState(() {}); //when your thumbnail will show.
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 32.r,
-      width: 32.r,
-      child: _controller.value.isInitialized
-          ? VideoPlayer(_controller)
-          : const CircularProgressIndicator.adaptive(),
-    );
-=======
       }
 
       return thumbnail;
+    }
+
+    Widget _createVoiceNoteThumbnail(
+        BuildContext context, Attachment attachment) {
+      final durationInInt = attachment.extraData['duration'] as int?;
+      var text = '';
+      if (durationInInt != null) {
+        final duration = Duration(milliseconds: durationInInt);
+        final minuteLeft = duration.inMinutes.remainder(60);
+        final minutes =
+            minuteLeft.toString().padLeft(minuteLeft >= 10 ? 2 : 1, '0');
+        final seconds =
+            duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+        text = '$minutes:$seconds';
+      }
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ImageIcon(
+            const AssetImage('assets/icons/microphone.png'),
+            size: 20.r,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          if (text.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w),
+              child: Text(
+                text,
+                style: messageTheme.messageTextStyle?.copyWith(
+                  fontSize: 14,
+                ),
+              ),
+            ),
+        ],
+      );
     }
 
     return {
@@ -636,7 +355,7 @@ class _VideoAttachmentThumbnailState extends State<_VideoAttachmentThumbnail> {
       AttachmentType.video: _createMediaThumbnail,
       AttachmentType.urlPreview: _createUrlThumbnail,
       AttachmentType.file: _createFileThumbnail,
+      AttachmentType.voicenote: _createVoiceNoteThumbnail,
     };
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
   }
 }

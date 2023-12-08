@@ -573,29 +573,6 @@ class StreamMessageWidget extends StatefulWidget {
     String? imageAttachmentThumbnailCropType,
     AttachmentActionsBuilder? attachmentActionsModalBuilder,
   }) {
-<<<<<<< HEAD
-    assert(
-      bottomRowBuilder == null || bottomRowBuilderWithDefaultWidget == null,
-      'You can only use one of the two bottom row builders',
-    );
-
-    var _bottomRowBuilderWithDefaultWidget = bottomRowBuilderWithDefaultWidget;
-
-    _bottomRowBuilderWithDefaultWidget ??= (context, message, defaultWidget) {
-      final _bottomRowBuilder = bottomRowBuilder ?? this.bottomRowBuilder;
-      if (_bottomRowBuilder != null) {
-        return _bottomRowBuilder(context, message);
-      }
-
-      return defaultWidget.copyWith(
-        usernameBuilder: usernameBuilder ?? this.usernameBuilder,
-        deletedBottomRowBuilder:
-            deletedBottomRowBuilder ?? this.deletedBottomRowBuilder,
-      );
-    };
-
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     return StreamMessageWidget(
       key: key ?? this.key,
       isDm: isDm ?? this.isDm,
@@ -833,25 +810,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       ? widget.widthFactor
                       : widget.widthFactor + 0.05,
                   child: Builder(builder: (context) {
-<<<<<<< HEAD
-                    var _bottomRowBuilderWithDefaultWidget =
-                        widget.bottomRowBuilderWithDefaultWidget;
-
-                    _bottomRowBuilderWithDefaultWidget ??=
-                        (context, message, defaultWidget) {
-                      final _bottomRowBuilder = widget.bottomRowBuilder;
-                      if (_bottomRowBuilder != null) {
-                        return _bottomRowBuilder(context, message);
-                      }
-
-                      return defaultWidget.copyWith(
-                        usernameBuilder: widget.usernameBuilder,
-                        deletedBottomRowBuilder: widget.deletedBottomRowBuilder,
-                      );
-                    };
-
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
                     return MessageWidgetContent(
                       isDm: widget.isDm,
                       showTailBubble: widget.showTailBubble,

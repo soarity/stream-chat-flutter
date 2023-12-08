@@ -12,11 +12,7 @@ class QuotedMessage extends StatelessWidget {
   const QuotedMessage({
     super.key,
     required this.message,
-<<<<<<< HEAD
-    required this.reverse,
     this.isDm = false,
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     required this.hasNonUrlAttachments,
     this.textBuilder,
   });
@@ -24,15 +20,9 @@ class QuotedMessage extends StatelessWidget {
   /// {@macro message}
   final Message message;
 
-<<<<<<< HEAD
-  /// {@macro reverse}
-  final bool reverse;
-
   ///
   final bool isDm;
 
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
   /// {@macro hasNonUrlAttachments}
   final bool hasNonUrlAttachments;
 
@@ -53,19 +43,9 @@ class QuotedMessage extends StatelessWidget {
       messageTheme: isMyMessage
           ? chatThemeData.otherMessageTheme
           : chatThemeData.ownMessageTheme,
-<<<<<<< HEAD
-      reverse: reverse,
-      showBorder: false,
-=======
       reverse: !isMyQuotedMessage,
       textBuilder: textBuilder,
-      padding: EdgeInsets.only(
-        right: 8,
-        left: 8,
-        top: 8,
-        bottom: hasNonUrlAttachments ? 8 : 0,
-      ),
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
+      showBorder: false,
     );
   }
 }

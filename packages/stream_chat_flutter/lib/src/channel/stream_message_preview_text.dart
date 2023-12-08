@@ -56,7 +56,6 @@ class StreamMessagePreviewText extends StatelessWidget {
           return '📷';
         } else if (it.type == AttachmentType.video) {
           return '🎬';
-<<<<<<< HEAD
         } else if (it.type == 'voicenote') {
           var text = '🎙️';
           final durationInInt = it.extraData['duration'] as int?;
@@ -72,9 +71,6 @@ class StreamMessagePreviewText extends StatelessWidget {
 
           return text;
         } else if (it.type == 'giphy') {
-=======
-        } else if (it.type == AttachmentType.giphy) {
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
           return '[GIF]';
         }
         return it == message.attachments.last

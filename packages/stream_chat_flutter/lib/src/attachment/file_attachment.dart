@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:stream_chat_flutter/src/attachment/attachment_widget.dart';
-=======
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
 import 'package:stream_chat_flutter/src/indicators/upload_progress_indicator.dart';
 import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
-import 'package:stream_chat_flutter/src/stream_chat.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/utils/utils.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
@@ -61,63 +55,6 @@ class StreamFileAttachment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    final colorTheme = StreamChatTheme.of(context).colorTheme;
-    return Material(
-      child: GestureDetector(
-        onTap: onAttachmentTap,
-        child: Container(
-          constraints: constraints ?? BoxConstraints.tightFor(width: 100.w),
-          height: 56.h,
-          decoration: BoxDecoration(
-            color: colorTheme.barsBg,
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                height: 40.h,
-                width: 33.33.w,
-                margin: EdgeInsets.all(8.r),
-                child: _FileTypeImage(
-                  isImageAttachment: isImageAttachment,
-                  isVideoAttachment: isVideoAttachment,
-                  source: source,
-                  attachment: attachment,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      attachment.title ?? context.translations.fileText,
-                      style: StreamChatTheme.of(context).textTheme.bodyBold,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 3.h),
-                    _FileAttachmentSubtitle(attachment: attachment),
-                  ],
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Material(
-                type: MaterialType.transparency,
-                child: trailing ??
-                    _Trailing(
-                      attachment: attachment,
-                      message: message,
-                    ),
-              ),
-            ],
-=======
     final chatTheme = StreamChatTheme.of(context);
     final textTheme = chatTheme.textTheme;
     final colorTheme = chatTheme.colorTheme;
@@ -129,7 +66,7 @@ class StreamFileAttachment extends StatelessWidget {
             color: colorTheme.borders,
             strokeAlign: BorderSide.strokeAlignOutside,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
         );
 
     return Container(
@@ -142,12 +79,12 @@ class StreamFileAttachment extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 34,
-            height: 40,
-            margin: const EdgeInsets.all(8),
+            width: 34.w,
+            height: 40.h,
+            margin: EdgeInsets.all(8.r),
             child: _FileTypeImage(file: file),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -159,12 +96,12 @@ class StreamFileAttachment extends StatelessWidget {
                   style: textTheme.bodyBold,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 3),
+                SizedBox(height: 3.h),
                 _FileAttachmentSubtitle(attachment: file),
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           Material(
             type: MaterialType.transparency,
             child: trailing ??
@@ -172,7 +109,6 @@ class StreamFileAttachment extends StatelessWidget {
                   attachment: file,
                   message: message,
                 ),
->>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
           ),
         ],
       ),
@@ -208,7 +144,7 @@ class _FileTypeImage extends StatelessWidget {
               color: colorTheme.borders,
               strokeAlign: BorderSide.strokeAlignOutside,
             ),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8.r),
           ),
         ),
         child: child,
@@ -346,7 +282,7 @@ class _FileAttachmentSubtitle extends StatelessWidget {
     final size = attachment.file?.size ?? attachment.extraData['file_size'];
     final textStyle = theme.textTheme.footnote.copyWith(
       color: theme.colorTheme.textLowEmphasis,
-      fontSize: 12.fzs,
+      fontSize: 12,
     );
     return attachment.uploadState.when(
       preparing: () => Text(fileSize(size), style: textStyle),
