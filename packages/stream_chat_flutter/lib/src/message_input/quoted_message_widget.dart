@@ -1,11 +1,16 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
+=======
+import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
+import 'package:stream_chat_flutter/src/attachment/thumbnail/image_attachment_thumbnail.dart';
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
 import 'package:stream_chat_flutter/src/message_input/clear_input_item_button.dart';
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:video_player/video_player.dart';
+
+typedef _Builders = Map<String, QuotedMessageAttachmentThumbnailBuilder>;
 
 /// {@template streamQuotedMessage}
 /// Widget for the quoted message.
@@ -20,6 +25,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     this.isDm = false,
     this.showBorder = true,
     this.textLimit = 170,
+    this.textBuilder,
     this.attachmentThumbnailBuilders,
     this.onQuotedMessageClear,
   });
@@ -43,19 +49,36 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   final int textLimit;
 
   /// Map that defines a thumbnail builder for an attachment type
-  final Map<String, QuotedMessageAttachmentThumbnailBuilder>?
-      attachmentThumbnailBuilders;
+  final _Builders? attachmentThumbnailBuilders;
 
   /// Callback for clearing quoted messages.
   final VoidCallback? onQuotedMessageClear;
 
+  /// {@macro textBuilder}
+  final Widget Function(BuildContext, Message)? textBuilder;
+
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final color = message.user?.extraData['color'];
     return ClipRRect(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(12.r),
         bottom: Radius.circular(6.r),
+=======
+    final children = [
+      Flexible(
+        child: _QuotedMessage(
+          message: message,
+          textLimit: textLimit,
+          messageTheme: messageTheme,
+          showBorder: showBorder,
+          reverse: reverse,
+          textBuilder: textBuilder,
+          onQuotedMessageClear: onQuotedMessageClear,
+          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+        ),
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -111,6 +134,7 @@ class _QuotedMessage extends StatelessWidget {
     required this.messageTheme,
     required this.showBorder,
     required this.reverse,
+    this.textBuilder,
     this.onQuotedMessageClear,
     this.attachmentThumbnailBuilders,
   });
@@ -121,17 +145,24 @@ class _QuotedMessage extends StatelessWidget {
   final StreamMessageThemeData messageTheme;
   final bool showBorder;
   final bool reverse;
+  final Widget Function(BuildContext, Message)? textBuilder;
 
-  /// Map that defines a thumbnail builder for an attachment type
-  final Map<String, QuotedMessageAttachmentThumbnailBuilder>?
-      attachmentThumbnailBuilders;
+  final _Builders? attachmentThumbnailBuilders;
 
   bool get _hasAttachments => message.attachments.isNotEmpty;
 
   bool get _containsText => message.text?.isNotEmpty == true;
 
+<<<<<<< HEAD
   bool get _isGiphy =>
       message.attachments.any((element) => element.type == 'giphy');
+=======
+  bool get _containsLinkAttachment =>
+      message.attachments.any((it) => it.type == AttachmentType.urlPreview);
+
+  bool get _isGiphy => message.attachments
+      .any((element) => element.type == AttachmentType.giphy);
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
 
   bool get _isVoiceNote =>
       message.attachments.any((element) => element.type == 'voicenote');
@@ -164,6 +195,7 @@ class _QuotedMessage extends StatelessWidget {
     } else {
       // Show quoted message
       children = [
+<<<<<<< HEAD
         if (msg.text!.isNotEmpty && !_isGiphy && !_isVoiceNote)
           Flexible(
             child: StreamMessageText(
@@ -181,12 +213,15 @@ class _QuotedMessage extends StatelessWidget {
                     ),
             ),
           ),
+=======
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
         if (_hasAttachments)
           _ParseAttachments(
             message: message,
             messageTheme: messageTheme,
             attachmentThumbnailBuilders: attachmentThumbnailBuilders,
           ),
+<<<<<<< HEAD
         if (onQuotedMessageClear != null)
           PlatformWidgetBuilder(
             web: (context, child) => child,
@@ -202,6 +237,64 @@ class _QuotedMessage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,
+=======
+        if (msg.text!.isNotEmpty && !_isGiphy)
+          Flexible(
+            child: textBuilder?.call(context, msg) ??
+                StreamMessageText(
+                  message: msg,
+                  messageTheme: isOnlyEmoji && _containsText
+                      ? messageTheme.copyWith(
+                          messageTextStyle:
+                              messageTheme.messageTextStyle?.copyWith(
+                            fontSize: 32,
+                          ),
+                        )
+                      : messageTheme.copyWith(
+                          messageTextStyle:
+                              messageTheme.messageTextStyle?.copyWith(
+                            fontSize: 12,
+                          ),
+                        ),
+                ),
+          ),
+      ];
+    }
+
+    // Add clear button if needed.
+    if (isDesktopDeviceOrWeb && onQuotedMessageClear != null) {
+      children.insert(
+        0,
+        ClearInputItemButton(onTap: onQuotedMessageClear),
+      );
+    }
+
+    // Add some spacing between the children.
+    children = children.insertBetween(const SizedBox(width: 8));
+
+    return Container(
+      decoration: BoxDecoration(
+        color: _getBackgroundColor(context),
+        border: showBorder
+            ? Border.all(
+                color: StreamChatTheme.of(context).colorTheme.disabled,
+              )
+            : null,
+        borderRadius: BorderRadius.only(
+          topRight: const Radius.circular(12),
+          topLeft: const Radius.circular(12),
+          bottomRight: reverse ? const Radius.circular(12) : Radius.zero,
+          bottomLeft: reverse ? Radius.zero : const Radius.circular(12),
+        ),
+      ),
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment:
+            reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: reverse ? children.reversed.toList() : children,
+      ),
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     );
   }
 }
@@ -215,6 +308,7 @@ class _ParseAttachments extends StatefulWidget {
 
   final Message message;
   final StreamMessageThemeData messageTheme;
+<<<<<<< HEAD
   final Map<String, QuotedMessageAttachmentThumbnailBuilder>?
       attachmentThumbnailBuilders;
 
@@ -249,20 +343,95 @@ class _ParseAttachmentsState extends State<_ParseAttachments> {
       } else {
         child = attachmentBuilder(context, attachment);
       }
+=======
+  final _Builders? attachmentThumbnailBuilders;
+
+  @override
+  Widget build(BuildContext context) {
+    final attachment = message.attachments.first;
+
+    var attachmentBuilders = attachmentThumbnailBuilders;
+    attachmentBuilders ??= _createDefaultAttachmentBuilders();
+
+    // Build the attachment widget using the builder for the attachment type.
+    final attachmentWidget = attachmentBuilders[attachment.type]?.call(
+      context,
+      attachment,
+    );
+
+    // Return empty container if no attachment widget is returned.
+    if (attachmentWidget == null) return const SizedBox.shrink();
+
+    final colorTheme = StreamChatTheme.of(context).colorTheme;
+
+    var clipBehavior = Clip.none;
+    ShapeDecoration? decoration;
+    if (attachment.type != AttachmentType.file) {
+      clipBehavior = Clip.hardEdge;
+      decoration = ShapeDecoration(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: colorTheme.borders,
+            strokeAlign: BorderSide.strokeAlignOutside,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+      );
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     }
 
-    final isImageFile = attachment.title?.mimeType?.type == 'image';
-    final isVideoFile = attachment.title?.mimeType?.type == 'video';
+    return Container(
+      key: Key(attachment.id),
+      clipBehavior: clipBehavior,
+      decoration: decoration,
+      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+      child: AbsorbPointer(child: attachmentWidget),
+    );
+  }
 
-    return Material(
-      clipBehavior: Clip.hardEdge,
-      type: MaterialType.transparency,
-      shape: attachment.type == 'file' && (!isImageFile && !isVideoFile)
-          ? null
-          : RoundedRectangleBorder(
-              side: const BorderSide(width: 0, color: Colors.transparent),
+  _Builders _createDefaultAttachmentBuilders() {
+    Widget _createMediaThumbnail(BuildContext context, Attachment media) {
+      return StreamImageAttachmentThumbnail(
+        image: media,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+      );
+    }
+
+    Widget _createUrlThumbnail(BuildContext context, Attachment media) {
+      return StreamImageAttachmentThumbnail(
+        image: media,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+      );
+    }
+
+    Widget _createFileThumbnail(BuildContext context, Attachment file) {
+      Widget thumbnail = StreamFileAttachmentThumbnail(
+        file: file,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+      );
+
+      final mediaType = file.title?.mediaType;
+      final isImage = mediaType?.type == AttachmentType.image;
+      final isVideo = mediaType?.type == AttachmentType.video;
+      if (isImage || isVideo) {
+        final colorTheme = StreamChatTheme.of(context).colorTheme;
+        thumbnail = Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: ShapeDecoration(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                color: colorTheme.borders,
+                strokeAlign: BorderSide.strokeAlignOutside,
+              ),
               borderRadius: BorderRadius.circular(8),
             ),
+<<<<<<< HEAD
       child: AbsorbPointer(child: child),
     );
   }
@@ -285,8 +454,12 @@ class _ParseAttachmentsState extends State<_ParseAttachments> {
           constraints: BoxConstraints.loose(Size(32.r, 32.r)),
           errorBuilder: (_, __) => AttachmentError(
             constraints: BoxConstraints.loose(Size(32.r, 32.r)),
+=======
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
           ),
+          child: thumbnail,
         );
+<<<<<<< HEAD
       },
       'giphy': (_, attachment) {
         final size = Size(32.r, 32.r);
@@ -451,5 +624,19 @@ class _VideoAttachmentThumbnailState extends State<_VideoAttachmentThumbnail> {
           ? VideoPlayer(_controller)
           : const CircularProgressIndicator.adaptive(),
     );
+=======
+      }
+
+      return thumbnail;
+    }
+
+    return {
+      AttachmentType.image: _createMediaThumbnail,
+      AttachmentType.giphy: _createMediaThumbnail,
+      AttachmentType.video: _createMediaThumbnail,
+      AttachmentType.urlPreview: _createUrlThumbnail,
+      AttachmentType.file: _createFileThumbnail,
+    };
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
   }
 }

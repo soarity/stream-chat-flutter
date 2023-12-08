@@ -1,50 +1,63 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:stream_chat_flutter/src/attachment/attachment_widget.dart';
+import 'package:stream_chat_flutter/src/attachment/thumbnail/giphy_attachment_thumbnail.dart';
+import 'package:stream_chat_flutter/src/misc/giphy_chip.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamGiphyAttachment}
 /// Shows a GIF attachment in a [StreamMessageWidget].
 /// {@endtemplate}
-class StreamGiphyAttachment extends StreamAttachmentWidget {
+class StreamGiphyAttachment extends StatelessWidget {
   /// {@macro streamGiphyAttachment}
   const StreamGiphyAttachment({
     super.key,
-    required super.message,
-    required super.attachment,
-    super.constraints,
-    this.onShowMessage,
-    this.onReplyMessage,
-    this.onAttachmentTap,
-    this.attachmentActionsModalBuilder,
+    required this.message,
+    required this.giphy,
+    this.type = GiphyInfoType.original,
+    this.shape,
+    this.constraints = const BoxConstraints(),
   });
 
-  /// {@macro showMessageCallback}
-  final ShowMessageCallback? onShowMessage;
+  /// The [Message] that the giphy is attached to.
+  final Message message;
 
-  /// {@macro replyMessageCallback}
-  final ReplyMessageCallback? onReplyMessage;
+  /// The [Attachment] object containing the giphy information.
+  final Attachment giphy;
 
-  /// {@macro onAttachmentTap}
-  final OnAttachmentTap? onAttachmentTap;
+  /// The type of giphy to display.
+  ///
+  /// Defaults to [GiphyInfoType.fixedHeight].
+  final GiphyInfoType type;
 
-  /// {@macro attachmentActionsBuilder}
-  final AttachmentActionsBuilder? attachmentActionsModalBuilder;
+  /// The shape of the attachment.
+  ///
+  /// Defaults to [RoundedRectangleBorder] with a radius of 14.
+  final ShapeBorder? shape;
+
+  /// The constraints to use when displaying the giphy.
+  final BoxConstraints constraints;
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl =
-        attachment.thumbUrl ?? attachment.imageUrl ?? attachment.assetUrl;
-    if (imageUrl == null) {
-      return const AttachmentError();
-    }
-    if (attachment.actions != null && attachment.actions!.isNotEmpty) {
-      return _buildSendingAttachment(context, imageUrl);
-    }
-    return _buildSentAttachment(context, imageUrl);
-  }
+    BoxFit? fit;
+    final giphyInfo = giphy.giphyInfo(type);
 
+    Size? giphySize;
+    if (giphyInfo != null) {
+      giphySize = Size(giphyInfo.width, giphyInfo.height);
+    }
+
+    // If attachment size is available, we will tighten the constraints max
+    // size to the attachment size.
+    var constraints = this.constraints;
+    if (giphySize != null) {
+      constraints = constraints.tightenMaxSize(giphySize);
+    } else {
+      // For backward compatibility, we will fill the available space if the
+      // attachment size is not available.
+      fit = BoxFit.cover;
+    }
+
+<<<<<<< HEAD
   Widget _buildSendingAttachment(BuildContext context, String imageUrl) {
     final streamChannel = StreamChannel.of(context);
     return ConstrainedBox(
@@ -247,32 +260,36 @@ class StreamGiphyAttachment extends StreamAttachmentWidget {
                 ),
               ],
             ),
+=======
+    final chatTheme = StreamChatTheme.of(context);
+    final colorTheme = chatTheme.colorTheme;
+    final shape = this.shape ??
+        RoundedRectangleBorder(
+          side: BorderSide(
+            color: colorTheme.borders,
+            strokeAlign: BorderSide.strokeAlignOutside,
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
           ),
-          const SizedBox(height: 4),
-          const Align(
-            alignment: Alignment.centerRight,
-            child: StreamVisibleFootnote(),
-          ),
-        ],
-      ),
-    );
-  }
+          borderRadius: BorderRadius.circular(14),
+        );
 
-  Future<void> _onImageTap(BuildContext context) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) {
-          final channel = StreamChannel.of(context).channel;
-          return StreamChannel(
-            channel: channel,
-            child: StreamFullScreenMediaBuilder(
-              mediaAttachmentPackages: message.getAttachmentPackageList(),
-              startIndex: message.attachments.indexOf(attachment),
-              userName: message.user!.name,
-              onShowMessage: onShowMessage,
-              onReplyMessage: onReplyMessage,
-              attachmentActionsModalBuilder: attachmentActionsModalBuilder,
+    return Container(
+      constraints: constraints,
+      clipBehavior: Clip.hardEdge,
+      decoration: ShapeDecoration(shape: shape),
+      child: AspectRatio(
+        aspectRatio: giphySize?.aspectRatio ?? 1,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            StreamGiphyAttachmentThumbnail(
+              type: type,
+              giphy: giphy,
+              fit: fit,
+              width: double.infinity,
+              height: double.infinity,
             ),
+<<<<<<< HEAD
           );
         },
       ),
@@ -343,11 +360,24 @@ class StreamGiphyAttachment extends StreamAttachmentWidget {
                           ),
                     ),
                   ],
+=======
+            if (giphy.uploadState.isSuccess)
+              const Positioned(
+                bottom: 8,
+                left: 8,
+                child: GiphyChip(),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: StreamAttachmentUploadStateBuilder(
+                  message: message,
+                  attachment: giphy,
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
                 ),
               ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

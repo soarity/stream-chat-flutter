@@ -25,7 +25,7 @@ class UnreadMessagesSeparator extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
           child: Text(
-            context.translations.unreadMessagesSeparatorText(unreadCount),
+            context.translations.unreadMessagesSeparatorText(),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onSecondaryContainer,

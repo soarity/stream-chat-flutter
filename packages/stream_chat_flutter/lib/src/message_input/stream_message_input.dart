@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-
 import 'dart:async';
 
 import 'package:desktop_drop/desktop_drop.dart';
@@ -111,8 +109,6 @@ class StreamMessageInput extends StatefulWidget {
     this.mediaAttachmentListBuilder,
     this.fileAttachmentBuilder,
     this.mediaAttachmentBuilder,
-    @Deprecated('Use `mediaAttachmentBuilder` instead.')
-    this.attachmentThumbnailBuilders,
     this.focusNode,
     this.sendButtonLocation = SendButtonLocation.outside,
     this.autofocus = false,
@@ -239,10 +235,6 @@ class StreamMessageInput extends StatefulWidget {
 
   /// Builder used to build the media attachment item.
   final AttachmentItemBuilder? mediaAttachmentBuilder;
-
-  /// Map that defines a thumbnail builder for an attachment type.
-  @Deprecated('Use `mediaAttachmentBuilder` instead.')
-  final Map<String, AttachmentThumbnailBuilder>? attachmentThumbnailBuilders;
 
   /// Map that defines a thumbnail builder for an attachment type.
   ///
@@ -1127,6 +1119,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       );
     }
 
+<<<<<<< HEAD
     return Padding(
       padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
       child: StreamQuotedMessageWidget(
@@ -1138,6 +1131,21 @@ class StreamMessageInputState extends State<StreamMessageInput>
         attachmentThumbnailBuilders:
             widget.quotedMessageAttachmentThumbnailBuilders,
       ),
+=======
+    final containsUrl = quotedMessage.attachments.any((it) {
+      return it.type == AttachmentType.urlPreview;
+    });
+
+    return StreamQuotedMessageWidget(
+      reverse: true,
+      showBorder: !containsUrl,
+      message: quotedMessage,
+      messageTheme: _streamChatTheme.otherMessageTheme,
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      onQuotedMessageClear: widget.onQuotedMessageCleared,
+      attachmentThumbnailBuilders:
+          widget.quotedMessageAttachmentThumbnailBuilders,
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     );
   }
 
@@ -1169,44 +1177,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
         fileAttachmentListBuilder: widget.fileAttachmentListBuilder,
         mediaAttachmentListBuilder: widget.mediaAttachmentListBuilder,
         fileAttachmentBuilder: widget.fileAttachmentBuilder,
-        mediaAttachmentBuilder: widget.mediaAttachmentBuilder ??
-            // For backward compatibility.
-            // TODO: Remove in the next major release.
-            (context, attachment, onRemovePressed) {
-              final Widget mediaAttachmentThumbnail;
-
-              final builder =
-                  widget.attachmentThumbnailBuilders?[attachment.type];
-              if (builder != null) {
-                mediaAttachmentThumbnail = builder(context, attachment);
-              } else {
-                mediaAttachmentThumbnail = MessageInputMediaAttachmentThumbnail(
-                  attachment: attachment,
-                );
-              }
-
-              return ClipRRect(
-                key: Key(attachment.id),
-                borderRadius: BorderRadius.circular(10),
-                child: Stack(
-                  children: <Widget>[
-                    AspectRatio(
-                      aspectRatio: 1,
-                      child: mediaAttachmentThumbnail,
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: RemoveAttachmentButton(
-                        onPressed: onRemovePressed != null
-                            ? () => onRemovePressed(attachment)
-                            : null,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+        mediaAttachmentBuilder: widget.mediaAttachmentBuilder,
       ),
     );
   }
@@ -1281,8 +1252,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
       message = message.copyWith(text: '/${message.command} ${message.text}');
     }
 
-    final skipEnrichUrl = _effectiveController.ogAttachment == null;
-
     var shouldKeepFocus = widget.shouldKeepFocusAfterMessage;
     shouldKeepFocus ??= !_commandEnabled;
 
@@ -1306,10 +1275,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       await WidgetsBinding.instance.endOfFrame;
     }
 
-    await _sendOrUpdateMessage(
-      message: message,
-      skipEnrichUrl: skipEnrichUrl,
-    );
+    await _sendOrUpdateMessage(message: message);
 
     if (mounted) {
       if (shouldKeepFocus) {
@@ -1322,36 +1288,29 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   Future<void> _sendOrUpdateMessage({
     required Message message,
-    bool skipEnrichUrl = false,
   }) async {
     final channel = StreamChannel.of(context).channel;
 
     try {
       Future sendingFuture;
       if (_isEditing) {
-        sendingFuture = channel.updateMessage(
-          message,
-          skipEnrichUrl: skipEnrichUrl,
-        );
+        sendingFuture = channel.updateMessage(message);
       } else {
-        sendingFuture = channel.sendMessage(
-          message,
-          skipEnrichUrl: skipEnrichUrl,
-        );
+        sendingFuture = channel.sendMessage(message);
       }
 
       final resp = await sendingFuture;
-      if (resp.message?.type == 'error') {
+      if (resp.message?.isError ?? false) {
         _effectiveController.message = message;
       }
       _startSlowMode();
       widget.onMessageSent?.call(resp.message);
     } catch (e, stk) {
       if (widget.onError != null) {
-        widget.onError?.call(e, stk);
-      } else {
-        rethrow;
+        return widget.onError?.call(e, stk);
       }
+
+      rethrow;
     }
   }
 

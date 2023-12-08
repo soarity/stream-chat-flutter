@@ -54,6 +54,7 @@ class TextBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     if (message.text?.trim().isEmpty ?? false) return const Offstage();
 
     if (message.user!.id == 'wer6bot' &&
@@ -62,6 +63,9 @@ class TextBubble extends StatelessWidget {
       return botBuilder!(context, message);
     }
 
+=======
+    if (message.text?.trim().isEmpty ?? true) return const Offstage();
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     return Padding(
       padding: isOnlyEmoji ? EdgeInsets.zero : textPadding,
       child: textBuilder != null

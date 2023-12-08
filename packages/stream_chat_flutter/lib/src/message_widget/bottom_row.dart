@@ -137,7 +137,108 @@ class BottomRow extends StatelessWidget {
       }
     }
 
+<<<<<<< HEAD
     final mediaQueryData = MediaQuery.of(context);
+=======
+    final threadParticipants = message.threadParticipants?.take(2);
+    final showThreadParticipants = threadParticipants?.isNotEmpty == true;
+    final replyCount = message.replyCount;
+
+    var msg = context.translations.threadReplyLabel;
+    if (showThreadReplyIndicator && replyCount! > 1) {
+      msg = context.translations.threadReplyCountText(replyCount);
+    }
+
+    Future<void> _onThreadTap() async {
+      try {
+        var message = this.message;
+        if (showInChannel) {
+          final channel = StreamChannel.of(context);
+          message = await channel.getMessage(message.parentId!);
+        }
+        return onThreadTap!(message);
+      } catch (e, stk) {
+        debugPrint('Error while fetching message: $e, $stk');
+      }
+    }
+
+    const usernameKey = Key('username');
+
+    final children = [
+      if (showUsername)
+        usernameBuilder?.call(context, message) ??
+            Username(
+              key: usernameKey,
+              message: message,
+              messageTheme: messageTheme,
+            ),
+      if (showTimeStamp)
+        Text(
+          Jiffy.parseFromDateTime(message.createdAt.toLocal()).jm,
+          style: messageTheme.createdAtStyle,
+        ),
+      if (showSendingIndicator)
+        sendingIndicatorBuilder?.call(context, message) ??
+            SendingIndicatorBuilder(
+              messageTheme: messageTheme,
+              message: message,
+              hasNonUrlAttachments: hasNonUrlAttachments,
+              streamChat: streamChat,
+              streamChatTheme: streamChatTheme,
+            ),
+    ];
+
+    final showThreadTail =
+        (showThreadReplyIndicator || showInChannel) && !isOnlyEmoji;
+
+    final threadIndicatorWidgets = [
+      if (showThreadTail)
+        // Added builder to use the nearest context to get the right
+        // textScaleFactor value.
+        Builder(
+          builder: (context) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: context.textScaleFactor *
+                    ((messageTheme.repliesStyle?.fontSize ?? 1) / 2),
+              ),
+              child: CustomPaint(
+                size: const Size(16, 32) * context.textScaleFactor,
+                painter: ThreadReplyPainter(
+                  context: context,
+                  color: messageTheme.messageBorderColor,
+                  reverse: reverse,
+                ),
+              ),
+            );
+          },
+        ),
+      if (showInChannel || showThreadReplyIndicator) ...[
+        if (showThreadParticipants)
+          SizedBox.fromSize(
+            size: Size((threadParticipants!.length * 8.0) + 8, 16),
+            child: ThreadParticipants(
+              threadParticipants: threadParticipants,
+              streamChatTheme: streamChatTheme,
+            ),
+          ),
+        MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: _onThreadTap,
+            child: Text(msg, style: messageTheme.repliesStyle),
+          ),
+        ),
+      ],
+    ];
+
+    if (reverse) {
+      children.addAll(threadIndicatorWidgets.reversed);
+    } else {
+      children.insertAll(0, threadIndicatorWidgets);
+    }
+
+>>>>>>> 43b8113cbde7b3b202a54ed81158c36bc817a158
     return Text.rich(
       TextSpan(
         children: [
