@@ -355,7 +355,7 @@ class _ParseAttachments extends StatelessWidget {
       AttachmentType.video: _createMediaThumbnail,
       AttachmentType.urlPreview: _createUrlThumbnail,
       AttachmentType.file: _createFileThumbnail,
-      AttachmentType.voicenote: _createVoiceNoteThumbnail,
+      'voicenote': _createVoiceNoteThumbnail,
     };
   }
 }
