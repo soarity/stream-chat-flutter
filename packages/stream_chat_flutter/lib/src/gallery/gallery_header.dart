@@ -121,6 +121,7 @@ class StreamGalleryHeader extends StatelessWidget
                       userName,
                       style: galleryHeaderThemeData.titleTextStyle,
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       sentAt,
                       style: galleryHeaderThemeData.subtitleTextStyle,
