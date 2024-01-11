@@ -20,34 +20,33 @@ class StreamSystemMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final message = this.message.replaceMentions(linkify: false);
+    final message = this.message.replaceMentions();
 
     final messageText = message.text;
     if (messageText == null) return const SizedBox.shrink();
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12.h),
-      child: SizedBox(
-        width: 280.w,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onMessageTap == null ? null : () => onMessageTap!(message),
-          child: Center(
-            child: Material(
-              shape: const StadiumBorder(),
-              elevation: 1,
-              color: Theme.of(context).colorScheme.onSecondary,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
-                child: Text(
-                  message.text!,
-                  textAlign: TextAlign.center,
-                  softWrap: true,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                ),
+      padding: EdgeInsets.symmetric(
+        vertical: 12.h,
+        horizontal: 20.w,
+      ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onMessageTap == null ? null : () => onMessageTap!(message),
+        child: Center(
+          child: Material(
+            shape: const StadiumBorder(),
+            elevation: 1,
+            color: Theme.of(context).colorScheme.onSecondary,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+              child: Text(
+                messageText,
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
               ),
             ),
           ),
