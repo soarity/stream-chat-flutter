@@ -144,7 +144,7 @@ class BottomRow extends StatelessWidget {
           if (showTimeStamp)
             WidgetSpan(
               child: MediaQuery(
-                data: mediaQueryData.copyWith(textScaleFactor: 1),
+                data: mediaQueryData.copyWith(textScaler: TextScaler.noScaling),
                 child: Text(
                   Jiffy.parseFromDateTime(message.createdAt.toLocal()).jm,
                   style: messageTheme.createdAtStyle,
@@ -154,7 +154,7 @@ class BottomRow extends StatelessWidget {
           if (showSendingIndicator)
             WidgetSpan(
               child: MediaQuery(
-                data: mediaQueryData.copyWith(textScaleFactor: 1),
+                data: mediaQueryData.copyWith(textScaler: TextScaler.noScaling),
                 child: SendingIndicatorBuilder(
                   messageTheme: messageTheme,
                   message: message,

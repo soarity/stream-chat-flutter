@@ -433,7 +433,7 @@ class ProfilePicture extends StatelessWidget {
         child = Center(
           child: Text(
             parseName(fullName),
-            textScaleFactor: 1,
+           textScaler: TextScaler.noScaling,
             style: style ??
                 Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
