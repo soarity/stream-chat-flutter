@@ -764,46 +764,21 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Widget _buildExpandActionsButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: AnimatedCrossFade(
-        crossFadeState: (_actionsShrunk && widget.enableActionAnimation)
-            ? CrossFadeState.showFirst
-            : CrossFadeState.showSecond,
-        firstCurve: Curves.easeOut,
-        secondCurve: Curves.easeIn,
-        firstChild: IconButton(
-          onPressed: () {
-            if (_actionsShrunk) {
-              setState(() => _actionsShrunk = false);
-            }
-          },
-          icon: Transform.rotate(
-            angle: (widget.actionsLocation == ActionsLocation.right ||
-                    widget.actionsLocation == ActionsLocation.rightInside)
-                ? pi
-                : 0,
-            child: StreamSvgIcon.emptyCircleLeft(
-              color: _messageInputTheme.expandButtonColor,
+    return AnimatedCrossFade(
+      crossFadeState: (_actionsShrunk && widget.enableActionAnimation)
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
+      firstCurve: Curves.easeOut,
+      secondCurve: Curves.easeIn,
+      firstChild: _buildSendButton(context),
+      secondChild: widget.disableAttachments && !(widget.actionsBuilder != null)
+          ? const Offstage()
+          : Wrap(
+              children: _actionsList()
+                  .insertBetween(SizedBox(width: widget.spaceBetweenActions)),
             ),
-          ),
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints.tightFor(
-            height: 24.r,
-            width: 24.r,
-          ),
-          splashRadius: 24.r,
-        ),
-        secondChild: widget.disableAttachments &&
-                !(widget.actionsBuilder != null)
-            ? const Offstage()
-            : Wrap(
-                children: _actionsList()
-                    .insertBetween(SizedBox(width: widget.spaceBetweenActions)),
-              ),
-        duration: const Duration(milliseconds: 300),
-        alignment: Alignment.center,
-      ),
+      duration: const Duration(milliseconds: 300),
+      alignment: Alignment.center,
     );
   }
 
@@ -869,9 +844,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
           padding: EdgeInsets.all(1.5.r),
           decoration: BoxDecoration(
             borderRadius: _messageInputTheme.borderRadius,
-            gradient: _effectiveFocusNode.hasFocus
-                ? _messageInputTheme.activeBorderGradient
-                : _messageInputTheme.idleBorderGradient,
             border: _effectiveFocusNode.hasFocus
                 ? Border.all(
                     color: Theme.of(context).colorScheme.primary,
