@@ -321,7 +321,7 @@ Future<T?> showChannelInfoModalBottomSheet<T>({
 ///    sheet.
 ///  * [Scaffold.of], for information about how to obtain the [BuildContext].
 ///  * <https://material.io/design/components/sheets-bottom.html#standard-bottom-sheet>
-PersistentBottomSheetController showChannelInfoBottomSheet({
+PersistentBottomSheetController showChannelInfoBottomSheet<T>({
   required BuildContext context,
   required Channel channel,
   Color? backgroundColor,

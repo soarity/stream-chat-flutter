@@ -22,7 +22,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
     this.textLimit = 170,
     this.textBuilder,
     this.attachmentThumbnailBuilders,
-    this.padding = const EdgeInsets.all(8),
     this.onQuotedMessageClear,
   });
 
@@ -47,9 +46,6 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   /// Map that defines a thumbnail builder for an attachment type
   final Map<String, QuotedMessageAttachmentThumbnailBuilder>?
       attachmentThumbnailBuilders;
-
-  /// Padding around the widget
-  final EdgeInsetsGeometry padding;
 
   /// Callback for clearing quoted messages.
   final VoidCallback? onQuotedMessageClear;
