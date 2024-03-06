@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamChat}
@@ -39,7 +38,6 @@ class StreamChat extends StatefulWidget {
     this.onBackgroundEventReceived,
     this.backgroundKeepAlive = const Duration(minutes: 1),
     this.connectivityStream,
-    this.useMaterial3 = false,
   });
 
   /// Client to do chat operations with
@@ -67,10 +65,6 @@ class StreamChat extends StatefulWidget {
   /// Visible for testing
   @visibleForTesting
   final Stream<ConnectivityResult>? connectivityStream;
-
-  /// Whether to use material 3 or not (default is false)
-  /// See our [docs](https://getstream.io/chat/docs/sdk/flutter/stream_chat_flutter/stream_chat_and_theming)
-  final bool useMaterial3;
 
   @override
   StreamChatState createState() => StreamChatState();
@@ -103,51 +97,45 @@ class StreamChatState extends State<StreamChat> {
   @override
   void initState() {
     super.initState();
-   
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = _getTheme(context, widget.streamChatThemeData);
-    return Theme(
-      data: Theme.of(context).copyWith(
-        useMaterial3: widget.useMaterial3,
-      ),
-      child: Portal(
-        child: StreamChatConfiguration(
-          data: streamChatConfigData,
-          child: StreamChatTheme(
-            data: theme,
-            child: Builder(
-              builder: (context) {
-                final materialTheme = Theme.of(context);
-                final streamTheme = StreamChatTheme.of(context);
-                return Theme(
-                  data: materialTheme.copyWith(
-                    primaryIconTheme: streamTheme.primaryIconTheme,
-                    colorScheme: materialTheme.colorScheme.copyWith(
-                      secondary: streamTheme.colorTheme.accentPrimary,
-                    ),
+    return Portal(
+      child: StreamChatConfiguration(
+        data: streamChatConfigData,
+        child: StreamChatTheme(
+          data: theme,
+          child: Builder(
+            builder: (context) {
+              final materialTheme = Theme.of(context);
+              final streamTheme = StreamChatTheme.of(context);
+              return Theme(
+                data: materialTheme.copyWith(
+                  primaryIconTheme: streamTheme.primaryIconTheme,
+                  colorScheme: materialTheme.colorScheme.copyWith(
+                    secondary: streamTheme.colorTheme.accentPrimary,
                   ),
-                  child: StreamChatCore(
-                    client: client,
-                    onBackgroundEventReceived: widget.onBackgroundEventReceived,
-                    backgroundKeepAlive: widget.backgroundKeepAlive,
-                    connectivityStream: widget.connectivityStream,
-                    child: Builder(
-                      builder: (context) {
-                        StreamChatClient.additionalHeaders = {
-                          'X-Stream-Client':
-                              '${StreamChatClient.defaultUserAgent}-'
-                                  'ui-${StreamChatClient.packageVersion}',
-                        };
-                        return widget.child ?? const Offstage();
-                      },
-                    ),
+                ),
+                child: StreamChatCore(
+                  client: client,
+                  onBackgroundEventReceived: widget.onBackgroundEventReceived,
+                  backgroundKeepAlive: widget.backgroundKeepAlive,
+                  connectivityStream: widget.connectivityStream,
+                  child: Builder(
+                    builder: (context) {
+                      StreamChatClient.additionalHeaders = {
+                        'X-Stream-Client':
+                            '${StreamChatClient.defaultUserAgent}-'
+                                'ui-${StreamChatClient.packageVersion}',
+                      };
+                      return widget.child ?? const Offstage();
+                    },
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -178,12 +166,4 @@ class StreamChatState extends State<StreamChat> {
     }
     super.didChangeDependencies();
   }
-}
-
-/// Font Size
-extension SizeExtension on num {
-  ///[ScreenUtil.setSp]
-  /// used to reduce font sizes on bigger screens
-  double get fzs =>
-      1.sw <= 576 ? ScreenUtil().setSp(this) : ScreenUtil().setSp(this - 1.6);
 }
