@@ -1,5 +1,6 @@
 // ignore_for_file: lines_longer_than_80_chars
 import 'dart:async';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +81,11 @@ class StreamMessageListView extends StatefulWidget {
     super.key,
     this.isDm = false,
     this.showScrollToBottom = true,
+    this.showUnreadCountOnScrollToBottom = false,
     this.scrollToBottomBuilder,
+    this.showUnreadIndicator = true,
+    this.unreadIndicatorBuilder,
+    this.markReadWhenAtTheBottom = false,
     this.messageBuilder,
     this.parentMessageBuilder,
     this.parentMessage,
@@ -165,9 +170,13 @@ class StreamMessageListView extends StatefulWidget {
   /// {@macro parentMessageBuilder}
   final ParentMessageBuilder? parentMessageBuilder;
 
-  /// If true will show a scroll to bottom message when there are new
-  /// messages and the scroll offset is not zero
+  /// If true will show a scroll to bottom button when
+  /// the scroll offset is not zero
   final bool showScrollToBottom;
+
+  /// If true will show an indicator with number of unread messages
+  /// on scroll to bottom button
+  final bool showUnreadCountOnScrollToBottom;
 
   /// Function used to build a custom scroll to bottom widget
   ///
@@ -189,6 +198,37 @@ class StreamMessageListView extends StatefulWidget {
     int unreadCount,
     Future<void> Function(int) scrollToBottomDefaultTapAction,
   )? scrollToBottomBuilder;
+
+  /// If true will show an indicator with number of unread messages
+  /// that will scroll to latest read message when tapped and mark
+  /// channel as read when dismissed
+  final bool showUnreadIndicator;
+
+  /// Function used to build a custom unread indicator widget
+  ///
+  /// Provides the current unread messages count and a reference
+  /// to the function that is executed on tap to scroll to latest
+  /// read message by default
+  ///
+  /// As an example:
+  /// ```
+  /// MessageListView(
+  ///   unreadIndicatorBuilder: (unreadCount, defaultTapAction, dismissAction) {
+  ///     return InkWell(
+  ///       onTap: () => defaultTapAction(unreadCount),
+  ///       child: Text('Scroll To Unread'),
+  ///     );
+  ///   },
+  /// ),
+  /// ```
+  final Widget Function(
+    int unreadCount,
+    Future<void> Function(String) scrollToUnreadDefaultTapAction,
+    Future<void> Function() dismissIndicatorDefaultTapAction,
+  )? unreadIndicatorBuilder;
+
+  /// If true will mark channel as read when the user scrolls to the bottom of the list
+  final bool markReadWhenAtTheBottom;
 
   /// Parent message in case of a thread
   final Message? parentMessage;
@@ -325,6 +365,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       widget.messageListController ?? _defaultController;
 
   StreamSubscription? _messageNewListener;
+  StreamSubscription? _userReadListener;
 
   Read? _userRead;
   Message? _oldestUnreadMessage;
@@ -354,7 +395,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         (it) =>
             it.user.id == streamChannel?.channel.client.state.currentUser?.id,
       );
+
       _messageNewListener?.cancel();
+      _userReadListener?.cancel();
+
       unreadCount = streamChannel?.channel.state?.unreadCount ?? 0;
       initialIndex = getInitialIndex(
         widget.initialScrollIndex,
@@ -390,6 +434,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         }
       });
 
+      _userReadListener =
+          streamChannel!.channel.state?.readStream.listen((event) {
+        setState(() {
+          unreadCount = streamChannel!.channel.state?.unreadCount ?? 0;
+          _userRead = streamChannel!.channel.state?.currentUserRead;
+        });
+      });
+
       unreadCount = streamChannel?.channel.state?.unreadCount ?? 0;
     }
   }
@@ -400,6 +452,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       streamChannel!.reloadChannel();
     }
     _messageNewListener?.cancel();
+    _userReadListener?.cancel();
     _itemPositionListener.itemPositions
         .removeListener(_handleItemPositionsChanged);
     super.dispose();
@@ -409,37 +462,39 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   Widget build(BuildContext context) {
     return Portal(
       labels: const [kPortalMessageListViewLabel],
-      child: MessageListCore(
-        paginationLimit: widget.paginationLimit,
-        messageFilter: widget.messageFilter,
-        loadingBuilder: widget.loadingBuilder ??
-            (context) => Center(
-                  child: CustomProgressIndicator(size: 20.r),
-                ),
-        emptyBuilder: widget.emptyBuilder ??
-            (context) => Center(
-                  child: Text(
-                    context.translations.emptyChatMessagesText,
-                    style: _streamTheme.textTheme.footnote.copyWith(
-                      color: _streamTheme.colorTheme.textHighEmphasis
-                          .withOpacity(0.5),
+      child: ScaffoldMessenger(
+        child: MessageListCore(
+          paginationLimit: widget.paginationLimit,
+          messageFilter: widget.messageFilter,
+          loadingBuilder: widget.loadingBuilder ??
+              (context) => Center(
+                    child: CustomProgressIndicator(size: 20.r),
+                  ),
+          emptyBuilder: widget.emptyBuilder ??
+              (context) => Center(
+                    child: Text(
+                      context.translations.emptyChatMessagesText,
+                      style: _streamTheme.textTheme.footnote.copyWith(
+                        color: _streamTheme.colorTheme.textHighEmphasis
+                            .withOpacity(0.5),
+                      ),
                     ),
                   ),
-                ),
-        messageListBuilder: widget.messageListBuilder ??
-            (context, list) => _buildListView(list),
-        messageListController: _messageListController,
-        parentMessage: widget.parentMessage,
-        errorBuilder: widget.errorBuilder ??
-            (BuildContext context, Object error) => Center(
-                  child: Text(
-                    context.translations.genericErrorText,
-                    style: _streamTheme.textTheme.footnote.copyWith(
-                      color: _streamTheme.colorTheme.textHighEmphasis
-                          .withOpacity(0.5),
+          messageListBuilder: widget.messageListBuilder ??
+              (context, list) => _buildListView(list),
+          messageListController: _messageListController,
+          parentMessage: widget.parentMessage,
+          errorBuilder: widget.errorBuilder ??
+              (BuildContext context, Object error) => Center(
+                    child: Text(
+                      context.translations.genericErrorText,
+                      style: _streamTheme.textTheme.footnote.copyWith(
+                        color: _streamTheme.colorTheme.textHighEmphasis
+                            .withOpacity(0.5),
+                      ),
                     ),
                   ),
-                ),
+        ),
       ),
     );
   }
@@ -756,6 +811,19 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             );
           },
         ),
+        if (widget.showFloatingDateDivider)
+          Positioned(
+            top: 20,
+            left: 0,
+            right: 0,
+            child: FloatingDateDivider(
+              itemCount: itemCount,
+              reverse: widget.reverse,
+              itemPositionListener: _itemPositionListener.itemPositions,
+              messages: messages,
+              dateDividerBuilder: widget.dateDividerBuilder,
+            ),
+          ),
         if (widget.showScrollToBottom)
           BetterStreamBuilder<bool>(
             stream: streamChannel!.channel.state!.isUpToDateStream,
@@ -771,19 +839,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
               },
             ),
           ),
-        if (widget.showFloatingDateDivider)
-          Positioned(
-            top: 20,
-            left: 0,
-            right: 0,
-            child: FloatingDateDivider(
-              itemCount: itemCount,
-              reverse: widget.reverse,
-              itemPositionListener: _itemPositionListener.itemPositions,
-              messages: messages,
-              dateDividerBuilder: widget.dateDividerBuilder,
-            ),
-          ),
+        if (widget.showUnreadIndicator) _buildShowUnreadBottom(),
       ],
     );
 
@@ -819,11 +875,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       _messageListController.paginateData!(direction: direction);
 
   Future<void> scrollToBottomDefaultTapAction(int unreadCount) async {
-    this.unreadCount = unreadCount;
-    if (unreadCount > 0) {
-      streamChannel!.channel.markRead();
-    }
-
     // If the channel is not up to date, we need to reload it before scrolling
     // to the end of the list.
     if (!_upToDate) {
@@ -842,11 +893,49 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     // Scroll to the end of the list.
     if (_scrollController?.isAttached == true) {
       _scrollController!.scrollTo(
-        index: 0,
+        index: max(
+            messages.toList().indexWhere((element) =>
+                element.id ==
+                streamChannel!
+                    .channel.state?.currentUserRead?.lastReadMessageId),
+            0),
         duration: const Duration(seconds: 1),
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  Future<void> scrollToUnreadDefaultTapAction(String lastReadMessageId) async {
+    // If the channel is not up to date, we need to reload it before scrolling
+    if (!_upToDate) {
+      // Reset the pagination variables.
+      initialIndex = 0;
+      initialAlignment = 0;
+      _bottomPaginationActive = false;
+
+      // Reload the channel to get the latest messages.
+      await streamChannel!.reloadChannel();
+
+      // Wait for the frame to be rendered with the updated channel state.
+      await WidgetsBinding.instance.endOfFrame;
+    }
+
+    // Scroll to the end of the list.
+    if (_scrollController?.isAttached == true) {
+      _scrollController!.scrollTo(
+        index: max(
+            messages
+                .toList()
+                .indexWhere((element) => element.id == lastReadMessageId),
+            0),
+        duration: const Duration(seconds: 1),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  Future<void> dismissIndicatorDefaultTapAction() async {
+    await streamChannel!.channel.markRead();
   }
 
   Widget _buildDateDivider(Message message) {
@@ -905,6 +994,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showCopyMessage: false,
       showDeleteMessage: false,
       showEditMessage: false,
+      showMarkUnreadMessage: false,
       message: message,
       showTailBubble: false,
       reverse: isMyMessage,
@@ -985,6 +1075,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             streamChannel!.channel.state!.members.any((e) =>
                 e.userId ==
                 streamChannel!.channel.client.state.currentUser!.id);
+
         return Positioned(
           bottom: 8,
           right: 8,
@@ -1006,7 +1097,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         color: _streamTheme.colorTheme.textHighEmphasis,
                       ),
               ),
-              if (showUnreadCount)
+              if (showUnreadCount && widget.showUnreadCountOnScrollToBottom)
                 Positioned(
                   left: 0,
                   right: 0,
@@ -1035,6 +1126,74 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   ),
                 ),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildShowUnreadBottom() {
+    return StreamBuilder<int>(
+      stream: streamChannel!.channel.state!.unreadCountStream,
+      builder: (_, snapshot) {
+        if (snapshot.hasError) {
+          return const Offstage();
+        } else if (!snapshot.hasData) {
+          return const Offstage();
+        }
+        final unreadCount = snapshot.data!;
+
+        if (widget.unreadIndicatorBuilder != null) {
+          return widget.unreadIndicatorBuilder!(
+            unreadCount,
+            scrollToUnreadDefaultTapAction,
+            dismissIndicatorDefaultTapAction,
+          );
+        }
+
+        final showUnread = unreadCount > 0 &&
+            streamChannel!.channel.state!.members.any((e) =>
+                e.userId ==
+                streamChannel!.channel.client.state.currentUser!.id);
+
+        if (!showUnread) return const Offstage();
+
+        final lastReadMessageId =
+            streamChannel!.channel.state!.currentUserRead?.lastReadMessageId;
+
+        return Positioned(
+          top: 8,
+          child: GestureDetector(
+            onTap: lastReadMessageId != null
+                ? () => scrollToUnreadDefaultTapAction(lastReadMessageId)
+                : null,
+            child: Container(
+              // width: 120,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              height: 40,
+              decoration: BoxDecoration(
+                color: _streamTheme.colorTheme.textLowEmphasis,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    context.translations
+                        .unreadCountIndicatorLabel(unreadCount: unreadCount),
+                    style: TextStyle(color: _streamTheme.colorTheme.barsBg),
+                  ),
+                  const SizedBox(width: 16),
+                  GestureDetector(
+                    onTap: dismissIndicatorDefaultTapAction,
+                    child: Icon(
+                      Icons.close,
+                      color: _streamTheme.colorTheme.barsBg,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -1100,6 +1259,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final showUsername = !isMyMessage &&
         (prevMsghasTimeDiff || !isPrevUserSame || hasFileAttachment);
 
+    final showMarkUnread =
+        streamChannel?.channel.config?.readEvents == true && !isMyMessage;
+
     final showUserAvatar = (isMyMessage || widget.isDm)
         ? DisplayWidget.gone
         : (hasTimeDiff || !isNextUserSame || hasFileAttachment)
@@ -1138,6 +1300,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showUsername: showUsername,
       showSendingIndicator: showSendingIndicator,
       showUserAvatar: showUserAvatar,
+      showMarkUnreadMessage: showMarkUnread,
       onQuotedMessageTap: (quotedMessageId) async {
         if (messages.map((e) => e.id).contains(quotedMessageId)) {
           final index = messages.indexWhere((m) => m.id == quotedMessageId);
@@ -1266,7 +1429,8 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       if (channel != null) {
         if (_upToDate &&
             channel.config?.readEvents == true &&
-            channel.state!.unreadCount > 0) {
+            channel.state!.unreadCount > 0 &&
+            widget.markReadWhenAtTheBottom) {
           streamChannel!.channel.markRead();
         }
       }

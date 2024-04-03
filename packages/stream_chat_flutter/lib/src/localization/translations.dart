@@ -211,6 +211,15 @@ abstract class Translations {
   /// based on [pinned]
   String togglePinUnpinText({required bool pinned});
 
+  /// The text for marking message as unread functionality in [MessageWidget]
+  String get markAsUnreadLabel;
+
+  /// The text for unread count indicator
+  String unreadCountIndicatorLabel({required int unreadCount});
+
+  /// The text of an error shown when marking a message as unread fails
+  String get markUnreadError;
+
   /// The text for showing delete/retry-delete based on [isDeleteFailed]
   String toggleDeleteRetryDeleteMessageText({required bool isDeleteFailed});
 
@@ -582,6 +591,14 @@ class DefaultTranslations implements Translations {
   }
 
   @override
+  String get markAsUnreadLabel => 'Mark as Unread';
+
+  @override
+  String unreadCountIndicatorLabel({required int unreadCount}) {
+    return '$unreadCount unread';
+  }
+
+  @override
   String toggleDeleteRetryDeleteMessageText({required bool isDeleteFailed}) {
     if (isDeleteFailed) return 'Retry Deleting Message';
     return 'Delete Message';
@@ -813,4 +830,9 @@ Attachment limit exceeded: it's not possible to add more than $limit attachments
 
   @override
   String get allowFileAccessMessage => 'Allow access to files';
+
+  @override
+  String get markUnreadError =>
+      'Error marking message unread. Cannot mark unread messages older than the'
+      ' newest 100 channel messages.';
 }
