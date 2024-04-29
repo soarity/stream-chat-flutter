@@ -56,11 +56,11 @@ class StreamMessagePreviewText extends StatelessWidget {
           return '📷';
         } else if (it.type == AttachmentType.video) {
           return '🎬';
-        } else if (it.type == 'voicenote') {
+        } else if (it.type == 'voicenote' || it.type == 'voiceRecording') {
           var text = '🎙️';
           final durationInInt = it.extraData['duration'] as int?;
           if (durationInInt != null) {
-            final duration = Duration(milliseconds: durationInInt);
+            final duration = Duration(seconds: durationInInt);
             final minuteLeft = duration.inMinutes.remainder(60);
             final minutes =
                 minuteLeft.toString().padLeft(minuteLeft >= 10 ? 2 : 1, '0');

@@ -315,7 +315,7 @@ class _ParseAttachments extends StatelessWidget {
       final durationInInt = attachment.extraData['duration'] as int?;
       var text = '';
       if (durationInInt != null) {
-        final duration = Duration(milliseconds: durationInInt);
+        final duration = Duration(seconds: durationInInt);
         final minuteLeft = duration.inMinutes.remainder(60);
         final minutes =
             minuteLeft.toString().padLeft(minuteLeft >= 10 ? 2 : 1, '0');
@@ -352,6 +352,7 @@ class _ParseAttachments extends StatelessWidget {
       AttachmentType.urlPreview: _createUrlThumbnail,
       AttachmentType.file: _createFileThumbnail,
       'voicenote': _createVoiceNoteThumbnail,
+      'voiceRecording': _createVoiceNoteThumbnail,
     };
   }
 }
