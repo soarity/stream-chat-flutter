@@ -64,7 +64,7 @@ class StreamChat extends StatefulWidget {
   /// Stream of connectivity result
   /// Visible for testing
   @visibleForTesting
-  final Stream<ConnectivityResult>? connectivityStream;
+  final Stream<List<ConnectivityResult>>? connectivityStream;
 
   @override
   StreamChatState createState() => StreamChatState();

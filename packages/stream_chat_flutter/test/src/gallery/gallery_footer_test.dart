@@ -64,13 +64,13 @@ void main() {
     'it should show channel typing',
     (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        MaterialAppWrapper(
           home: StreamChat(
             client: client,
             child: StreamChannel(
               channel: channel,
-              child: WillPopScope(
-                onWillPop: () async => false,
+              child: PopScope(
+                onPopInvoked: (bool didPop) async => false,
                 child: const Scaffold(
                   body: StreamGalleryFooter(
                     mediaAttachmentPackages: [],
@@ -93,8 +93,8 @@ void main() {
           client: client,
           child: StreamChannel(
             channel: channel,
-            child: WillPopScope(
-              onWillPop: () async => false,
+            child: PopScope(
+              onPopInvoked: (bool didPop) async => false,
               child: const Scaffold(
                 body: StreamGalleryFooter(
                   mediaAttachmentPackages: [],
