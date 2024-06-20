@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/attachment/thumbnail/media_attachment_thumbnail.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 part 'fallback_attachment_builder.dart';
@@ -51,12 +50,12 @@ abstract class StreamAttachmentWidgetBuilder {
   /// Example:
   ///
   /// ```dart
-  /// final myBuilders = [
-  ///  ...StreamAttachmentWidgetBuilder.defaultBuilders,
-  ///  MyCustomAttachmentBuilder(),
-  ///  MyOtherCustomAttachmentBuilder(),
-  ///  ...
-  /// ];
+  ///   final myBuilders = StreamAttachmentWidgetBuilder.defaultBuilders(
+  ///     customAttachmentBuilders: [
+  ///       MyCustomAttachmentBuilder(),
+  ///       MyOtherCustomAttachmentBuilder(),
+  ///     ]
+  ///   );
   /// ```
   ///
   /// **Note**: The order of the builders in the list is important. The first
@@ -67,8 +66,11 @@ abstract class StreamAttachmentWidgetBuilder {
     ShapeBorder? shape,
     EdgeInsetsGeometry padding = const EdgeInsets.all(4),
     StreamAttachmentWidgetTapCallback? onAttachmentTap,
+    List<StreamAttachmentWidgetBuilder>? customAttachmentBuilders,
   }) {
     return [
+      ...?customAttachmentBuilders,
+
       // Handles a mix of image, gif, video, url and file attachments.
       MixedAttachmentBuilder(
         padding: padding,

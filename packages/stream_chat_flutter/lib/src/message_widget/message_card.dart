@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_chat_flutter/src/message_widget/bottom_row.dart';
 import 'package:stream_chat_flutter/src/message_widget/chat_bubble.dart';
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content.dart';
 import 'package:stream_chat_flutter/src/message_widget/username.dart';

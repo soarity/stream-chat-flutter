@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta/meta.dart';
-import 'package:stream_chat_flutter/src/message_widget/message_widget_content_components.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Signature for the builder function that will be called when the message
@@ -297,7 +296,7 @@ class MessageWidgetContent extends StatelessWidget {
                         onReplyTap: onReplyTap,
                         onShowMessage: onShowMessage,
                         attachmentActionsModalBuilder:
-                        attachmentActionsModalBuilder,
+                            attachmentActionsModalBuilder,
                         streamChat: streamChat,
                         streamChatTheme: streamChatTheme,
                         textPadding: textPadding,
@@ -344,6 +343,8 @@ class MessageWidgetContent extends StatelessWidget {
 }
 
 /// {@template UserAvatar}
+/// Widget for the UserAvatar
+/// {@endtemplate}
 
 class UserAvatar extends StatelessWidget {
   ///
@@ -433,7 +434,7 @@ class ProfilePicture extends StatelessWidget {
         child = Center(
           child: Text(
             parseName(fullName),
-           textScaler: TextScaler.noScaling,
+            textScaler: TextScaler.noScaling,
             style: style ??
                 Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,

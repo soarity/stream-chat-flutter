@@ -389,16 +389,32 @@ class StreamMessageInput extends StatefulWidget {
     FocusNode node,
     KeyEvent event,
   ) {
-    // On desktop/web, send the message when the user presses the enter key.
-    return event is KeyUpEvent && event.logicalKey == LogicalKeyboardKey.enter;
+    if (CurrentPlatform.isWeb ||
+        CurrentPlatform.isMacOS ||
+        CurrentPlatform.isWindows ||
+        CurrentPlatform.isLinux) {
+      // On desktop/web, send the message when the user presses the enter key.
+      return event is KeyUpEvent &&
+          event.logicalKey == LogicalKeyboardKey.enter;
+    }
+
+    return false;
   }
 
   static bool _defaultClearQuotedMessageKeyPredicate(
     FocusNode node,
     KeyEvent event,
   ) {
-    // On desktop/web, clear the quoted message when the user presses the escape key.
-    return event is KeyUpEvent && event.logicalKey == LogicalKeyboardKey.escape;
+    if (CurrentPlatform.isWeb ||
+        CurrentPlatform.isMacOS ||
+        CurrentPlatform.isWindows ||
+        CurrentPlatform.isLinux) {
+      // On desktop/web, clear the quoted message when the user presses the escape key.
+      return event is KeyUpEvent &&
+          event.logicalKey == LogicalKeyboardKey.escape;
+    }
+
+    return false;
   }
 
   @override
@@ -863,14 +879,20 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 maxHeight: widget.maxHeight,
                 child: PlatformWidgetBuilder(
                   web: (context, child) => Focus(
+                    skipTraversal: true,
                     onKeyEvent: _handleKeyPressed,
                     child: child!,
                   ),
                   desktop: (context, child) => Focus(
+                    skipTraversal: true,
                     onKeyEvent: _handleKeyPressed,
                     child: child!,
                   ),
-                  mobile: (context, child) => child,
+                  mobile: (context, child) => Focus(
+                    skipTraversal: true,
+                    onKeyEvent: _handleKeyPressed,
+                    child: child!,
+                  ),
                   child: Row(
                     children: [
                       Expanded(

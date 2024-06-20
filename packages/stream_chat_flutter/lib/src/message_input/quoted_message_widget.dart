@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
-import 'package:stream_chat_flutter/src/attachment/thumbnail/image_attachment_thumbnail.dart';
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
