@@ -16,15 +16,11 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-<<<<<<< HEAD
   stream_chat_flutter:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: circles/release/7.4.0
+      ref: circles/release/8.0.0
       path: packages/stream_chat_flutter
-=======
-  stream_chat_flutter: ^8.0.0
->>>>>>> 6363c4f9f7e704279ef289ccd6049629b432944b
 
 dev_dependencies:
   flutter_test:
