@@ -1,3 +1,10 @@
+## 8.0.0
+
+🐞 Fixed
+
+- Fixed null errors in web from markdown.
+- Fixed bug causing background events to be sent in foreground.
+
 ## 7.3.0 
 
 🐞 Fixed
