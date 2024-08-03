@@ -320,7 +320,7 @@ class StreamMessageListView extends StatefulWidget {
     if (spacingTypes.contains(SpacingType.otherUser)) {
       return const SizedBox(height: 8);
     } else if (spacingTypes.contains(SpacingType.timeDiff)) {
-      return const SizedBox(height: 8);
+      return const SizedBox(height: 4);
     }
     return const SizedBox(height: 2);
   }
