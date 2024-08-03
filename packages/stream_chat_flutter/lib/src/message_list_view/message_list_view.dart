@@ -1263,9 +1263,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final showUsername = !isMyMessage &&
         (prevMsghasTimeDiff || !isPrevUserSame || hasFileAttachment);
 
-    final showMarkUnread =
-        streamChannel?.channel.config?.readEvents == true && !isMyMessage;
-
     final showUserAvatar = (isMyMessage || widget.isDm)
         ? DisplayWidget.gone
         : (hasTimeDiff || !isNextUserSame || hasFileAttachment)
@@ -1281,11 +1278,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         isOnlyEmoji || hasUrlAttachment || (isMyMessage && !hasFileAttachment)
             ? BorderSide.none
             : null;
-
-    final currentUser = StreamChat.of(context).currentUser;
-    final members = StreamChannel.of(context).channel.state?.members ?? [];
-    final currentUserMember =
-        members.firstWhereOrNull((e) => e.user!.id == currentUser!.id);
 
     Widget messageWidget = StreamMessageWidget(
       isDm: widget.isDm,
@@ -1303,7 +1295,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,
       showUserAvatar: showUserAvatar,
-      showMarkUnreadMessage: showMarkUnread,
+      showMarkUnreadMessage: false,
       onQuotedMessageTap: (quotedMessageId) async {
         if (messages.map((e) => e.id).contains(quotedMessageId)) {
           final index = messages.indexWhere((m) => m.id == quotedMessageId);
@@ -1365,8 +1357,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         widget.onMessageTap?.call(message);
         FocusScope.of(context).unfocus();
       },
-      showPinButton: currentUserMember != null &&
-          _userPermissions.contains(PermissionType.pinMessage),
+      showPinButton: false,
       showPinHighlight: false,
       botBuilder: widget.botBuilder,
     );
