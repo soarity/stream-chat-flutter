@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 ///
 class CustomProgressIndicator extends StatelessWidget {
@@ -21,8 +20,8 @@ class CustomProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: size ?? 30.r,
-        height: size ?? 30.r,
+        width: size ?? 30,
+        height: size ?? 30,
         child: Platform.isIOS
             ? const CupertinoActivityIndicator()
             : const CircularProgressIndicator(strokeWidth: 2),
