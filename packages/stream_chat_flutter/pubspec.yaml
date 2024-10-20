@@ -35,8 +35,6 @@ dependencies:
   jiffy: ^6.2.1
   just_audio: ^0.9.38
   lottie: ^3.1.2
-  media_kit: ^1.1.10+1
-  media_kit_video: ^1.2.4
   meta: ^1.9.1
   path_provider: ^2.1.3
   photo_manager: ^3.2.0
@@ -47,7 +45,7 @@ dependencies:
   stream_chat_flutter_core:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: circles/release/8.1.0
+      ref: circles/release/8.2.0
       path: packages/stream_chat_flutter_core
   synchronized: ^3.1.0+1
   thumblr: ^0.0.4
