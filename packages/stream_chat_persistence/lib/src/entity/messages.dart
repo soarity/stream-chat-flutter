@@ -97,6 +97,9 @@ class Messages extends Table {
   /// The DateTime on which the message was deleted on the server.
   DateTimeColumn get remoteDeletedAt => dateTime().nullable()();
 
+  /// The DateTime at which the message text was edited
+  DateTimeColumn get messageTextUpdatedAt => dateTime().nullable()();
+
   /// Id of the User who sent the message
   TextColumn get userId => text().nullable()();
 
@@ -121,7 +124,7 @@ class Messages extends Table {
       text().nullable().map(NullableMapConverter<String>())();
 
   /// Message custom extraData
-  TextColumn get extraData => text().nullable().map(MapConverter<Object?>())();
+  TextColumn get extraData => text().nullable().map(MapConverter())();
 
   @override
   Set<Column> get primaryKey => {id};

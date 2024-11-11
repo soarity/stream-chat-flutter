@@ -28,6 +28,7 @@ class MessageCard extends StatefulWidget {
     required this.showInChannel,
     required this.showTimeStamp,
     required this.showUsername,
+    required this.showEditedLabel,
     required this.reverse,
     required this.messageTheme,
     required this.hasQuotedMessage,
@@ -113,6 +114,9 @@ class MessageCard extends StatefulWidget {
 
   /// {@macro showTimestamp}
   final bool showTimeStamp;
+
+  /// {@macro showEdited}
+  final bool showEditedLabel;
 
   /// {@macro showUsername}
   final bool showUsername;
@@ -351,6 +355,7 @@ class _MessageCardState extends State<MessageCard> {
                   isGiphy: widget.isGiphy,
                   showSendingIndicator: widget.showSendingIndicator,
                   showTimeStamp: widget.showTimeStamp,
+                  showEditedLabel: widget.showEditedLabel,
                   streamChatTheme: widget.streamChatTheme,
                   streamChat: widget.streamChat,
                   hasNonUrlAttachments: widget.hasNonUrlAttachments,

@@ -16,6 +16,7 @@ class BottomRow extends StatelessWidget {
     required this.showInChannel,
     required this.showTimeStamp,
     required this.showUsername,
+    required this.showEditedLabel,
     required this.reverse,
     required this.showSendingIndicator,
     required this.hasUrlAttachments,
@@ -47,6 +48,9 @@ class BottomRow extends StatelessWidget {
 
   /// {@macro showUsername}
   final bool showUsername;
+
+  /// {@macro showEdited}
+  final bool showEditedLabel;
 
   /// {@macro reverse}
   final bool reverse;
@@ -92,6 +96,7 @@ class BottomRow extends StatelessWidget {
     bool? showInChannel,
     bool? showTimeStamp,
     bool? showUsername,
+    bool? showEditedLabel,
     bool? reverse,
     bool? showSendingIndicator,
     bool? hasUrlAttachments,
@@ -112,6 +117,7 @@ class BottomRow extends StatelessWidget {
         showInChannel: showInChannel ?? this.showInChannel,
         showTimeStamp: showTimeStamp ?? this.showTimeStamp,
         showUsername: showUsername ?? this.showUsername,
+        showEditedLabel: showEditedLabel ?? this.showEditedLabel,
         reverse: reverse ?? this.reverse,
         showSendingIndicator: showSendingIndicator ?? this.showSendingIndicator,
         hasUrlAttachments: hasUrlAttachments ?? this.hasUrlAttachments,
@@ -137,10 +143,22 @@ class BottomRow extends StatelessWidget {
       }
     }
 
+    final isEdited = message.messageTextUpdatedAt != null;
+
     final mediaQueryData = MediaQuery.of(context);
     return Text.rich(
       TextSpan(
         children: [
+          if (showEditedLabel && isEdited)
+            WidgetSpan(
+              child: MediaQuery(
+                data: mediaQueryData.copyWith(textScaler: TextScaler.noScaling),
+                child: Text(
+                  context.translations.editedMessageLabel,
+                  style: messageTheme.createdAtStyle,
+                ),
+              ),
+            ),
           if (showTimeStamp)
             WidgetSpan(
               child: MediaQuery(

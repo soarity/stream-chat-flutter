@@ -72,6 +72,9 @@ abstract class Translations {
   /// The label for message deleted
   String get messageDeletedLabel;
 
+  /// The label for showing the message is edited
+  String get editedMessageLabel;
+
   /// The label for message reactions
   String get messageReactionsLabel;
 
@@ -460,6 +463,9 @@ class DefaultTranslations implements Translations {
 
   @override
   String get messageDeletedLabel => 'Message deleted';
+
+  @override
+  String get editedMessageLabel => 'Edited';
 
   @override
   String get messageReactionsLabel => 'Message Reactions';

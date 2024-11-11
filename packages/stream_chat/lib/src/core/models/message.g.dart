@@ -21,10 +21,10 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       silent: json['silent'] as bool? ?? false,
       shadowed: json['shadowed'] as bool? ?? false,
       reactionCounts: (json['reaction_counts'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as int),
+        (k, e) => MapEntry(k, (e as num).toInt()),
       ),
       reactionScores: (json['reaction_scores'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as int),
+        (k, e) => MapEntry(k, (e as num).toInt()),
       ),
       latestReactions: (json['latest_reactions'] as List<dynamic>?)
           ?.map((e) => Reaction.fromJson(e as Map<String, dynamic>))
@@ -37,7 +37,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           ? null
           : Message.fromJson(json['quoted_message'] as Map<String, dynamic>),
       quotedMessageId: json['quoted_message_id'] as String?,
-      replyCount: json['reply_count'] as int? ?? 0,
+      replyCount: (json['reply_count'] as num?)?.toInt() ?? 0,
       threadParticipants: (json['thread_participants'] as List<dynamic>?)
           ?.map((e) => User.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -52,6 +52,9 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       deletedAt: json['deleted_at'] == null
           ? null
           : DateTime.parse(json['deleted_at'] as String),
+      messageTextUpdatedAt: json['message_text_updated_at'] == null
+          ? null
+          : DateTime.parse(json['message_text_updated_at'] as String),
       user: json['user'] == null
           ? null
           : User.fromJson(json['user'] as Map<String, dynamic>),

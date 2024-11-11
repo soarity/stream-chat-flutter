@@ -64,6 +64,7 @@ class MessageWidgetContent extends StatelessWidget {
     required this.showSendingIndicator,
     required this.showTimeStamp,
     required this.showUsername,
+    required this.showEditedLabel,
     required this.messageWidget,
     this.onUserAvatarTap,
     this.borderRadiusGeometry,
@@ -75,10 +76,6 @@ class MessageWidgetContent extends StatelessWidget {
     this.textBuilder,
     this.quotedMessageBuilder,
     this.bottomRowBuilderWithDefaultWidget,
-    @Deprecated('''
-    Use [bottomRowBuilderWithDefaultWidget] instead.
-    Will be removed in the next major version.
-    ''') this.deletedBottomRowBuilder,
     this.userAvatarBuilder,
   });
 
@@ -226,8 +223,8 @@ class MessageWidgetContent extends StatelessWidget {
   /// {@macro showUsername}
   final bool showUsername;
 
-  /// {@macro deletedBottomRowBuilder}
-  final Widget Function(BuildContext, Message)? deletedBottomRowBuilder;
+  /// {@macro showEdited}
+  final bool showEditedLabel;
 
   /// {@macro messageWidget}
   final StreamMessageWidget messageWidget;
@@ -279,6 +276,7 @@ class MessageWidgetContent extends StatelessWidget {
                         botBuilder: botBuilder,
                         showInChannel: showInChannel,
                         showUsername: showUsername,
+                        showEditedLabel: showEditedLabel,
                         isFailedState: isFailedState,
                         showSendingIndicator: showSendingIndicator,
                         showUserAvatar: showUserAvatar,

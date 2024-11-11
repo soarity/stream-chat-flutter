@@ -44,6 +44,7 @@ void main() {
                 showUsername: false,
                 showInChannel: true,
                 showTimeStamp: false,
+                showEditedLabel: false,
                 reverse: false,
                 showSendingIndicator: false,
                 hasUrlAttachments: false,
