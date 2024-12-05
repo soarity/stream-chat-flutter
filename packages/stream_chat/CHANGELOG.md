@@ -1,3 +1,9 @@
+## 8.3.0
+
+✅ Added
+
+- Added support for AI assistant states and events.
+
 ## 8.2.0
 
 ✅ Added

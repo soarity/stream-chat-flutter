@@ -1,3 +1,21 @@
+## 8.3.0
+
+✅ Added
+
+- Added several new widgets to enhance the AI assistant features.
+  - `StreamingMessageView` to show AI assistant messages with streaming animation.
+  - `AITypingIndicatorView` to show AI typing indicator.
+
+✅ Added
+
+- Added several new widgets to enhance the AI assistant features.
+  - `StreamingMessageView` to show AI assistant messages with streaming animation.
+  - `AITypingIndicatorView` to show AI typing indicator.
+
+🐞 Fixed
+
+- [[#2030]](https://github.com/GetStream/stream-chat-flutter/issues/2030) Fixed `video_thumbnail` Namespace not specified.
+
 ## 8.2.0
 
 ✅ Added
