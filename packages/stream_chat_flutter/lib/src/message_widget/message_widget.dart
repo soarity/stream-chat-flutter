@@ -566,6 +566,11 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   bool get hasNonUrlAttachments => widget.message.attachments
       .any((it) => it.type != AttachmentType.urlPreview);
 
+  /// {@template hasPoll}
+  /// `true` if the [message] contains a poll.
+  /// {@endtemplate}
+  bool get hasPoll => widget.message.poll != null;
+
   /// {@template hasUrlAttachments}
   /// `true` if any of the [message]'s attachments are a giphy with a
   /// [Attachment.titleLink].
@@ -608,6 +613,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   bool get shouldShowEditAction =>
       widget.showEditMessage &&
       !isDeleteFailed &&
+      !hasPoll &&
       !widget.message.attachments
           .any((element) => element.type == AttachmentType.giphy);
 
@@ -618,12 +624,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       widget.showCopyMessage &&
       !isFailedState &&
       widget.message.text?.trim().isNotEmpty == true;
-
-  bool get shouldShowEditMessage =>
-      widget.showEditMessage &&
-      !isDeleteFailed &&
-      !widget.message.attachments
-          .any((element) => element.type == AttachmentType.giphy);
 
   bool get shouldShowDeleteAction => widget.showDeleteMessage || isDeleteFailed;
 
@@ -668,6 +668,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           duration: const Duration(seconds: 1),
           color: widget.message.pinned && widget.showPinHighlight
               ? _streamChatTheme.colorTheme.highlight
+              // ignore: deprecated_member_use
               : _streamChatTheme.colorTheme.barsBg.withOpacity(0),
           child: Portal(
             child: PlatformWidgetBuilder(
@@ -709,6 +710,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       reverse: widget.reverse,
                       message: widget.message,
                       hasNonUrlAttachments: hasNonUrlAttachments,
+                      hasPoll: hasPoll,
                       hasQuotedMessage: hasQuotedMessage,
                       textPadding: widget.textPadding,
                       attachmentBuilders: widget.attachmentBuilders,

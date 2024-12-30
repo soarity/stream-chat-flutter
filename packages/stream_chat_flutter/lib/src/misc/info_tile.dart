@@ -52,6 +52,7 @@ class StreamInfoTile extends StatelessWidget {
       portalFollower: Container(
         height: 25.h,
         color: backgroundColor ??
+            // ignore: deprecated_member_use
             chatThemeData.colorTheme.textLowEmphasis.withOpacity(0.9),
         child: Center(
           child: Text(

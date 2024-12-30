@@ -32,6 +32,7 @@ class ClearInputItemButton extends StatelessWidget {
         hoverElevation: 0,
         onPressed: onTap,
         fillColor:
+            // ignore: deprecated_member_use
             _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.5),
         child: Center(
           child: StreamSvgIcon.close(

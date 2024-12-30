@@ -1,3 +1,21 @@
+## 9.0.0
+
+🛑️ Breaking
+
+- The `StreamAttachmentPickerController` has been restructured to improve flexibility and support additional use cases like poll management.
+  - Previously managed a `List<Attachment>` but now manages an `AttachmentPickerValue` object, which includes:
+    - `attachments`: A list of attachments.
+    - `poll`: A new field for managing polls.
+
+✅ Added
+
+- Added a new `StreamPollCreator` widget to facilitate poll creation within the chat interface.
+- Added a new `PollMessage` widget to display poll messages within the chat interface.
+
+🔄 Changed
+
+- Updated minimum Flutter version to 3.24.5 for the SDK.
+
 ## 8.3.0
 
 ✅ Added

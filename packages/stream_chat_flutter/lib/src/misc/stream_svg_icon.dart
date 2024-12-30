@@ -197,6 +197,32 @@ class StreamSvgIcon extends StatelessWidget {
   }
 
   /// [StreamSvgIcon] type
+  factory StreamSvgIcon.polls({
+    double? size,
+    Color? color,
+  }) {
+    return StreamSvgIcon(
+      assetName: 'polls.svg',
+      color: color,
+      width: size,
+      height: size,
+    );
+  }
+
+  /// [StreamSvgIcon] type
+  factory StreamSvgIcon.send({
+    double? size,
+    Color? color,
+  }) {
+    return StreamSvgIcon(
+      assetName: 'send.svg',
+      color: color,
+      width: size,
+      height: size,
+    );
+  }
+
+  /// [StreamSvgIcon] type
   factory StreamSvgIcon.pictures({
     double? size,
     Color? color,
@@ -1087,6 +1113,19 @@ class StreamSvgIcon extends StatelessWidget {
   }) {
     return StreamSvgIcon(
       assetName: 'video_call_icon.svg',
+      color: color,
+      width: size,
+      height: size,
+    );
+  }
+
+  /// [StreamSvgIcon] type
+  factory StreamSvgIcon.award({
+    double? size,
+    Color? color,
+  }) {
+    return StreamSvgIcon(
+      assetName: 'icon_award.svg',
       color: color,
       width: size,
       height: size,
