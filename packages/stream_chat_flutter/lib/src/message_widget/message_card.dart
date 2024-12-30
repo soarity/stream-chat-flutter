@@ -270,7 +270,7 @@ class _MessageCardState extends State<MessageCard> {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .outlineVariant
-                                    .withOpacity(0.5),
+                                    .withValues(alpha: 0.5),
                               ),
                             ),
                             QuotedMessage(

@@ -89,8 +89,6 @@ export 'src/poll/stream_poll_option_votes_dialog.dart';
 export 'src/poll/stream_poll_options_dialog.dart';
 export 'src/poll/stream_poll_results_dialog.dart';
 export 'src/poll/stream_poll_text_field.dart';
-export 'src/scroll_view/channel_scroll_view/stream_channel_grid_tile.dart';
-export 'src/scroll_view/channel_scroll_view/stream_channel_grid_view.dart';
 export 'src/scroll_view/channel_scroll_view/stream_channel_list_tile.dart';
 export 'src/scroll_view/channel_scroll_view/stream_channel_list_view.dart';
 export 'src/scroll_view/member_scroll_view/stream_member_list_view.dart';

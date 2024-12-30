@@ -62,7 +62,10 @@ class StreamQuotedMessageWidget extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: showBorder
-              ? Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)
+              ? Theme.of(context)
+                  .colorScheme
+                  .outlineVariant
+                  .withValues(alpha: 0.5)
               : null,
           border: Border(
             left: BorderSide(
