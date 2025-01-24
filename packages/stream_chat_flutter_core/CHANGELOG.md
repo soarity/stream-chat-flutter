@@ -1,3 +1,13 @@
+## 9.2.0
+
+- Updated `stream_chat` dependency to [`9.2.0`](https://pub.dev/packages/stream_chat/changelog).
+
+## 9.1.0
+
+✅ Added
+
+- Added `StreamThreadListController` to load and paginate list of threads.
+
 ## 9.0.0
 
 ✅ Added

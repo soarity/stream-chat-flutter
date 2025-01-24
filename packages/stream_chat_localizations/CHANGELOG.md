@@ -1,3 +1,12 @@
+## 9.2.0
+
+- Updated `stream_chat_flutter` dependency to [`9.2.0+1`](https://pub.dev/packages/stream_chat/changelog).
+
+## 9.1.0
+
+- Added translations for new `repliedToLabel` label.
+- Added translations for new `newThreadsLabel` label.
+
 ## 9.0.0
 
 - Added multiple new localization strings related to poll creation and validation.

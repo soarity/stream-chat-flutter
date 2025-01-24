@@ -42,12 +42,10 @@ class FloatingDateDivider extends StatelessWidget {
           return const Offstage();
         }
 
-        int? index;
-        if (reverse) {
-          index = getTopElementIndex(positions);
-        } else {
-          index = getBottomElementIndex(positions);
-        }
+        var index = switch (reverse) {
+          true => getBottomElementIndex(positions),
+          false => getTopElementIndex(positions),
+        };
 
         if (index == null) {
           return const Offstage();

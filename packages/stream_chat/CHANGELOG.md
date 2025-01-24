@@ -1,3 +1,13 @@
+## 9.2.0
+
+- Bug fixes and improvements
+
+## 9.1.0
+
+✅ Added
+
+- Added support for Threads v2 feature, which allows users to query all the threads.
+
 ## 9.0.0
 
 ✅ Added

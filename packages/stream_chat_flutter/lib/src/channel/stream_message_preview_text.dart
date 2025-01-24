@@ -38,52 +38,35 @@ class StreamMessagePreviewText extends StatelessWidget {
         .text;
     final messageAttachments = message.attachments;
     final messageMentionedUsers = message.mentionedUsers;
-    final user = message.user!;
-    final sender = user.id == StreamChat.of(context).currentUser?.id
-        ? '${context.translations.youText}: '
-        : isDm
-            ? ''
-            : '${user.name}: ';
 
     final mentionedUsersRegex = RegExp(
       messageMentionedUsers.map((it) => '@${it.name}').join('|'),
       caseSensitive: false,
     );
 
-    final messageTextParts = [
-      ...messageAttachments.map((it) {
-        if (it.type == AttachmentType.image) {
-          return '📷';
-        } else if (it.type == AttachmentType.video) {
-          return '🎬';
-        } else if (it.type == 'voicenote' || it.type == 'voiceRecording') {
-          var text = '🎙️';
-          final durationInInt = it.extraData['duration'] as int?;
-          if (durationInInt != null) {
-            final duration = Duration(seconds: durationInInt);
-            final minuteLeft = duration.inMinutes.remainder(60);
-            final minutes =
-                minuteLeft.toString().padLeft(minuteLeft >= 10 ? 2 : 1, '0');
-            final seconds =
-                duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-            text = '$text $minutes:$seconds';
-          }
-
-          return text;
-        } else if (it.type == 'giphy') {
-          return '[GIF]';
-        }
-        return it == message.attachments.last
-            ? (it.title ?? 'File')
-            : '${it.title ?? 'File'} , ';
-      }),
-      if (message.poll?.name case final pollName?) '📊 $pollName',
-      if (messageText != null)
-        if (messageMentionedUsers.isNotEmpty)
-          ...mentionedUsersRegex.allMatchesWithSep(messageText)
-        else
-          messageText,
-    ];
+    final messageTextParts = switch (message.isDeleted) {
+      // Show the deleted message label if the message is deleted.
+      true => [context.translations.messageDeletedLabel],
+      // Otherwise, combine the message text with the attachments and poll.
+      false => [
+          ...messageAttachments.map(
+            (it) => switch (it.type) {
+              AttachmentType.image => '📷',
+              AttachmentType.video => '🎬',
+              AttachmentType.giphy => '[GIF]',
+              _ => it == message.attachments.last
+                  ? (it.title ?? 'File')
+                  : '${it.title ?? 'File'} , ',
+            },
+          ),
+          if (message.poll?.name case final pollName?) '📊 $pollName',
+          if (messageText != null)
+            if (messageMentionedUsers.isNotEmpty)
+              ...mentionedUsersRegex.allMatchesWithSep(messageText)
+            else
+              messageText,
+        ]
+    };
 
     final fontStyle = (message.isSystem || message.isDeleted)
         ? FontStyle.italic
@@ -97,32 +80,28 @@ class StreamMessagePreviewText extends StatelessWidget {
     );
 
     final spans = [
-      TextSpan(
-        text: sender,
-        style: regularTextStyle?.copyWith(fontWeight: FontWeight.w600),
-      ),
-      for (final part in messageTextParts)
-        if (messageMentionedUsers.isNotEmpty &&
-            messageMentionedUsers.any((it) => '@${it.name}' == part))
-          TextSpan(
+      ...messageTextParts.map((part) {
+        if (messageMentionedUsers.any((it) => '@${it.name}' == part)) {
+          return TextSpan(
             text: part,
             style: mentionsTextStyle,
-          )
-        else if (messageAttachments.isNotEmpty &&
-            messageAttachments
-                .where((it) => it.title != null)
-                .any((it) => it.title == part))
-          TextSpan(
+          );
+        }
+
+        if (messageAttachments.any((it) => it.title == part)) {
+          return TextSpan(
             text: part,
             style: regularTextStyle?.copyWith(
               fontStyle: FontStyle.italic,
             ),
-          )
-        else
-          TextSpan(
-            text: part,
-            style: regularTextStyle,
-          ),
+          );
+        }
+
+        return TextSpan(
+          text: part,
+          style: regularTextStyle,
+        );
+      })
     ];
 
     return Text.rich(

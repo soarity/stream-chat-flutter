@@ -484,6 +484,12 @@ abstract class Translations {
 
   /// The label for "Error loading poll votes".
   String get loadingPollVotesError;
+
+  /// The label for "replied to:"
+  String get repliedToLabel;
+
+  /// The label for "$count new threads"
+  String newThreadsLabel({required int count});
 }
 
 /// Default implementation of Translation strings for the stream chat widgets
@@ -1091,4 +1097,13 @@ Attachment limit exceeded: it's not possible to add more than $limit attachments
 
   @override
   String get loadingPollVotesError => 'Error loading poll votes';
+
+  @override
+  String get repliedToLabel => 'replied to:';
+
+  @override
+  String newThreadsLabel({required int count}) {
+    if (count == 1) return '1 new thread';
+    return '$count new threads';
+  }
 }

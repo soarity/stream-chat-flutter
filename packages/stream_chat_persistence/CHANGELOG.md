@@ -1,3 +1,11 @@
+## 9.2.0
+
+- Updated `stream_chat` dependency to [`9.2.0`](https://pub.dev/packages/stream_chat/changelog).
+
+## 9.1.0
+
+- Updated `stream_chat` dependency to [`9.1.0`](https://pub.dev/packages/stream_chat/changelog).
+
 ## 9.0.0
 
 - Added support for `Poll` and `PollVote` entities in the database.
