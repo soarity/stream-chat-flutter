@@ -1010,6 +1010,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showMarkUnreadMessage: false,
       message: message,
       showTailBubble: false,
+      showTimestamp: !message.isDeleted,
       reverse: isMyMessage,
       showUsername: !isMyMessage,
       padding: const EdgeInsets.symmetric(horizontal: 16),

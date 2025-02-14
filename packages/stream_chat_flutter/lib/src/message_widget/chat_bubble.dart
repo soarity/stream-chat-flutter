@@ -37,9 +37,9 @@ class BubbleChat extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           isMyMessage ? 10 : 18,
-          4,
+          6,
           isMyMessage ? 18 : 10,
-          4,
+          6,
         ),
         child: child,
       ),
