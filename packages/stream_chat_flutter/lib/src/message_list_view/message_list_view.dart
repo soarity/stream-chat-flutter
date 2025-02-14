@@ -1274,15 +1274,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final hasUrlAttachment =
         message.attachments.any((it) => it.type == AttachmentType.urlPreview);
 
-    final hasReplies = message.replyCount! > 0;
-
     final attachmentBorderRadius = hasUrlAttachment
         ? 8.0
         : hasFileAttachment
             ? 12.0
             : 14.0;
-
-    final showTimeStamp = !hasReplies && (hasTimeDiff || !isNextUserSame);
 
     final showUsername = !isMyMessage &&
         (prevMsghasTimeDiff || !isPrevUserSame || hasFileAttachment);
@@ -1316,7 +1312,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         (hasTimeDiff || !isNextUserSame || hasFileAttachment) ? 12 : 4,
       ),
       showUsername: showUsername,
-      showTimestamp: showTimeStamp,
       showSendingIndicator: showSendingIndicator,
       showUserAvatar: showUserAvatar,
       showMarkUnreadMessage: false,
