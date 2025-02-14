@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta/meta.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -263,7 +262,7 @@ class MessageWidgetContent extends StatelessWidget {
             children: [
               Padding(
                 padding: showReactions
-                    ? EdgeInsets.only(top: 12.h)
+                    ? const EdgeInsets.only(top: 12)
                     : EdgeInsets.zero,
                 child: Stack(
                   alignment:
@@ -272,7 +271,7 @@ class MessageWidgetContent extends StatelessWidget {
                     Padding(
                       padding: showUserAvatar == DisplayWidget.gone
                           ? EdgeInsets.zero
-                          : EdgeInsets.only(left: 40.w),
+                          : const EdgeInsets.only(left: 40),
                       child: MessageCard(
                         message: message,
                         isDm: isDm,
@@ -339,7 +338,11 @@ class MessageWidgetContent extends StatelessWidget {
             ],
           ),
         ),
-        if (isFailedState) StreamSvgIcon.error(size: 20.r),
+        if (isFailedState)
+          const StreamSvgIcon(
+            size: 20,
+            icon: StreamSvgIcons.error,
+          ),
       ],
     );
   }
@@ -372,7 +375,7 @@ class UserAvatar extends StatelessWidget {
     if (showUserAvatar == DisplayWidget.gone) {
       return const Offstage();
     } else if (showUserAvatar == DisplayWidget.hide) {
-      return SizedBox(width: 40.w);
+      return const SizedBox(width: 40);
     }
 
     final user = message.user!;
@@ -380,7 +383,7 @@ class UserAvatar extends StatelessWidget {
       showBorder: true,
       picURL: user.image ?? '',
       fullName: user.name,
-      radius: 20.r,
+      radius: 20,
     );
   }
 }
@@ -424,7 +427,7 @@ class ProfilePicture extends StatelessWidget {
   Widget build(BuildContext context) {
     final background =
         backgroundColor ?? Theme.of(context).colorScheme.secondaryContainer;
-    final diameter = (radius ?? 26.r) * 2;
+    final diameter = (radius ?? 26) * 2;
     ImageProvider<Object>? image;
     Widget? child;
 

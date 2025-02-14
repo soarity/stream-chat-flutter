@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 
 /// {@template streamOptionListTile}
@@ -55,7 +54,7 @@ class StreamOptionListTile extends StatelessWidget {
         Material(
           color: tileColor ?? chatThemeData.colorTheme.barsBg,
           child: SizedBox(
-            height: 40.h,
+            height: 40,
             child: InkWell(
               onTap: onTap,
               child: Row(

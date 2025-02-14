@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template pinMessageButton}
@@ -27,14 +26,15 @@ class PinMessageButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding:  EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
+        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
-            StreamSvgIcon.pin(
+            StreamSvgIcon(
+              icon: StreamSvgIcons.pin,
               color: streamChatThemeData.primaryIconTheme.color,
-              size: 24.r,
+              size: 24,
             ),
-             SizedBox(width: 16.w),
+            const SizedBox(width: 16),
             Text(
               context.translations.togglePinUnpinText(
                 pinned: pinned,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template quotingMessageTopArea}
@@ -29,16 +29,15 @@ class QuotingMessageTopArea extends StatelessWidget {
     final _streamChatTheme = StreamChatTheme.of(context);
     if (hasQuotedMessage) {
       return Padding(
-        padding: EdgeInsets.fromLTRB(8.w, 4.h, 8.w, 0),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: EdgeInsets.all(8.r),
-              child: StreamSvgIcon.reply(
-                size: 24.r,
-                color: _streamChatTheme.colorTheme.disabled,
-              ),
+            StreamMessageInputIconButton(
+              iconSize: 24,
+              color: _streamChatTheme.colorTheme.disabled,
+              icon: const StreamSvgIcon(icon: StreamSvgIcons.reply),
+              onPressed: null,
             ),
             Text(
               context.translations.replyToMessageLabel,
@@ -47,10 +46,10 @@ class QuotingMessageTopArea extends StatelessWidget {
                     fontSize: 14,
                   ),
             ),
-            IconButton(
-              visualDensity: VisualDensity.compact,
-              iconSize: 24.r,
-              icon: StreamSvgIcon.closeSmall(size: 24.r),
+            StreamMessageInputIconButton(
+              iconSize: 24,
+              color: _streamChatTheme.colorTheme.textLowEmphasis,
+              icon: const StreamSvgIcon(icon: StreamSvgIcons.closeSmall),
               onPressed: onQuotedMessageCleared?.call,
             ),
           ],

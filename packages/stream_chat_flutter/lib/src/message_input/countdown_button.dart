@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Button for showing visual component of slow mode.
@@ -18,15 +18,12 @@ class StreamCountdownButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: StreamChatTheme.of(context).colorTheme.disabled,
         shape: BoxShape.circle,
+        color: StreamChatTheme.of(context).colorTheme.disabled,
       ),
-      child: SizedBox(
-        height: 26.r,
-        width: 26.r,
-        child: Center(
-          child: Text('$count'),
-        ),
+      child: SizedBox.square(
+        dimension: kDefaultMessageInputIconSize,
+        child: Center(child: Text('$count')),
       ),
     );
   }

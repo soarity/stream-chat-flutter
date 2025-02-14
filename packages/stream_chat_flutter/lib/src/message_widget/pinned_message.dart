@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template pinnedMessage}
@@ -24,20 +23,25 @@ class PinnedMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(8.w, 0, 8.w, 4.h),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          StreamSvgIcon.pin(size: 18.r),
-          SizedBox(width: 4.w),
+          const StreamSvgIcon(
+            size: 16,
+            icon: StreamSvgIcons.pin,
+          ),
+          const SizedBox(width: 4),
           Text(
             context.translations.pinnedByUserText(
               pinnedBy: pinnedBy,
               currentUser: currentUser,
             ),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
-                ),
+            style: TextStyle(
+              color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ],
       ),

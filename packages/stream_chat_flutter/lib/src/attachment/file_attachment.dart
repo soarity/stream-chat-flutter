@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
+import 'package:stream_chat_flutter/src/icons/stream_svg_icon.dart';
 import 'package:stream_chat_flutter/src/indicators/upload_progress_indicator.dart';
-import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/utils/utils.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
@@ -66,7 +65,7 @@ class StreamFileAttachment extends StatelessWidget {
             color: colorTheme.borders,
             strokeAlign: BorderSide.strokeAlignOutside,
           ),
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(12),
         );
 
     return Container(
@@ -79,12 +78,12 @@ class StreamFileAttachment extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 34.w,
-            height: 40.h,
-            margin: EdgeInsets.all(8.r),
+            width: 34,
+            height: 40,
+            margin: const EdgeInsets.all(8),
             child: _FileTypeImage(file: file),
           ),
-          SizedBox(width: 8.w),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -96,12 +95,12 @@ class StreamFileAttachment extends StatelessWidget {
                   style: textTheme.bodyBold,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 3.h),
+                const SizedBox(height: 4),
                 _FileAttachmentSubtitle(attachment: file),
               ],
             ),
           ),
-          SizedBox(width: 8.w),
+          const SizedBox(width: 8),
           Material(
             type: MaterialType.transparency,
             child: trailing ??
@@ -144,7 +143,7 @@ class _FileTypeImage extends StatelessWidget {
               color: colorTheme.borders,
               strokeAlign: BorderSide.strokeAlignOutside,
             ),
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
         child: child,
@@ -172,7 +171,8 @@ class _Trailing extends StatelessWidget {
 
     if (message.state.isCompleted) {
       return IconButton(
-        icon: StreamSvgIcon.cloudDownload(
+        icon: StreamSvgIcon(
+          icon: StreamSvgIcons.cloudDownload,
           color: theme.colorTheme.textHighEmphasis,
         ),
         visualDensity: VisualDensity.compact,
@@ -192,41 +192,44 @@ class _Trailing extends StatelessWidget {
 
     return attachment.uploadState.when(
       preparing: () => Padding(
-        padding: EdgeInsets.all(8.r),
+        padding: const EdgeInsets.all(8),
         child: _TrailingButton(
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg),
+          icon: StreamSvgIcon(
+            icon: StreamSvgIcons.close,
+            color: theme.colorTheme.barsBg,
+          ),
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.cancelAttachmentUpload(attachmentId),
         ),
       ),
       inProgress: (_, __) => Padding(
-        padding: EdgeInsets.all(8.r),
+        padding: const EdgeInsets.all(8),
         child: _TrailingButton(
-          icon: StreamSvgIcon.close(
+          icon: StreamSvgIcon(
+            icon: StreamSvgIcons.close,
             color: theme.colorTheme.barsBg,
-            size: 24.r,
           ),
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.cancelAttachmentUpload(attachmentId),
         ),
       ),
       success: () => Padding(
-        padding: EdgeInsets.all(8.r),
+        padding: const EdgeInsets.all(8),
         child: CircleAvatar(
           backgroundColor: theme.colorTheme.accentPrimary,
-          maxRadius: 12.r,
-          child: StreamSvgIcon.check(
+          maxRadius: 12,
+          child: StreamSvgIcon(
+            icon: StreamSvgIcons.check,
             color: theme.colorTheme.barsBg,
-            size: 24.r,
           ),
         ),
       ),
       failed: (_) => Padding(
         padding: const EdgeInsets.all(8),
         child: _TrailingButton(
-          icon: StreamSvgIcon.retry(
+          icon: StreamSvgIcon(
+            icon: StreamSvgIcons.retry,
             color: theme.colorTheme.barsBg,
-            size: 24.r,
           ),
           fillColor: theme.colorTheme.overlayDark,
           onPressed: () => channel.retryAttachmentUpload(

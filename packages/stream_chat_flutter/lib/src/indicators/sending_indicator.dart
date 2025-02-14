@@ -25,21 +25,24 @@ class StreamSendingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isMessageRead) {
-      return StreamSvgIcon.checkAll(
+      return StreamSvgIcon(
         size: size,
+        icon: StreamSvgIcons.checkAll,
         color: Theme.of(context).colorScheme.tertiary,
       );
     }
     if (message.state.isCompleted) {
-      return StreamSvgIcon.check(
+      return StreamSvgIcon(
         size: size,
+        icon: StreamSvgIcons.check,
         color: Theme.of(context).colorScheme.tertiary,
       );
     }
     if (message.state.isOutgoing) {
-      return Icon(
-        Icons.access_time,
+      return StreamSvgIcon(
         size: size,
+        icon: StreamSvgIcons.time,
+        color: Theme.of(context).colorScheme.tertiary,
       );
     }
     return const SizedBox.shrink();

@@ -1105,10 +1105,12 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   return scrollToBottomDefaultTapAction(unreadCount);
                 },
                 child: widget.reverse
-                    ? StreamSvgIcon.down(
+                    ? StreamSvgIcon(
+                        icon: StreamSvgIcons.down,
                         color: _streamTheme.colorTheme.textHighEmphasis,
                       )
-                    : StreamSvgIcon.up(
+                    : StreamSvgIcon(
+                        icon: StreamSvgIcons.up,
                         color: _streamTheme.colorTheme.textHighEmphasis,
                       ),
               ),
@@ -1444,9 +1446,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     if (isLastItemFullyVisible) {
       // We are using the first message as the last fully visible message
       // because the messages are reversed in the list view.
-      final newLastFullyVisibleMessage = messages.first;
+      final newLastFullyVisibleMessage = messages.firstOrNull;
       final lastFullyVisibleMessageChanged = switch (_lastFullyVisibleMessage) {
-        final message? => message.id != newLastFullyVisibleMessage.id,
+        final message? => message.id != newLastFullyVisibleMessage?.id,
         null => true, // Allows setting the initial value.
       };
 

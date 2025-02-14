@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template clearInputItemButton}
@@ -20,8 +19,8 @@ class ClearInputItemButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final _streamChatTheme = StreamChatTheme.of(context);
     return SizedBox(
-      height: 20.r,
-      width: 20.r,
+      height: 20,
+      width: 20,
       child: RawMaterialButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -35,8 +34,9 @@ class ClearInputItemButton extends StatelessWidget {
             // ignore: deprecated_member_use
             _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.5),
         child: Center(
-          child: StreamSvgIcon.close(
-            size: 24.r,
+          child: StreamSvgIcon(
+            size: 24,
+            icon: StreamSvgIcons.close,
             color: _streamChatTheme.colorTheme.barsBg,
           ),
         ),

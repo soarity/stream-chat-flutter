@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template resendMessageButton}
@@ -31,14 +30,14 @@ class ResendMessageButton extends StatelessWidget {
         channel.retryMessage(message);
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
+        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
-            StreamSvgIcon.circleUp(
-              size: 24.r,
+            StreamSvgIcon(
+              icon: StreamSvgIcons.circleUp,
               color: streamChatThemeData.colorTheme.accentPrimary,
             ),
-            SizedBox(width: 16.w),
+            const SizedBox(width: 16),
             Text(
               context.translations.toggleResendOrResendEditedMessage(
                 isUpdateFailed: isUpdateFailed,

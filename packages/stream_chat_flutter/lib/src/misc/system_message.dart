@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamSystemMessage}
@@ -26,9 +25,9 @@ class StreamSystemMessage extends StatelessWidget {
     if (messageText == null) return const SizedBox.shrink();
 
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: 12.h,
-        horizontal: 20.w,
+      padding: const EdgeInsets.symmetric(
+        vertical: 12,
+        horizontal: 20,
       ),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -39,7 +38,7 @@ class StreamSystemMessage extends StatelessWidget {
             elevation: 1,
             color: Theme.of(context).colorScheme.onSecondary,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Text(
                 messageText,
                 textAlign: TextAlign.center,

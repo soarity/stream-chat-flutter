@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamUserMentionTile}
@@ -38,16 +37,16 @@ class StreamUserMentionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatThemeData = StreamChatTheme.of(context);
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.h),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          SizedBox(width: 16.w),
+          const SizedBox(width: 16),
           leading ??
               StreamUserAvatar(
                 user: user,
-                constraints: BoxConstraints.tight(Size(40.r, 40.r)),
+                constraints: BoxConstraints.tight(const Size(40, 40)),
               ),
-          SizedBox(width: 8.w),
+          const SizedBox(width: 8),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -62,9 +61,12 @@ class StreamUserMentionTile extends StatelessWidget {
           ),
           trailing ??
               Padding(
-                padding: EdgeInsets.only(right: 18.w, left: 8.w),
-                child: StreamSvgIcon.mentions(
-                  size: 24.r,
+                padding: const EdgeInsets.only(
+                  right: 18,
+                  left: 8,
+                ),
+                child: StreamSvgIcon(
+                  icon: StreamSvgIcons.mentions,
                   color: chatThemeData.colorTheme.accentPrimary,
                 ),
               ),

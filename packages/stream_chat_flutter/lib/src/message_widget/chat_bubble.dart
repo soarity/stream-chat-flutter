@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, cascade_invocations
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 ///iMessage's chat bubble type
 ///
@@ -37,10 +36,10 @@ class BubbleChat extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          isMyMessage ? 10.w : 18.w,
-          6.h,
-          isMyMessage ? 18.w : 10.w,
-          6.h,
+          isMyMessage ? 10 : 18,
+          6,
+          isMyMessage ? 18 : 10,
+          6,
         ),
         child: child,
       ),

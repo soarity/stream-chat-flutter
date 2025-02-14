@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide ButtonStyle;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_actions_modal/mam_widgets.dart';
 import 'package:stream_chat_flutter/src/message_actions_modal/mark_unread_message_button.dart';
 import 'package:stream_chat_flutter/src/message_widget/reactions/reactions_align.dart';
@@ -280,11 +279,11 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     return InkWell(
       onTap: () => messageAction.onTap?.call(widget.message),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
+        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
             messageAction.leading ?? const Offstage(),
-            SizedBox(width: 16.w),
+            const SizedBox(width: 16),
             messageAction.title ?? const Offstage(),
           ],
         ),
@@ -299,9 +298,10 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     final answer = await showConfirmationBottomSheet(
       context,
       title: context.translations.flagMessageLabel,
-      icon: StreamSvgIcon.flag(
+      icon: StreamSvgIcon(
+        icon: StreamSvgIcons.flag,
         color: streamChatThemeData.colorTheme.accentError,
-        size: 24.r,
+        size: 24,
       ),
       question: context.translations.flagMessageQuestion,
       okText: context.translations.flagLabel,
@@ -314,9 +314,10 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
         await client.flagMessage(widget.message.id);
         await showInfoBottomSheet(
           context,
-          icon: StreamSvgIcon.flag(
+          icon: StreamSvgIcon(
+            icon: StreamSvgIcons.flag,
             color: theme.colorTheme.accentError,
-            size: 24.r,
+            size: 24,
           ),
           details: context.translations.flagMessageSuccessfulText,
           title: context.translations.flagMessageSuccessfulLabel,
@@ -327,9 +328,10 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
             err.errorCode == ChatErrorCode.inputError) {
           await showInfoBottomSheet(
             context,
-            icon: StreamSvgIcon.flag(
+            icon: StreamSvgIcon(
+              icon: StreamSvgIcons.flag,
               color: theme.colorTheme.accentError,
-              size: 24.r,
+              size: 24,
             ),
             details: context.translations.flagMessageSuccessfulText,
             title: context.translations.flagMessageSuccessfulLabel,
@@ -363,9 +365,10 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     final answer = await showConfirmationBottomSheet(
       context,
       title: context.translations.deleteMessageLabel,
-      icon: StreamSvgIcon.flag(
+      icon: StreamSvgIcon(
+        icon: StreamSvgIcons.flag,
         color: StreamChatTheme.of(context).colorTheme.accentError,
-        size: 24.r,
+        size: 24,
       ),
       question: context.translations.deleteMessageQuestion,
       okText: context.translations.deleteLabel,
@@ -392,9 +395,10 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
   void _showErrorAlertBottomSheet() {
     showInfoBottomSheet(
       context,
-      icon: StreamSvgIcon.error(
+      icon: StreamSvgIcon(
+        icon: StreamSvgIcons.error,
         color: StreamChatTheme.of(context).colorTheme.accentError,
-        size: 24.r,
+        size: 24,
       ),
       details: context.translations.operationCouldNotBeCompletedText,
       title: context.translations.somethingWentWrongError,

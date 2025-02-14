@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template user_mentions_overlay}
@@ -84,7 +83,6 @@ class _StreamMentionAutocompleteOptionsState
         final users = snapshot.data!;
 
         return StreamAutocompleteOptions<User>(
-           margin: EdgeInsets.all(8.r),
           options: users,
           optionBuilder: (context, user) {
             final colorTheme = StreamChatTheme.of(context).colorTheme;

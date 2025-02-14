@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamDateDivider}
@@ -40,10 +39,10 @@ class StreamDateDivider extends StatelessWidget {
     return Center(
       child: Material(
         elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         color: Theme.of(context).colorScheme.onSecondary,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Text(
             dayInfo,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template editMessageSheet}
@@ -59,7 +58,8 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8),
-                      child: StreamSvgIcon.edit(
+                      child: StreamSvgIcon(
+                        icon: StreamSvgIcons.edit,
                         color: streamChatThemeData.colorTheme.disabled,
                       ),
                     ),
@@ -71,7 +71,10 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
                     ),
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      icon: StreamSvgIcon.closeSmall(),
+                      icon: StreamSvgIcon(
+                        icon: StreamSvgIcons.closeSmall,
+                        color: streamChatThemeData.colorTheme.textLowEmphasis,
+                      ),
                       onPressed: Navigator.of(context).pop,
                     ),
                   ],
@@ -82,15 +85,15 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
               else
                 StreamMessageInput(
                   activeSendButton: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10.w),
-                    padding: EdgeInsets.all(8.r),
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.all(8),
                     decoration: ShapeDecoration(
                       color: Theme.of(context).primaryColor,
                       shape: const CircleBorder(),
                     ),
                     child: ImageIcon(
                       const AssetImage('assets/icons/send.png'),
-                      size: 24.r,
+                      size: 24,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
@@ -100,10 +103,10 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
                       customBorder: const CircleBorder(),
                       onTap: button.onPressed,
                       child: Container(
-                        padding: EdgeInsets.all(8.r),
+                        padding: const EdgeInsets.all(8),
                         child: ImageIcon(
                           const AssetImage('assets/icons/attachment.png'),
-                          size: 24.r,
+                          size: 24,
                           color: Theme.of(context).colorScheme.outline,
                         ),
                       ),

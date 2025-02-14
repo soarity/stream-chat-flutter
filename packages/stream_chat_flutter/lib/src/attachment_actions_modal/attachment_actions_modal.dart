@@ -105,14 +105,37 @@ class AttachmentActionsModal extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (showReply)
+                    _buildButton(
+                      context,
+                      context.translations.replyLabel,
+                      StreamSvgIcon(
+                        size: 24,
+                        icon: StreamSvgIcons.reply,
+                        color: theme.colorTheme.textLowEmphasis,
+                      ),
+                      onReply,
+                    ),
+                  if (showShowInChat)
+                    _buildButton(
+                      context,
+                      context.translations.showInChatLabel,
+                      StreamSvgIcon(
+                        size: 24,
+                        icon: StreamSvgIcons.eye,
+                        color: theme.colorTheme.textHighEmphasis,
+                      ),
+                      onShowMessage,
+                    ),
                   if (showSave)
                     _buildButton(
                       context,
                       attachment.type == AttachmentType.video
                           ? context.translations.saveVideoLabel
                           : context.translations.saveImageLabel,
-                      StreamSvgIcon.iconSave(
+                      StreamSvgIcon(
                         size: 24,
+                        icon: StreamSvgIcons.save,
                         color: theme.colorTheme.textLowEmphasis,
                       ),
                       () {
@@ -166,6 +189,52 @@ class AttachmentActionsModal extends StatelessWidget {
                         );
                       },
                     ),
+                  if (StreamChat.of(context).currentUser?.id ==
+                          message.user?.id &&
+                      showDelete)
+                    _buildButton(
+                      context,
+                      context.translations.deleteLabel.capitalize(),
+                      StreamSvgIcon(
+                        size: 24,
+                        icon: StreamSvgIcons.delete,
+                        color: theme.colorTheme.accentError,
+                      ),
+                      () {
+                        final channel = StreamChannel.of(context).channel;
+                        if (message.attachments.length > 1 ||
+                            message.text?.isNotEmpty == true) {
+                          final currentAttachmentIndex =
+                              message.attachments.indexWhere(
+                            (element) => element.id == attachment.id,
+                          );
+                          final remainingAttachments = [...message.attachments]
+                            ..removeAt(currentAttachmentIndex);
+                          channel.updateMessage(message.copyWith(
+                            attachments: remainingAttachments,
+                          ));
+                          Navigator.of(context)
+                            ..pop()
+                            ..maybePop();
+                        } else {
+                          channel.deleteMessage(message);
+                          Navigator.of(context)
+                            ..pop()
+                            ..maybePop();
+                        }
+                      },
+                      color: theme.colorTheme.accentError,
+                    ),
+                  ...customActions
+                      .map(
+                        (e) => _buildButton(
+                          context,
+                          e.actionTitle,
+                          e.icon,
+                          e.onTap,
+                        ),
+                      )
+                      .toList(),
                 ]
                     .map<Widget>((e) => Align(
                           alignment: Alignment.centerRight,
@@ -260,7 +329,8 @@ class AttachmentActionsModal extends StatelessWidget {
                         ? SizedBox(
                             height: 100,
                             width: 100,
-                            child: StreamSvgIcon.error(
+                            child: StreamSvgIcon(
+                              icon: StreamSvgIcons.error,
                               color: theme.colorTheme.disabled,
                             ),
                           )
@@ -269,7 +339,8 @@ class AttachmentActionsModal extends StatelessWidget {
                                 key: const Key('completedIcon'),
                                 height: 160,
                                 width: 160,
-                                child: StreamSvgIcon.check(
+                                child: StreamSvgIcon(
+                                  icon: StreamSvgIcons.check,
                                   color: theme.colorTheme.disabled,
                                 ),
                               )

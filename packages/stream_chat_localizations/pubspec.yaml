@@ -1,6 +1,6 @@
 name: stream_chat_localizations
 description: The Official localizations for Stream Chat Flutter, a service for building chat applications
-version: 9.2.0
+version: 9.4.0
 homepage: https://github.com/GetStream/stream-chat-flutter
 repository: https://github.com/GetStream/stream-chat-flutter
 issue_tracker: https://github.com/GetStream/stream-chat-flutter/issues
@@ -18,8 +18,8 @@ issue_tracker: https://github.com/GetStream/stream-chat-flutter/issues
 #   2. Add it to the melos.yaml file for future updates.
 
 environment:
-  sdk: ^3.5.4
-  flutter: ">=3.24.5"
+  sdk: ^3.6.2
+  flutter: ">=3.27.4"
 
 publish_to: "none"
 
@@ -31,7 +31,7 @@ dependencies:
   stream_chat_flutter:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: circles/release/9.2.0
+      ref: circles/release/9.3.0
       path: packages/stream_chat_flutter
 
 dev_dependencies:

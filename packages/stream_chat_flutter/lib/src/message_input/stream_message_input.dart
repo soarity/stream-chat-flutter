@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/src/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_button.dart';
@@ -12,6 +11,7 @@ import 'package:stream_chat_flutter/src/message_input/dm_checkbox.dart';
 import 'package:stream_chat_flutter/src/message_input/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/src/message_input/quoting_message_top_area.dart';
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
+import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -592,9 +592,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
         !channel.ownCapabilities.contains(PermissionType.sendMessage)) {
       return SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 24.w,
-            vertical: 15.h,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 15,
           ),
           child: Text(
             context.translations.sendMessagePermissionError,
@@ -648,16 +648,16 @@ class StreamMessageInputState extends State<StreamMessageInput>
                       },
                     ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: _buildTextField(context),
                   ),
                   if (_effectiveController.message.parentId != null &&
                       !widget.hideSendAsDm)
                     Padding(
-                      padding: EdgeInsets.only(
-                        right: 12.w,
-                        left: 12.w,
-                        bottom: 10.h,
+                      padding: const EdgeInsets.only(
+                        right: 12,
+                        left: 12,
+                        bottom: 10,
                       ),
                       child: DmCheckbox(
                         foregroundDecoration: BoxDecoration(
@@ -785,7 +785,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
       onSendMessage: sendMessage,
       timeOut: _timeOut,
       isIdle: !widget.validator(_effectiveController.message),
-      isEditEnabled: _isEditing,
       idleSendButton: widget.idleSendButton,
       activeSendButton: widget.activeSendButton,
     );
@@ -929,17 +928,17 @@ class StreamMessageInputState extends State<StreamMessageInput>
           if (attachments.isNotEmpty) _addAttachments(attachments);
         },
         child: Container(
-          padding: EdgeInsets.all(1.5.r),
+          padding: const EdgeInsets.all(1.5),
           decoration: BoxDecoration(
             borderRadius: _messageInputTheme.borderRadius,
             border: _effectiveFocusNode.hasFocus
                 ? Border.all(
                     color: Theme.of(context).colorScheme.primary,
-                    width: 1.5.r,
+                    width: 1.5,
                   )
                 : Border.all(
                     color: Theme.of(context).colorScheme.outline,
-                    width: 1.5.r,
+                    width: 1.5,
                   ),
           ),
           child: Column(
@@ -1052,7 +1051,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
           color: Colors.transparent,
         ),
       ),
-      contentPadding: EdgeInsets.fromLTRB(12.w, 7.h, 8.w, 7.h),
+      contentPadding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
       prefixIcon: _commandEnabled
           ? Row(
               mainAxisSize: MainAxisSize.min,
@@ -1069,9 +1068,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        StreamSvgIcon.lightning(
+                        const StreamSvgIcon(
+                          size: 16,
                           color: Colors.white,
-                          size: 16.r,
+                          icon: StreamSvgIcons.lightning,
                         ),
                         Text(
                           _effectiveController.message.command!.toUpperCase(),
@@ -1094,16 +1094,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
         children: [
           if (_commandEnabled)
             Padding(
-              padding: EdgeInsets.only(right: 8.w),
-              child: IconButton(
-                iconSize: 24.r,
-                icon: StreamSvgIcon.closeSmall(size: 24.r),
-                splashRadius: 24.r,
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints.tightFor(
-                  height: 24.r,
-                  width: 24.r,
-                ),
+              padding: const EdgeInsets.only(right: 8),
+              child: StreamMessageInputIconButton(
+                iconSize: 24,
+                color: _messageInputTheme.actionButtonIdleColor,
+                icon: const StreamSvgIcon(icon: StreamSvgIcons.closeSmall),
                 onPressed: _effectiveController.clear,
               ),
             ),
@@ -1257,7 +1252,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
     });
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(4.w, 4.h, 4.w, 0),
+      padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
       child: StreamQuotedMessageWidget(
         reverse: true,
         isDm: widget.isDm,
@@ -1356,9 +1351,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
             element.group(0)?.split('.').last.isValidTLD() == true)) {
       showInfoBottomSheet(
         context,
-        icon: StreamSvgIcon.error(
+        icon: StreamSvgIcon(
+          icon: StreamSvgIcons.error,
           color: StreamChatTheme.of(context).colorTheme.accentError,
-          size: 24.r,
+          size: 24,
         ),
         title: 'Links are disabled',
         details: 'Sending links is not allowed in this conversation.',
@@ -1492,7 +1488,7 @@ class OGAttachmentPreview extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: EdgeInsets.all(8.r),
+          padding: const EdgeInsets.all(8),
           child: Icon(
             Icons.link,
             color: colorTheme.accentPrimary,
@@ -1531,9 +1527,9 @@ class OGAttachmentPreview extends StatelessWidget {
           ),
         ),
         IconButton(
-          iconSize: 24.r,
+          iconSize: 24,
           visualDensity: VisualDensity.compact,
-          icon: StreamSvgIcon.closeSmall(size: 24.r),
+          icon: const StreamSvgIcon(icon: StreamSvgIcons.closeSmall),
           onPressed: onDismissPreviewPressed,
         ),
       ],

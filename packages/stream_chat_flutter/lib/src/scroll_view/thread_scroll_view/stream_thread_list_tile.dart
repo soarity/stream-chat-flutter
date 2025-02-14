@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/misc/timestamp.dart';
-import 'package:stream_chat_flutter/src/theme/thread_list_tile_theme.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamThreadListTile}
@@ -50,6 +49,7 @@ class StreamThreadListTile extends StatelessWidget {
         padding: theme.padding,
         color: theme.backgroundColor,
         child: Column(
+          spacing: 6,
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -76,7 +76,7 @@ class StreamThreadListTile extends StatelessWidget {
                 language: language,
                 latestReply: latestReply,
               ),
-          ].insertBetween(const SizedBox(height: 6)),
+          ],
         ),
       ),
     );
@@ -217,6 +217,7 @@ class ThreadLatestReply extends StatelessWidget {
     final theme = StreamThreadListTileTheme.of(context);
 
     return Row(
+      spacing: 8,
       children: <Widget>[
         if (latestReply.user case final user?) StreamUserAvatar(user: user),
         Expanded(
@@ -246,7 +247,7 @@ class ThreadLatestReply extends StatelessWidget {
             ],
           ),
         ),
-      ].insertBetween(const SizedBox(width: 8)),
+      ],
     );
   }
 }

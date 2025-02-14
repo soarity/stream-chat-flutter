@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_widget/chat_bubble.dart';
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content.dart';
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
@@ -238,7 +237,7 @@ class _MessageCardState extends State<MessageCard> {
         children: [
           if (!widget.isDm && message.user != null && widget.showUsername)
             Padding(
-              padding: EdgeInsets.only(bottom: 4.h),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Username(
                 key: usernameKey,
                 messageTheme: widget.messageTheme,
@@ -254,7 +253,7 @@ class _MessageCardState extends State<MessageCard> {
               child: (widthLimit + bottomRowWidth) > 0 &&
                       quotedMessageHeight > 0
                   ? Padding(
-                      padding: EdgeInsets.only(bottom: 6.h),
+                      padding: const EdgeInsets.only(bottom: 6),
                       child: SizedBox(
                         width: widthLimit + bottomRowWidth,
                         height: quotedMessageHeight,
@@ -263,9 +262,9 @@ class _MessageCardState extends State<MessageCard> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(12.r),
-                                  bottom: Radius.circular(6.r),
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(12),
+                                  bottom: Radius.circular(6),
                                 ),
                                 color: Theme.of(context)
                                     .colorScheme
@@ -284,7 +283,7 @@ class _MessageCardState extends State<MessageCard> {
                       ),
                     )
                   : Padding(
-                      padding: EdgeInsets.only(bottom: 6.h),
+                      padding: const EdgeInsets.only(bottom: 6),
                       child: QuotedMessage(
                         key: quotedWidgetKey,
                         isDm: widget.isDm,
@@ -345,9 +344,9 @@ class _MessageCardState extends State<MessageCard> {
                 ),
               Padding(
                 key: bottomRowKey,
-                padding: EdgeInsets.only(
-                  top: 2.h,
-                  left: 8.w,
+                padding: const EdgeInsets.only(
+                  top: 2,
+                  left: 8,
                 ),
                 child: BottomRow(
                   message: widget.message,

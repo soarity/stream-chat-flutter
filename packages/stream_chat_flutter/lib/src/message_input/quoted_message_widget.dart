@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -55,9 +54,9 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = message.user?.extraData['color'];
     return ClipRRect(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(12.r),
-        bottom: Radius.circular(6.r),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(12),
+        bottom: Radius.circular(6),
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -72,12 +71,12 @@ class StreamQuotedMessageWidget extends StatelessWidget {
               color: color == null
                   ? Theme.of(context).colorScheme.tertiary
                   : Color(int.parse('0x$color')),
-              width: 4.w,
+              width: 4,
             ),
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(8.w, 8.h, 0, 8.h),
+          padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: showBorder
@@ -86,7 +85,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
             children: [
               if (!isDm)
                 Padding(
-                  padding: EdgeInsets.only(bottom: 4.h),
+                  padding: const EdgeInsets.only(bottom: 4),
                   child: Username(
                     messageTheme: messageTheme,
                     message: message,
@@ -165,7 +164,6 @@ class _QuotedMessage extends StatelessWidget {
           context.translations.messageDeletedLabel,
           style: messageTheme.messageTextStyle?.copyWith(
             fontStyle: FontStyle.italic,
-            fontSize: 14,
             color: messageTheme.createdAtStyle?.color,
           ),
         ),
@@ -206,16 +204,17 @@ class _QuotedMessage extends StatelessWidget {
                       : messageTheme.copyWith(
                           messageTextStyle:
                               messageTheme.messageTextStyle?.copyWith(
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                         ),
                 ),
           ),
-      ].insertBetween(SizedBox(width: 8.w));
+      ];
     }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: 8,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,
     );
@@ -253,7 +252,8 @@ class _ParseAttachments extends StatelessWidget {
 
     var clipBehavior = Clip.none;
     ShapeDecoration? decoration;
-    if (attachment.type != AttachmentType.file) {
+    if (attachment.type != AttachmentType.file &&
+        attachment.type != AttachmentType.voiceRecording) {
       clipBehavior = Clip.hardEdge;
       decoration = ShapeDecoration(
         shape: RoundedRectangleBorder(
@@ -343,12 +343,12 @@ class _ParseAttachments extends StatelessWidget {
         children: [
           ImageIcon(
             const AssetImage('assets/icons/microphone.png'),
-            size: 20.r,
+            size: 20,
             color: Theme.of(context).colorScheme.outline,
           ),
           if (text.isNotEmpty)
             Padding(
-              padding: EdgeInsets.only(left: 4.w),
+              padding: const EdgeInsets.only(left: 4),
               child: Text(
                 text,
                 style: messageTheme.messageTextStyle?.copyWith(
@@ -366,8 +366,9 @@ class _ParseAttachments extends StatelessWidget {
       AttachmentType.video: _createMediaThumbnail,
       AttachmentType.urlPreview: _createUrlThumbnail,
       AttachmentType.file: _createFileThumbnail,
+      AttachmentType.voiceRecording: _createFileThumbnail,
       'voicenote': _createVoiceNoteThumbnail,
-      'voiceRecording': _createVoiceNoteThumbnail,
+      // 'voiceRecording': _createVoiceNoteThumbnail,
     };
   }
 }

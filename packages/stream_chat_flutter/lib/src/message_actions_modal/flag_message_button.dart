@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template flagMessageButton}
@@ -23,13 +22,14 @@ class FlagMessageButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding:  EdgeInsets.symmetric(vertical: 11.h, horizontal: 16.w),
+        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
-            StreamSvgIcon.iconFlag(
+            StreamSvgIcon(
+              icon: StreamSvgIcons.flag,
               color: streamChatThemeData.primaryIconTheme.color,
             ),
-             SizedBox(width: 16.w),
+            const SizedBox(width: 16),
             Text(
               context.translations.flagMessageLabel,
               style: streamChatThemeData.textTheme.body,

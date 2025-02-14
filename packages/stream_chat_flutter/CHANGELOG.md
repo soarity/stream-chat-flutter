@@ -1,3 +1,26 @@
+## 9.4.0
+
+🔄 Changed
+
+- Updated minimum Flutter version to 3.27.4 for the SDK.
+- Replaced [image_gallery_saver_plus](https://pub.dev/packages/image_gallery_saver_plus) with [gal](https://pub.dev/packages/gal)
+
+## 9.3.0
+
+✅ Added
+
+- Added support for `voiceRecording` type attachments.
+
+🔄 Changed
+
+- Deprecated `PlayListItem` in favor of `PlaylistTrack`.
+- Deprecated `StreamVoiceRecordingListPlayer` in favor of `StreamVoiceRecordingAttachmentPlaylist`.
+- Deprecated `StreamVoiceRecordingLoading` as it is no longer used.
+- Deprecated `StreamVoiceRecordingPlayer` in favor of `StreamVoiceRecordingAttachment`.
+- Deprecated `StreamVoiceRecordingSlider` in favor of `StreamAudioWaveformSlider`.
+- Deprecated `VoiceRecordingAttachmentBuilder` in favor of `VoiceRecordingAttachmentPlaylistBuilder`.
+- Deprecated `StreamVoiceRecordingTheme` in favor of `StreamVoiceRecordingAttachmentTheme`.
+
 ## 9.2.0+1
 
 - Remove untracked files from the package.

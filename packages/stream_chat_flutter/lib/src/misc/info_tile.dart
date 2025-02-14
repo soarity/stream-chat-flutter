@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 
 /// {@template streamInfoTile}
@@ -50,7 +49,7 @@ class StreamInfoTile extends StatelessWidget {
         target: childAnchor ?? Alignment.bottomCenter,
       ),
       portalFollower: Container(
-        height: 25.h,
+        height: 24,
         color: backgroundColor ??
             // ignore: deprecated_member_use
             chatThemeData.colorTheme.textLowEmphasis.withOpacity(0.9),

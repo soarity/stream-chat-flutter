@@ -1,7 +1,7 @@
 name: stream_chat_flutter
 homepage: https://github.com/GetStream/stream-chat-flutter
 description: Stream Chat official Flutter SDK. Build your own chat experience using Dart and Flutter.
-version: 9.2.0+1
+version: 9.4.0
 repository: https://github.com/GetStream/stream-chat-flutter
 issue_tracker: https://github.com/GetStream/stream-chat-flutter/issues
 
@@ -18,8 +18,8 @@ issue_tracker: https://github.com/GetStream/stream-chat-flutter/issues
 #   2. Add it to the melos.yaml file for future updates.
 
 environment:
-  sdk: ^3.5.4
-  flutter: ">=3.24.5"
+  sdk: ^3.6.2
+  flutter: ">=3.27.4"
 
 publish_to: "none"
 
@@ -38,11 +38,10 @@ dependencies:
     sdk: flutter
   flutter_markdown: ^0.7.2+1
   flutter_portal: ^1.1.4
-  flutter_screenutil: ^5.9.3
   flutter_svg: ^2.0.10+1
+  gal: ^2.3.1
   get_thumbnail_video: ^0.7.3
   http_parser: ^4.0.2
-  image_gallery_saver_plus: ^3.0.5
   image_picker: ^1.1.2
   image_size_getter: ^2.3.0
   jiffy: ^6.2.1
@@ -53,14 +52,16 @@ dependencies:
   photo_manager: ^3.2.0
   photo_view: ^0.15.0
   rate_limiter: ^1.0.0
+  record: ^5.2.0
   rxdart: ^0.28.0
   share_plus: ^10.0.2
   shimmer: ^3.0.0
   stream_chat_flutter_core:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: circles/release/9.2.0
+      ref: circles/release/9.3.0
       path: packages/stream_chat_flutter_core
+  svg_icon_widget: ^0.0.1
   synchronized: ^3.1.0+1
   thumblr: ^0.0.4
   url_launcher: ^6.3.0
@@ -73,13 +74,15 @@ dev_dependencies:
     sdk: flutter
   mocktail: ^1.0.0
   path: ^1.8.3
+  path_provider_platform_interface: ^2.0.0
+  plugin_platform_interface: ^2.0.0
 
 flutter:
   assets:
-    - images/
-    - svgs/
-    - lib/svgs/
-    - animations/
+    - lib/assets/animations/
+    - lib/assets/icons/
+    - lib/assets/icons/colored/
+    - lib/assets/images/
   uses-material-design: true
 
 # This package supports all platforms listed below.
