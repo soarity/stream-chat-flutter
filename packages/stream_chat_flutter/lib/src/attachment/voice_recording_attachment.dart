@@ -118,6 +118,10 @@ class StreamVoiceRecordingAttachment extends StatelessWidget {
 
     final shape = this.shape ??
         RoundedRectangleBorder(
+          side: BorderSide(
+            color: StreamChatTheme.of(context).colorTheme.borders,
+            strokeAlign: BorderSide.strokeAlignOutside,
+          ),
           borderRadius: BorderRadius.circular(14),
         );
 

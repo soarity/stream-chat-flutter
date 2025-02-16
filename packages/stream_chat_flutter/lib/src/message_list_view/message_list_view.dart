@@ -1023,10 +1023,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                 : 2,
       ),
       attachmentShape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: _streamTheme.colorTheme.borders,
-          strokeAlign: BorderSide.strokeAlignOutside,
-        ),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(attachmentBorderRadius),
           bottomLeft: isMyMessage
@@ -1340,10 +1336,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
       attachmentShape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: _streamTheme.colorTheme.borders,
-          strokeAlign: BorderSide.strokeAlignOutside,
-        ),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(attachmentBorderRadius),
           bottomLeft: isMyMessage
