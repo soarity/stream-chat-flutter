@@ -383,33 +383,33 @@ class RecordStateLockedRecordingContent extends StatelessWidget {
         follower: Alignment.bottomRight,
       ),
       portalFollower: const SwipeToLockButton(isLocked: true),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              PlaybackTimerText(
-                duration: state.duration,
-                style: theme.textTheme.headline.copyWith(
-                  color: theme.colorTheme.textLowEmphasis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: SizedBox(
-                  height: kDefaultMessageInputIconSize,
-                  child: StreamAudioWaveform(
-                    limit: 50,
-                    waveform: state.waveform,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                PlaybackTimerText(
+                  duration: state.duration,
+                  style: theme.textTheme.headline.copyWith(
+                    color: theme.colorTheme.textLowEmphasis,
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SizedBox(
+                    height: kDefaultMessageInputIconSize,
+                    child: StreamAudioWaveform(
+                      limit: 50,
+                      waveform: state.waveform,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
@@ -448,8 +448,8 @@ class RecordStateLockedRecordingContent extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -589,7 +589,7 @@ class _RecordStateStoppedContentState extends State<RecordStateStoppedContent> {
             ),
           const SizedBox(height: 2),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
