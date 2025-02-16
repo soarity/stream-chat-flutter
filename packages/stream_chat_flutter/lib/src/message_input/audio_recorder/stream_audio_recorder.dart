@@ -426,7 +426,7 @@ class RecordStateLockedRecordingContent extends StatelessWidget {
                   onTap: onRecordStop,
                   child: ImageIcon(
                     const AssetImage('assets/icons/stop-circle.png'),
-                    size: 28,
+                    size: 32,
                     color: Theme.of(context).colorScheme.error,
                   ),
                 ),
