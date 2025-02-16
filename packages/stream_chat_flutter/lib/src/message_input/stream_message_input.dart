@@ -866,33 +866,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
         false => CrossFadeState.showSecond,
       },
       firstChild: _buildSendButton(context),
-      secondChild: widget.disableAttachments && !(widget.actionsBuilder != null)
-          ? const Offstage()
-          : Wrap(
-              children: _actionsList()
-                  .insertBetween(SizedBox(width: widget.spaceBetweenActions)),
-            ),
+      secondChild: const Offstage(),
     );
-  }
-
-  List<Widget> _actionsList() {
-    final channel = StreamChannel.of(context).channel;
-    final defaultActions = <Widget>[
-      if (!widget.disableAttachments &&
-          channel.ownCapabilities.contains(PermissionType.uploadFile))
-        _buildAttachmentButton(context),
-      if (widget.showCommandsButton &&
-          !_isEditing &&
-          channel.state != null &&
-          channel.config?.commands.isNotEmpty == true)
-        _buildCommandButton(context),
-    ];
-
-    if (widget.actionsBuilder case final builder?) {
-      return builder(context, defaultActions);
-    }
-
-    return defaultActions;
   }
 
   Widget _buildAttachmentButton(BuildContext context) {
@@ -1378,35 +1353,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
     }
 
     _effectiveController.removeAttachmentById(attachment.id);
-  }
-
-  Widget _buildCommandButton(BuildContext context) {
-    final s = _effectiveController.text.trim();
-    final isCommandOptionsVisible = s.startsWith(_kCommandTrigger);
-    final defaultButton = CommandButton(
-      color: s.isNotEmpty
-          ? _streamChatTheme.colorTheme.disabled
-          : (isCommandOptionsVisible
-              ? _messageInputTheme.actionButtonColor!
-              : _messageInputTheme.actionButtonIdleColor!),
-      onPressed: () async {
-        // Clear the text if the commands options are already visible.
-        if (isCommandOptionsVisible) {
-          _effectiveController.clear();
-          _effectiveFocusNode.unfocus();
-        } else {
-          // This triggers the [StreamAutocomplete] to show the command trigger.
-          _effectiveController.textEditingValue = const TextEditingValue(
-            text: _kCommandTrigger,
-            selection: TextSelection.collapsed(offset: _kCommandTrigger.length),
-          );
-          _effectiveFocusNode.requestFocus();
-        }
-      },
-    );
-
-    return widget.commandButtonBuilder?.call(context, defaultButton) ??
-        defaultButton;
   }
 
   /// Adds an attachment to the [messageInputController.attachments] map

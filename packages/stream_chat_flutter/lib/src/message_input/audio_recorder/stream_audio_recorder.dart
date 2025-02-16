@@ -139,9 +139,21 @@ class StreamAudioRecorderButton extends StatelessWidget {
       },
       child: StreamAudioRecorder(
         state: recordState,
-        button: RecordButton(
-          onPressed: () {}, // Allows showing ripple effect on tap.
-          icon: const StreamSvgIcon(icon: StreamSvgIcons.mic),
+        button: InkWell(
+          onTap: () {},
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.all(8),
+            decoration: ShapeDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              shape: const CircleBorder(),
+            ),
+            child: ImageIcon(
+              const AssetImage('assets/icons/microphone.png'),
+              size: 24,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
         ),
         builder: (context, state, recordButton) => switch (state) {
           // Show only the record button if the recording is not in progress.
@@ -398,21 +410,40 @@ class RecordStateLockedRecordingContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              StreamMessageInputIconButton(
-                icon: const StreamSvgIcon(icon: StreamSvgIcons.delete),
-                color: theme.colorTheme.accentPrimary,
-                onPressed: onRecordCancel,
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: onRecordCancel,
+                child: ImageIcon(
+                  const AssetImage('assets/icons/trash2.png'),
+                  size: 28,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
               ),
-              StreamMessageInputIconButton(
-                icon: const StreamSvgIcon(icon: StreamSvgIcons.stop),
-                color: theme.colorTheme.accentError,
-                onPressed: onRecordStop,
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: onRecordStop,
+                child: ImageIcon(
+                  const AssetImage('assets/icons/stop-circle.png'),
+                  size: 28,
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
-              StreamMessageInputIconButton(
-                icon: const StreamSvgIcon(icon: StreamSvgIcons.checkSend),
-                color: theme.colorTheme.accentPrimary,
-                onPressed: onRecordEnd,
-              )
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: onRecordEnd,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: ShapeDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    shape: const CircleBorder(),
+                  ),
+                  child: ImageIcon(
+                    const AssetImage('assets/icons/send.png'),
+                    size: 24,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -557,16 +588,31 @@ class _RecordStateStoppedContentState extends State<RecordStateStoppedContent> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              StreamMessageInputIconButton(
-                icon: const StreamSvgIcon(icon: StreamSvgIcons.delete),
-                color: theme.colorTheme.accentPrimary,
-                onPressed: widget.onRecordCancel,
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: widget.onRecordCancel,
+                child: ImageIcon(
+                  const AssetImage('assets/icons/trash2.png'),
+                  size: 28,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
               ),
-              StreamMessageInputIconButton(
-                icon: const StreamSvgIcon(icon: StreamSvgIcons.checkSend),
-                color: theme.colorTheme.accentPrimary,
-                onPressed: widget.onRecordFinish,
-              )
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: widget.onRecordFinish,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: ShapeDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    shape: const CircleBorder(),
+                  ),
+                  child: ImageIcon(
+                    const AssetImage('assets/icons/send.png'),
+                    size: 24,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
             ],
           ),
         ],
