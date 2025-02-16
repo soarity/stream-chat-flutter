@@ -1306,11 +1306,12 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       message: message,
       reverse: isMyMessage,
       showReactions: !message.isDeleted,
+      showTimestamp: !message.isDeleted,
       padding: EdgeInsets.fromLTRB(
         16,
         0,
         16,
-        (hasTimeDiff || !isNextUserSame || hasFileAttachment) ? 12 : 4,
+        (hasTimeDiff || !isNextUserSame || hasFileAttachment) ? 10 : 4,
       ),
       showUsername: showUsername,
       showSendingIndicator: showSendingIndicator,
