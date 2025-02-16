@@ -1293,7 +1293,12 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     final showSendingIndicator =
         isMyMessage && (index == 0 || hasTimeDiff || !isNextUserSame);
 
-    const borderSide = BorderSide.none;
+    final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
+
+    final borderSide =
+        isOnlyEmoji || hasUrlAttachment || (isMyMessage && !hasFileAttachment)
+            ? BorderSide.none
+            : null;
 
     Widget messageWidget = StreamMessageWidget(
       isDm: widget.isDm,
