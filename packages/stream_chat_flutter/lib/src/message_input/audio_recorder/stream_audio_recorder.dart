@@ -151,7 +151,7 @@ class StreamAudioRecorderButton extends StatelessWidget {
             child: ImageIcon(
               const AssetImage('assets/icons/microphone.png'),
               size: 24,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),
@@ -407,44 +407,47 @@ class RecordStateLockedRecordingContent extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                customBorder: const CircleBorder(),
-                onTap: onRecordCancel,
-                child: ImageIcon(
-                  const AssetImage('assets/icons/trash2.png'),
-                  size: 28,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-              InkWell(
-                customBorder: const CircleBorder(),
-                onTap: onRecordStop,
-                child: ImageIcon(
-                  const AssetImage('assets/icons/stop-circle.png'),
-                  size: 28,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-              InkWell(
-                customBorder: const CircleBorder(),
-                onTap: onRecordEnd,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: ShapeDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: const CircleBorder(),
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: onRecordCancel,
                   child: ImageIcon(
-                    const AssetImage('assets/icons/send.png'),
-                    size: 24,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    const AssetImage('assets/icons/trash2.png'),
+                    size: 28,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                 ),
-              ),
-            ],
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: onRecordStop,
+                  child: ImageIcon(
+                    const AssetImage('assets/icons/stop-circle.png'),
+                    size: 28,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: onRecordEnd,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: ShapeDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: const CircleBorder(),
+                    ),
+                    child: ImageIcon(
+                      const AssetImage('assets/icons/send.png'),
+                      size: 24,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -585,35 +588,38 @@ class _RecordStateStoppedContentState extends State<RecordStateStoppedContent> {
               },
             ),
           const SizedBox(height: 2),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                customBorder: const CircleBorder(),
-                onTap: widget.onRecordCancel,
-                child: ImageIcon(
-                  const AssetImage('assets/icons/trash2.png'),
-                  size: 28,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-              InkWell(
-                customBorder: const CircleBorder(),
-                onTap: widget.onRecordFinish,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: ShapeDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: const CircleBorder(),
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: widget.onRecordCancel,
                   child: ImageIcon(
-                    const AssetImage('assets/icons/send.png'),
-                    size: 24,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    const AssetImage('assets/icons/trash2.png'),
+                    size: 28,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                 ),
-              ),
-            ],
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: widget.onRecordFinish,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: ShapeDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: const CircleBorder(),
+                    ),
+                    child: ImageIcon(
+                      const AssetImage('assets/icons/send.png'),
+                      size: 24,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
