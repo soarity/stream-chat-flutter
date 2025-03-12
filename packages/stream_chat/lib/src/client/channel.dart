@@ -1911,11 +1911,13 @@ class ChannelClientState {
   ChannelClientState(
     this._channel,
     ChannelState channelState,
-    //ignore: unnecessary_parenthesis
-  ) : _debouncedUpdatePersistenceChannelState = ((ChannelState state) =>
-                _channel._client.chatPersistenceClient
-                    ?.updateChannelState(state))
-            .debounced(const Duration(seconds: 1)) {
+  ) : _debouncedUpdatePersistenceChannelState = debounce(
+          (ChannelState state) {
+            final persistenceClient = _channel._client.chatPersistenceClient;
+            return persistenceClient?.updateChannelState(state);
+          },
+          const Duration(seconds: 1),
+        ) {
     _retryQueue = RetryQueue(
       channel: _channel,
       logger: _channel.client.detachedLogger(
@@ -2193,7 +2195,7 @@ class ChannelClientState {
   /// [EventType.messageNew] will not be pushed on to message list.
   bool get isUpToDate => _isUpToDateController.value;
 
-  set isUpToDate(bool isUpToDate) => _isUpToDateController.add(isUpToDate);
+  set isUpToDate(bool isUpToDate) => _isUpToDateController.safeAdd(isUpToDate);
 
   /// [isUpToDate] flag count as a stream.
   Stream<bool> get isUpToDateStream => _isUpToDateController.stream;
@@ -2495,6 +2497,25 @@ class ChannelClientState {
     }));
   }
 
+  // Logic taken from the backend SDK
+  // https://github.com/GetStream/chat/blob/9245c2b3f7e679267d57ee510c60e93de051cb8e/types/channel.go#L1136-L1150
+  bool _shouldUpdateChannelLastMessageAt(Message message) {
+    if (message.shadowed) return false;
+    if (message.isEphemeral) return false;
+
+    final config = channelState.channel?.config;
+    if (message.isSystem && config?.skipLastMsgUpdateForSystemMsgs == true) {
+      return false;
+    }
+
+    final currentUserId = _channel._client.state.currentUser?.id;
+    if (currentUserId case final userId? when message.isNotVisibleTo(userId)) {
+      return false;
+    }
+
+    return true;
+  }
+
   /// Updates the [message] in the state if it exists. Adds it otherwise.
   void updateMessage(Message message) {
     // Determine if the message should be displayed in the channel view.
@@ -2529,7 +2550,7 @@ class ChannelClientState {
 
           // Update the quotedMessage only if the updatedMessage indicates
           // deletion.
-          if (message.type == 'deleted') {
+          if (message.isDeleted) {
             return it.copyWith(
               quotedMessage: updatedMessage.copyWith(
                 type: message.type,
@@ -2547,12 +2568,19 @@ class ChannelClientState {
       // Handle updates to pinned messages.
       final newPinnedMessages = _updatePinnedMessages(message);
 
+      // Calculate the new last message at time.
+      var lastMessageAt = _channelState.channel?.lastMessageAt;
+      lastMessageAt ??= message.createdAt;
+      if (_shouldUpdateChannelLastMessageAt(message)) {
+        lastMessageAt = [lastMessageAt, message.createdAt].max;
+      }
+
       // Apply the updated lists to the channel state.
       _channelState = _channelState.copyWith(
         messages: newMessages.sorted(_sortByCreatedAt),
         pinnedMessages: newPinnedMessages,
         channel: _channelState.channel?.copyWith(
-          lastMessageAt: message.createdAt,
+          lastMessageAt: lastMessageAt,
         ),
       );
     }
@@ -2796,19 +2824,40 @@ class ChannelClientState {
   }
 
   bool _countMessageAsUnread(Message message) {
-    final userId = _channel.client.state.currentUser?.id;
-    final userIsMuted =
-        _channel.client.state.currentUser?.mutes.firstWhereOrNull(
-              (m) => m.user.id == message.user?.id,
-            ) !=
-            null;
-    final isThreadMessage = message.parentId != null;
+    // Don't count if the message is silent or shadowed.
+    if (message.silent) return false;
+    if (message.shadowed) return false;
 
-    return !message.silent &&
-        !message.shadowed &&
-        message.user?.id != userId &&
-        !userIsMuted &&
-        !isThreadMessage;
+    // Don't count if the channel is muted.
+    if (_channel.isMuted) return false;
+
+    // Don't count if the channel doesn't allow read events.
+    if (!_channel.ownCapabilities.contains(PermissionType.readEvents)) {
+      return false;
+    }
+
+    // Don't count thread replies which are not shown in the channel as unread.
+    if (message.parentId != null && message.showInChannel == false) {
+      return false;
+    }
+
+    // Don't count if the message doesn't have a user.
+    final messageUser = message.user;
+    if (messageUser == null) return false;
+
+    // Don't count if the current user is not set.
+    final currentUser = _channel.client.state.currentUser;
+    if (currentUser == null) return false;
+
+    // Don't count user's own messages as unread.
+    if (messageUser.id == currentUser.id) return false;
+
+    // Don't count messages from muted users as unread.
+    final isMuted = currentUser.mutes.any((it) => it.user.id == messageUser.id);
+    if (isMuted) return false;
+
+    // If we've passed all checks, count the message as unread.
+    return true;
   }
 
   /// Counts the number of unread messages mentioning the current user.
@@ -2918,7 +2967,7 @@ class ChannelClientState {
   final Debounce _debouncedUpdatePersistenceChannelState;
 
   set _channelState(ChannelState v) {
-    _channelStateController.add(v);
+    _channelStateController.safeAdd(v);
     _debouncedUpdatePersistenceChannelState.call([v]);
   }
 
@@ -2933,7 +2982,7 @@ class ChannelClientState {
       BehaviorSubject.seeded({});
 
   set _threads(Map<String, List<Message>> threads) {
-    _threadsController.add(threads);
+    _threadsController.safeAdd(threads);
     _channel.client.chatPersistenceClient?.updateChannelThreads(
       _channel.cid!,
       threads,
@@ -2962,7 +3011,7 @@ class ChannelClientState {
             if (user != null && user.id != currentUser.id) {
               final events = {...typingEvents};
               events[user] = event;
-              _typingEventsController.add(events);
+              _typingEventsController.safeAdd(events);
             }
           },
         ),
@@ -2973,7 +3022,7 @@ class ChannelClientState {
             final user = event.user;
             if (user != null && user.id != currentUser.id) {
               final events = {...typingEvents}..remove(user);
-              _typingEventsController.add(events);
+              _typingEventsController.safeAdd(events);
             }
           },
         ),

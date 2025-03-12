@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_redundant_argument_values
+
 import 'package:stream_chat/src/core/models/attachment.dart';
 import 'package:stream_chat/src/core/models/message.dart';
 import 'package:stream_chat/src/core/models/reaction.dart';
@@ -29,6 +31,7 @@ void main() {
       expect(message.pinExpires, null);
       expect(message.pinnedBy, null);
       expect(message.i18n, null);
+      expect(message.restrictedVisibility, isA<List<String>>());
     });
 
     test('should serialize to json correctly', () {
@@ -51,12 +54,11 @@ void main() {
                 'https://media.giphy.com/media/5zvN79uTGfLMOVfQaA/giphy.gif',
             'asset_url':
                 'https://media.giphy.com/media/5zvN79uTGfLMOVfQaA/giphy.mp4',
-            'og_scrape_url':
-                'https://giphy.com/gifs/the-lion-king-live-action-5zvN79uTGfLMOVfQaA'
           })
         ],
         showInChannel: true,
         parentId: 'parentId',
+        restrictedVisibility: const ['user-id-3'],
         extraData: const {'hey': 'test'},
       );
 
@@ -64,6 +66,133 @@ void main() {
         message.toJson(),
         jsonFixture('message_to_json.json'),
       );
+    });
+  });
+
+  group('MessageVisibility Extension Tests', () {
+    group('hasRestrictedVisibility', () {
+      test('should return false when restrictedVisibility is null', () {
+        final message = Message(restrictedVisibility: null);
+        expect(message.hasRestrictedVisibility, false);
+      });
+
+      test('should return false when restrictedVisibility is empty', () {
+        final message = Message(restrictedVisibility: const []);
+        expect(message.hasRestrictedVisibility, false);
+      });
+
+      test('should return true when restrictedVisibility has entries', () {
+        final message = Message(restrictedVisibility: const ['user1', 'user2']);
+        expect(message.hasRestrictedVisibility, true);
+      });
+    });
+
+    group('isVisibleTo', () {
+      test('should return true when restrictedVisibility is null', () {
+        final message = Message(restrictedVisibility: null);
+        expect(message.isVisibleTo('anyUser'), true);
+      });
+
+      test('should return true when restrictedVisibility is empty', () {
+        final message = Message(restrictedVisibility: const []);
+        expect(message.isVisibleTo('anyUser'), true);
+      });
+
+      test('should return true when user is in restrictedVisibility list', () {
+        final message =
+            Message(restrictedVisibility: const ['user1', 'user2', 'user3']);
+        expect(message.isVisibleTo('user2'), true);
+      });
+
+      test('should return false when user is not in restrictedVisibility list',
+          () {
+        final message =
+            Message(restrictedVisibility: const ['user1', 'user2', 'user3']);
+        expect(message.isVisibleTo('user4'), false);
+      });
+
+      test('should handle case sensitivity correctly', () {
+        final message = Message(restrictedVisibility: const ['User1', 'USER2']);
+        expect(message.isVisibleTo('user1'), false,
+            reason: 'Should be case sensitive');
+        expect(message.isVisibleTo('User1'), true);
+      });
+    });
+
+    group('isNotVisibleTo', () {
+      test('should return false when restrictedVisibility is null', () {
+        final message = Message(restrictedVisibility: null);
+        expect(message.isNotVisibleTo('anyUser'), false);
+      });
+
+      test('should return false when restrictedVisibility is empty', () {
+        final message = Message(restrictedVisibility: const []);
+        expect(message.isNotVisibleTo('anyUser'), false);
+      });
+
+      test('should return false when user is in restrictedVisibility list', () {
+        final message =
+            Message(restrictedVisibility: const ['user1', 'user2', 'user3']);
+        expect(message.isNotVisibleTo('user2'), false);
+      });
+
+      test('should return true when user is not in restrictedVisibility list',
+          () {
+        final message =
+            Message(restrictedVisibility: const ['user1', 'user2', 'user3']);
+        expect(message.isNotVisibleTo('user4'), true);
+      });
+
+      test('should be the exact opposite of isVisibleTo', () {
+        final message = Message(restrictedVisibility: const ['user1', 'user2']);
+        const userId = 'testUser';
+        expect(message.isNotVisibleTo(userId), !message.isVisibleTo(userId));
+      });
+    });
+
+    group('MessageType Extension Tests', () {
+      test('should correctly compare extension type with string values', () {
+        final regularMessage = Message(type: MessageType.regular);
+        final ephemeralMessage = Message(type: MessageType.ephemeral);
+        final errorMessage = Message(type: MessageType.error);
+        final replyMessage = Message(type: MessageType.reply);
+        final systemMessage = Message(type: MessageType.system);
+        final deletedMessage = Message(type: MessageType.deleted);
+
+        // Test comparing extension type with string literals
+        expect(regularMessage.type == 'regular', isTrue);
+        expect(ephemeralMessage.type == 'ephemeral', isTrue);
+        expect(errorMessage.type == 'error', isTrue);
+        expect(replyMessage.type == 'reply', isTrue);
+        expect(systemMessage.type == 'system', isTrue);
+        expect(deletedMessage.type == 'deleted', isTrue);
+
+        // Test the helper methods
+        expect(regularMessage.isRegular, isTrue);
+        expect(ephemeralMessage.isEphemeral, isTrue);
+        expect(errorMessage.isError, isTrue);
+        expect(replyMessage.isReply, isTrue);
+        expect(systemMessage.isSystem, isTrue);
+        expect(deletedMessage.isDeleted, isTrue);
+      });
+
+      test('should correctly handle string assignment to MessageType', () {
+        final message = Message(type: 'regular');
+        expect(message.type, equals(MessageType.regular));
+        expect(message.isRegular, isTrue);
+
+        final customTypeMessage = Message(type: 'custom_type');
+        expect(customTypeMessage.type, equals('custom_type'));
+      });
+
+      test('should correctly serialize and deserialize from json', () {
+        expect(MessageType.toJson(MessageType.regular), equals('regular'));
+        expect(MessageType.toJson(MessageType.system), equals('system'));
+        expect(MessageType.toJson(MessageType.ephemeral), isNull);
+
+        expect(MessageType.fromJson('regular'), equals(MessageType.regular));
+        expect(MessageType.fromJson('custom'), equals('custom'));
+      });
     });
   });
 }

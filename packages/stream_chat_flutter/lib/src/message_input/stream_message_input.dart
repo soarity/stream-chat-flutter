@@ -157,9 +157,15 @@ class StreamMessageInput extends StatefulWidget {
     this.ogPreviewFilter = _defaultOgPreviewFilter,
     this.hintGetter = _defaultHintGetter,
     this.contentInsertionConfiguration,
-    this.useNativeAttachmentPickerOnMobile = false,
+    bool useSystemAttachmentPicker = false,
+    @Deprecated(
+      'Use useSystemAttachmentPicker instead. '
+      'This feature was deprecated after v9.4.0',
+    )
+    bool useNativeAttachmentPickerOnMobile = false,
     this.pollConfig,
-  });
+  }) : useSystemAttachmentPicker = useSystemAttachmentPicker || //
+            useNativeAttachmentPickerOnMobile;
 
   /// The predicate used to send a message on desktop/web
   final KeyEventPredicate sendMessageKeyPredicate;
@@ -380,9 +386,25 @@ class StreamMessageInput extends StatefulWidget {
   /// {@macro flutter.widgets.editableText.contentInsertionConfiguration}
   final ContentInsertionConfiguration? contentInsertionConfiguration;
 
+  /// If True, allows you to use the system’s default media picker instead of
+  /// the custom media picker provided by the library. This can be beneficial
+  /// for several reasons:
+  ///
+  /// 1. Consistency: Provides a consistent user experience by using the
+  /// familiar system media picker.
+  /// 2. Permissions: Reduces the need for additional permissions, as the system
+  /// media picker handles permissions internally.
+  /// 3. Simplicity: Simplifies the implementation by leveraging the built-in
+  /// functionality of the system media picker.
+  final bool useSystemAttachmentPicker;
+
   /// Forces use of native attachment picker on mobile instead of the custom
   /// Stream attachment picker.
-  final bool useNativeAttachmentPickerOnMobile;
+  @Deprecated(
+    'Use useSystemAttachmentPicker instead. '
+    'This feature was deprecated after v9.4.0',
+  )
+  bool get useNativeAttachmentPickerOnMobile => useSystemAttachmentPicker;
 
   /// The configuration to use while creating a poll.
   ///
@@ -486,16 +508,18 @@ class StreamMessageInputState extends State<StreamMessageInput>
     assert(_controller != null, '');
 
     registerForRestoration(_controller!, 'messageInputController');
-    _effectiveController
-      ..removeListener(_onChangedDebounced)
-      ..addListener(_onChangedDebounced);
-    if (!_isEditing && _timeOut <= 0) _startSlowMode();
+    _initialiseEffectiveController();
   }
 
   void _initialiseEffectiveController() {
     _effectiveController
       ..removeListener(_onChangedDebounced)
       ..addListener(_onChangedDebounced);
+
+    // Call the listener once to make sure the initial state is reflected
+    // correctly in the UI.
+    _onChangedDebounced.call();
+
     if (!_isEditing && _timeOut <= 0) _startSlowMode();
   }
 
@@ -938,6 +962,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
         return true;
       });
 
+    final messageInputTheme = StreamMessageInputTheme.of(context);
+    final useSystemPicker = widget.useSystemAttachmentPicker ||
+        (messageInputTheme.useSystemAttachmentPicker ?? false);
+
     final value = await showStreamAttachmentPickerModalBottomSheet(
       context: context,
       onError: widget.onError,
@@ -945,8 +973,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       pollConfig: widget.pollConfig,
       initialPoll: initialPoll,
       initialAttachments: initialAttachments,
-      useNativeAttachmentPickerOnMobile:
-          widget.useNativeAttachmentPickerOnMobile,
+      useSystemAttachmentPicker: useSystemPicker,
     );
 
     if (value == null || value is! AttachmentPickerValue) return;
@@ -1452,17 +1479,15 @@ class StreamMessageInputState extends State<StreamMessageInput>
     final channel = StreamChannel.of(context).channel;
 
     try {
-      Future sendingFuture;
-      if (_isEditing) {
-        sendingFuture = channel.updateMessage(message);
-      } else {
-        sendingFuture = channel.sendMessage(message);
-      }
+      final resp = await switch (_isEditing) {
+        true => channel.updateMessage(message),
+        false => channel.sendMessage(message),
+      };
 
-      final resp = await sendingFuture;
-      if (resp.message?.isError ?? false) {
+      if (resp.message.isError) {
         _effectiveController.message = message;
       }
+
       _startSlowMode();
       widget.onMessageSent?.call(resp.message);
     } catch (e, stk) {

@@ -1,3 +1,21 @@
+## 9.5.0
+
+✅ Added
+
+- [[#2101]](https://github.com/GetStream/stream-chat-flutter/issues/2101) Added support for system messages not updating `channel.lastMessageAt`.
+- Added support for sending private or restricted visibility messages.
+- Add `member.extraData` field.
+
+🐞 Fixed
+
+- [[#1774]](https://github.com/GetStream/stream-chat-flutter/issues/1774) Fixed failed to execute 'close' on 'WebSocket'.
+- [[#2016]](https://github.com/GetStream/stream-chat-flutter/issues/2016) Fix muted channel's unreadCount incorrectly updated.
+  
+🔄 Changed
+
+- Refactored identifying the `Attachment.uploadState` logic for local and remote attachments. Also updated the logic for determining the attachment type to check for ogScrapeUrl instead of `AttachmentType.giphy`.
+- Improved the `x-stream-client` header generation for better client identification and analytics.
+
 ## 9.4.0
 
 🔄 Changed

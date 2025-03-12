@@ -1,3 +1,8 @@
+## 9.5.0
+
+- Added support for `Message.restrictedVisibility` field.
+- Added support for `Member.extraData` field.
+
 ## 9.4.0
 
 - Updated minimum Flutter version to 3.27.4 for the SDK.
