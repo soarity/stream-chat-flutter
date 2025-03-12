@@ -59,7 +59,7 @@ dependencies:
   stream_chat_flutter_core:
     git:
       url: https://github.com/soarity/stream-chat-flutter.git
-      ref: circles/release/9.3´5.0
+      ref: circles/release/9.5.0
       path: packages/stream_chat_flutter_core
   svg_icon_widget: ^0.0.1
   synchronized: ^3.1.0+1
