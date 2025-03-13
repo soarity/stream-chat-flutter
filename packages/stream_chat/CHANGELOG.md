@@ -1,3 +1,9 @@
+## 9.6.0
+
+🐞 Fixed
+
+- [[#1775]](https://github.com/GetStream/stream-chat-flutter/issues/1775) Fix incorrect message order.
+
 ## 9.5.0
 
 ✅ Added
