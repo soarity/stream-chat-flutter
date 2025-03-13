@@ -163,17 +163,7 @@ class StreamMessageInput extends StatefulWidget {
     )
     bool useNativeAttachmentPickerOnMobile = false,
     this.pollConfig,
-  })  : assert(
-          idleSendIcon == null || idleSendButton == null,
-          'idleSendIcon and idleSendButton cannot be used together',
-        ),
-        idleSendIcon = idleSendIcon ?? idleSendButton,
-        assert(
-          activeSendIcon == null || activeSendButton == null,
-          'activeSendIcon and activeSendButton cannot be used together',
-        ),
-        activeSendIcon = activeSendIcon ?? activeSendButton,
-        useSystemAttachmentPicker = useSystemAttachmentPicker || //
+  }) : useSystemAttachmentPicker = useSystemAttachmentPicker || //
             useNativeAttachmentPickerOnMobile;
 
   /// The predicate used to send a message on desktop/web
@@ -304,18 +294,10 @@ class StreamMessageInput extends StatefulWidget {
   final bool autofocus;
 
   /// Send button widget in an idle state
-  final Widget? idleSendIcon;
-
-  /// Send button widget in an idle state
-  @Deprecated("Use 'idleSendIcon' instead")
-  Widget? get idleSendButton => idleSendIcon;
+  final Widget? idleSendButton;
 
   /// Send button widget in an active state
-  final Widget? activeSendIcon;
-
-  /// Send button widget in an active state
-  @Deprecated("Use 'activeSendIcon' instead")
-  Widget? get activeSendButton => activeSendIcon;
+  final Widget? activeSendButton;
 
   /// Emoji Send button widget in an active state
   final Widget? emojiSendButton;
@@ -845,8 +827,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
       onSendMessage: sendMessage,
       timeOut: _effectiveController.cooldownTimeOut,
       isIdle: !widget.validator(_effectiveController.message),
-      idleSendButton: widget.idleSendIcon,
-      activeSendButton: widget.activeSendIcon,
+      idleSendButton: widget.idleSendButton,
+      activeSendButton: widget.activeSendButton,
     );
   }
 
