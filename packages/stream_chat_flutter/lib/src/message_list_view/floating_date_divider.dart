@@ -48,15 +48,8 @@ class FloatingDateDivider extends StatelessWidget {
           false => getTopElementIndex(positions),
         };
 
-<<<<<<< HEAD
         if (index == null) {
-          return const Offstage();
-=======
-        if ((index == null) ||
-            (!isThreadConversation && index == itemCount - 2) ||
-            (isThreadConversation && index == itemCount - 1)) {
           return const Empty();
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
         }
 
         if (index <= 2 || index >= itemCount - 3) {

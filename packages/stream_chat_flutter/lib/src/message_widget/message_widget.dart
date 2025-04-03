@@ -699,13 +699,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           child: Portal(
             child: PlatformWidgetBuilder(
               mobile: (context, child) {
-<<<<<<< HEAD
-                return GestureDetector(
-                  onTap: () => widget.onMessageTap!(widget.message),
-                  onLongPress: widget.message.state.isDeleted
-                      ? null
-                      : () => onLongPress(context),
-=======
                 final message = widget.message;
                 return InkWell(
                   onTap: switch (widget.onMessageTap) {
@@ -720,7 +713,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                     _ when message.state.isOutgoing => null,
                     _ => () => _onMessageLongPressed(context, message),
                   },
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
                   child: child,
                 );
               },
@@ -913,18 +905,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             }
           },
         ),
-<<<<<<< HEAD
-=======
-      if (shouldShowThreadReplyAction)
-        StreamChatContextMenuItem(
-          leading: const StreamSvgIcon(icon: StreamSvgIcons.threadReply),
-          title: Text(context.translations.threadReplyLabel),
-          onClick: () {
-            Navigator.of(context, rootNavigator: true).pop();
-            widget.onThreadTap?.call(message);
-          },
-        ),
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
       if (shouldShowCopyAction)
         StreamChatContextMenuItem(
           leading: const StreamSvgIcon(icon: StreamSvgIcons.copy),

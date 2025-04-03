@@ -12,11 +12,7 @@ import 'package:stream_chat_flutter/src/message_input/quoting_message_top_area.d
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
 import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
-<<<<<<< HEAD
-=======
 import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
-import 'package:stream_chat_flutter/src/misc/gradient_box_border.dart';
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 const _kCommandTrigger = '/';
@@ -769,8 +765,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
         return Row(
           children: [
             if (!isAudioRecordingFlowActive) ...[
-              if (!widget.disableAttachments &&
-                  channel.ownCapabilities.contains(PermissionType.uploadFile))
+              if (!widget.disableAttachments && channel.canUploadFile)
                 _buildAttachmentButton(context),
               Expanded(child: _buildTextInput(context)),
               if (_isEditing || _effectiveController.attachments.isNotEmpty)
@@ -845,68 +840,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
         true => CrossFadeState.showFirst,
         false => CrossFadeState.showSecond,
       },
-<<<<<<< HEAD
       firstChild: _buildSendButton(context),
       secondChild: const Offstage(),
     );
   }
 
-=======
-      layoutBuilder: (top, topKey, bottom, bottomKey) => Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          Positioned(key: bottomKey, top: 0, child: bottom),
-          Positioned(key: topKey, child: top),
-        ],
-      ),
-      firstChild: StreamMessageInputIconButton(
-        color: _messageInputTheme.expandButtonColor,
-        icon: Transform.rotate(
-          angle: (widget.actionsLocation == ActionsLocation.right ||
-                  widget.actionsLocation == ActionsLocation.rightInside)
-              ? pi
-              : 0,
-          child: const StreamSvgIcon(icon: StreamSvgIcons.emptyCircleRight),
-        ),
-        onPressed: () {
-          if (_actionsShrunk) {
-            setState(() => _actionsShrunk = false);
-          }
-        },
-      ),
-      secondChild: widget.disableAttachments &&
-              !widget.showCommandsButton &&
-              !(widget.actionsBuilder != null)
-          ? const Empty()
-          : Row(
-              spacing: widget.spaceBetweenActions,
-              mainAxisSize: MainAxisSize.min,
-              children: _actionsList(),
-            ),
-    );
-  }
-
-  List<Widget> _actionsList() {
-    final channel = StreamChannel.of(context).channel;
-    final defaultActions = <Widget>[
-      if (!widget.disableAttachments && channel.canUploadFile)
-        _buildAttachmentButton(context),
-      if (widget.showCommandsButton &&
-          !_isEditing &&
-          channel.state != null &&
-          channel.config?.commands.isNotEmpty == true)
-        _buildCommandButton(context),
-    ];
-
-    if (widget.actionsBuilder case final builder?) {
-      return builder(context, defaultActions);
-    }
-
-    return defaultActions;
-  }
-
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
   Widget _buildAttachmentButton(BuildContext context) {
     final defaultButton = AttachmentButton(
       color: _messageInputTheme.actionButtonIdleColor,
@@ -1034,7 +972,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
             _buildAttachments(),
             LimitedBox(
               maxHeight: widget.maxHeight,
-<<<<<<< HEAD
               child: PlatformWidgetBuilder(
                 web: (context, child) => Focus(
                   skipTraversal: true,
@@ -1075,28 +1012,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
                     ),
                     widget.emojiSendButton ?? const Offstage(),
                   ],
-=======
-              child: Focus(
-                skipTraversal: true,
-                onKeyEvent: _handleKeyPressed,
-                child: StreamMessageTextField(
-                  key: const Key('messageInputText'),
-                  maxLines: widget.maxLines,
-                  minLines: widget.minLines,
-                  textInputAction: widget.textInputAction,
-                  onSubmitted: (_) => sendMessage(),
-                  keyboardType: widget.keyboardType,
-                  controller: _effectiveController,
-                  focusNode: _effectiveFocusNode,
-                  style: _messageInputTheme.inputTextStyle,
-                  autofocus: widget.autofocus,
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: _getInputDecoration(context),
-                  textCapitalization: widget.textCapitalization,
-                  autocorrect: widget.autoCorrect,
-                  contentInsertionConfiguration:
-                      widget.contentInsertionConfiguration,
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
                 ),
               ),
             ),

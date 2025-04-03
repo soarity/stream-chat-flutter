@@ -11,11 +11,8 @@ import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart
 import 'package:stream_chat_flutter/src/message_list_view/mlv_utils.dart';
 import 'package:stream_chat_flutter/src/message_list_view/unread_messages_separator.dart';
 import 'package:stream_chat_flutter/src/message_widget/ephemeral_message.dart';
-<<<<<<< HEAD
-import 'package:stream_chat_flutter/src/progress_indicator.dart';
-=======
 import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
+import 'package:stream_chat_flutter/src/progress_indicator.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Spacing Types (These are properties of a message to help inform the decision
@@ -128,6 +125,7 @@ class StreamMessageListView extends StatefulWidget {
     this.shrinkWrap = false,
     this.paginationLimit = 20,
     this.paginationLoadingIndicatorBuilder,
+    this.threadSeparatorBuilder,
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.onDrag,
     this.spacingWidgetBuilder = _defaultSpacingWidgetBuilder,
   });
@@ -311,8 +309,6 @@ class StreamMessageListView extends StatefulWidget {
   /// Called when system message is tapped.
   final OnMessageTap? onSystemMessageTap;
 
-<<<<<<< HEAD
-=======
   /// Called when ephemeral message is tapped.
   final OnMessageTap? onEphemeralMessageTap;
 
@@ -326,7 +322,6 @@ class StreamMessageListView extends StatefulWidget {
   final Function(BuildContext context, Message parentMessage)?
       threadSeparatorBuilder;
 
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
   /// Builder used to build the unread message separator
   final Widget Function(BuildContext context, int unreadCount)?
       unreadMessagesSeparatorBuilder;
@@ -680,11 +675,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         if (messages.isNotEmpty) {
                           return _buildDateDivider(messages.last);
                         }
-<<<<<<< HEAD
-
-=======
-                        if (_isThreadConversation) return const Empty();
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
                         return const SizedBox(height: 52);
                       }
                       return const SizedBox(height: 8);
@@ -1370,11 +1360,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       },
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
-<<<<<<< HEAD
-=======
-      showThreadReplyMessage:
-          !isThreadMessage && streamChannel?.channel.canSendReply == true,
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
       attachmentShape: RoundedRectangleBorder(
@@ -1408,25 +1393,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme
           : _streamTheme.otherMessageTheme,
-<<<<<<< HEAD
-      onMessageTap: (message) {
-        widget.onMessageTap?.call(message);
-        FocusScope.of(context).unfocus();
-      },
       showPinButton: false,
       showPinHighlight: false,
       botBuilder: widget.botBuilder,
-=======
       onMessageTap: widget.onMessageTap,
       onMessageLongPress: widget.onMessageLongPress,
-      showPinButton: currentUserMember != null &&
-          streamChannel?.channel.canPinMessage == true &&
-          // Pinning a restricted visibility message is not allowed, simply
-          // because pinning a message is meant to bring attention to that
-          // message, that is not possible with a message that is only visible
-          // to a subset of users.
-          !message.hasRestrictedVisibility,
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
     );
 
     if (widget.messageBuilder != null) {

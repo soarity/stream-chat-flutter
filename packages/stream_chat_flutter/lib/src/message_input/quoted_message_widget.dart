@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:stream_chat_flutter/src/message_widget/username.dart';
-=======
-import 'package:stream_chat_flutter/src/message_input/clear_input_item_button.dart';
 import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 typedef _Builders = Map<String, QuotedMessageAttachmentThumbnailBuilder>;
@@ -373,7 +369,6 @@ class _ParseAttachments extends StatelessWidget {
       AttachmentType.file: _createFileThumbnail,
       AttachmentType.voiceRecording: _createFileThumbnail,
       'voicenote': _createVoiceNoteThumbnail,
-      // 'voiceRecording': _createVoiceNoteThumbnail,
     };
   }
 }

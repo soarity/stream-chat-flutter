@@ -46,10 +46,6 @@ class StreamSendingIndicator extends StatelessWidget {
         color: Theme.of(context).colorScheme.tertiary,
       );
     }
-<<<<<<< HEAD
-    return const SizedBox.shrink();
-=======
     return const Empty();
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
   }
 }

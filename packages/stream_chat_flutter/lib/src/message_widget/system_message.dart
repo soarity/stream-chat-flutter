@@ -25,20 +25,21 @@ class StreamSystemMessage extends StatelessWidget {
     final messageText = message.text;
     if (messageText == null) return const Empty();
 
-<<<<<<< HEAD:packages/stream_chat_flutter/lib/src/misc/system_message.dart
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 12,
         horizontal: 20,
       ),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onMessageTap == null ? null : () => onMessageTap!(message),
-        child: Center(
-          child: Material(
-            shape: const StadiumBorder(),
-            elevation: 1,
-            color: Theme.of(context).colorScheme.onSecondary,
+      child: Center(
+        child: Material(
+          shape: const StadiumBorder(),
+          elevation: 1,
+          color: Theme.of(context).colorScheme.onSecondary,
+          child: InkWell(
+            onTap: switch (onMessageTap) {
+              final onTap? => () => onTap(message),
+              _ => null,
+            },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Text(
@@ -50,21 +51,6 @@ class StreamSystemMessage extends StatelessWidget {
                     ),
               ),
             ),
-=======
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: switch (onMessageTap) {
-          final onTap? => () => onTap(message),
-          _ => null,
-        },
-        child: Text(
-          messageText,
-          softWrap: true,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.captionBold.copyWith(
-            color: theme.colorTheme.textLowEmphasis,
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46:packages/stream_chat_flutter/lib/src/message_widget/system_message.dart
           ),
         ),
       ),

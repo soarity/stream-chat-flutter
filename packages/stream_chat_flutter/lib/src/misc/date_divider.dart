@@ -22,23 +22,6 @@ class StreamDateDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    final createdAt = Jiffy.parseFromDateTime(dateTime);
-    final now = Jiffy.parseFromDateTime(DateTime.now());
-
-    var dayInfo = createdAt.MMMd;
-    if (createdAt.isSame(now, unit: Unit.day)) {
-      dayInfo = context.translations.todayLabel;
-    } else if (createdAt.isSame(now.subtract(days: 1), unit: Unit.day)) {
-      dayInfo = context.translations.yesterdayLabel;
-    } else if (createdAt.isAfter(now.subtract(days: 7), unit: Unit.day)) {
-      dayInfo = createdAt.EEEE;
-    } else if (createdAt.isAfter(now.subtract(years: 1), unit: Unit.day)) {
-      dayInfo = createdAt.MMMd;
-    }
-
-    if (uppercase) dayInfo = dayInfo.toUpperCase();
-
     return Center(
       child: Material(
         elevation: 1,
@@ -46,38 +29,24 @@ class StreamDateDivider extends StatelessWidget {
         color: Theme.of(context).colorScheme.onSecondary,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Text(
-            dayInfo,
+          child: StreamTimestamp(
+            date: dateTime.toLocal(),
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                 ),
-=======
-    final chatThemeData = StreamChatTheme.of(context);
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-        decoration: BoxDecoration(
-          color: chatThemeData.colorTheme.overlayDark,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: StreamTimestamp(
-          date: dateTime.toLocal(),
-          style: chatThemeData.textTheme.footnote.copyWith(
-            color: chatThemeData.colorTheme.barsBg,
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
-          ),
-          formatter: (context, date) {
-            final timestamp = switch (date) {
-              _ when date.isToday => context.translations.todayLabel,
-              _ when date.isYesterday => context.translations.yesterdayLabel,
-              _ when date.isWithinAWeek => Jiffy.parseFromDateTime(date).EEEE,
-              _ when date.isWithinAYear => Jiffy.parseFromDateTime(date).MMMd,
-              _ => Jiffy.parseFromDateTime(date).yMMMd,
-            };
+            formatter: (context, date) {
+              final timestamp = switch (date) {
+                _ when date.isToday => context.translations.todayLabel,
+                _ when date.isYesterday => context.translations.yesterdayLabel,
+                _ when date.isWithinAWeek => Jiffy.parseFromDateTime(date).EEEE,
+                _ when date.isWithinAYear => Jiffy.parseFromDateTime(date).MMMd,
+                _ => Jiffy.parseFromDateTime(date).yMMMd,
+              };
 
-            if (uppercase) return timestamp.toUpperCase();
-            return timestamp;
-          },
+              if (uppercase) return timestamp.toUpperCase();
+              return timestamp;
+            },
+          ),
         ),
       ),
     );

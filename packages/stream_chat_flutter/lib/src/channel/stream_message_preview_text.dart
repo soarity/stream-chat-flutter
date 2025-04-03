@@ -7,12 +7,9 @@ class StreamMessagePreviewText extends StatelessWidget {
   const StreamMessagePreviewText({
     super.key,
     required this.message,
-<<<<<<< HEAD
     this.isDm = false,
     this.maxLines = 1,
-=======
     this.channel,
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
     this.language,
     this.textStyle,
   });
@@ -63,18 +60,6 @@ class StreamMessagePreviewText extends StatelessWidget {
               );
             }
 
-<<<<<<< HEAD
-    final fontStyle = switch (message.isSystem || message.isDeleted) {
-      true => FontStyle.italic,
-      false => FontStyle.normal,
-    };
-
-    final regularTextStyle = textStyle?.copyWith(fontStyle: fontStyle);
-
-    final mentionsTextStyle = textStyle?.copyWith(
-      fontStyle: fontStyle,
-      fontWeight: FontWeight.w600,
-=======
             return TextSpan(
               text: text,
               style: textStyle,
@@ -82,17 +67,11 @@ class StreamMessagePreviewText extends StatelessWidget {
           },
         )
       ],
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
     );
 
     return Text.rich(
-<<<<<<< HEAD
-      TextSpan(children: spans),
-      maxLines: maxLines,
-=======
       maxLines: 1,
       previewTextSpan,
->>>>>>> 78604c60fb775e9251282984293587b8888c7a46
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.start,
     );
