@@ -1246,7 +1246,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Widget _buildReplyToMessage() {
-    if (!_hasQuotedMessage) return const Empty();
+    if (!_hasQuotedMessage) return const Offstage();
+
     final quotedMessage = _effectiveController.message.quotedMessage!;
 
     final quotedMessageBuilder = widget.quotedMessageBuilder;
