@@ -12,7 +12,6 @@ import 'package:stream_chat_flutter/src/message_input/quoting_message_top_area.d
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
 import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 const _kCommandTrigger = '/';
@@ -1284,7 +1283,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
     }).toList(growable: false);
 
     // If there are no attachments, return an empty widget
-    if (nonOGAttachments.isEmpty) return const Empty();
+    if (nonOGAttachments.isEmpty) return const Offstage();
 
     // If the user has provided a custom attachment list builder, use that.
     final attachmentListBuilder = widget.attachmentListBuilder;
