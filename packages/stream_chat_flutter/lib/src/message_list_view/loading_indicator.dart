@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:stream_chat_flutter/src/progress_indicator.dart';
+=======
+import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template loadingIndicatorMLV}
@@ -45,7 +49,7 @@ class LoadingIndicator extends StatelessWidget {
         ),
       ),
       builder: (context, data) {
-        if (!data) return const Offstage();
+        if (!data) return const Empty();
         return indicatorBuilder?.call(context) ??
             const Center(
               child: Padding(

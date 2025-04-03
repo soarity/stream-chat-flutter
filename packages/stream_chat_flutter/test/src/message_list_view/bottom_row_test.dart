@@ -61,6 +61,9 @@ void main() {
       ),
     );
 
+    // wait for the initial state to be rendered.
+    await tester.pump(Duration.zero);
+
     await tester.tap(find.byType(GestureDetector));
     await tester.pumpAndSettle();
 

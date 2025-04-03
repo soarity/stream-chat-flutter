@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/src/message_widget/sending_indicator_builder.dart';
+import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
+import 'package:stream_chat_flutter/src/misc/timestamp.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// A widget that displays a channel preview.
@@ -197,7 +199,7 @@ class StreamChannelListTile extends StatelessWidget {
                 comparator: const ListEquality().equals,
                 builder: (context, members) {
                   if (members.isEmpty) {
-                    return const Offstage();
+                    return const Empty();
                   }
                   return unreadIndicatorBuilder?.call(context) ??
                       StreamUnreadIndicator.channels(cid: channel.cid);
@@ -224,7 +226,7 @@ class StreamChannelListTile extends StatelessWidget {
 
                   if (lastMessage == null ||
                       (lastMessage.user?.id != currentUser.id)) {
-                    return const Offstage();
+                    return const Empty();
                   }
 
                   final hasNonUrlAttachments = lastMessage.attachments
@@ -276,30 +278,9 @@ class ChannelLastMessageDate extends StatelessWidget {
   Widget build(BuildContext context) => BetterStreamBuilder<DateTime>(
         stream: channel.lastMessageAtStream,
         initialData: channel.lastMessageAt,
-        builder: (context, data) {
-          final lastMessageAt = data.toLocal();
-
-          String stringDate;
-          final now = DateTime.now();
-
-          final startOfDay = DateTime(now.year, now.month, now.day);
-
-          if (lastMessageAt.millisecondsSinceEpoch >=
-              startOfDay.millisecondsSinceEpoch) {
-            stringDate = Jiffy.parseFromDateTime(lastMessageAt.toLocal()).jm;
-          } else if (lastMessageAt.millisecondsSinceEpoch >=
-              startOfDay
-                  .subtract(const Duration(days: 1))
-                  .millisecondsSinceEpoch) {
-            stringDate = context.translations.yesterdayLabel;
-          } else if (startOfDay.difference(lastMessageAt).inDays < 7) {
-            stringDate = Jiffy.parseFromDateTime(lastMessageAt.toLocal()).EEEE;
-          } else {
-            stringDate = Jiffy.parseFromDateTime(lastMessageAt.toLocal()).yMd;
-          }
-
-          return Text(
-            stringDate,
+        builder: (context, lastMessageAt) {
+          return StreamTimestamp(
+            date: lastMessageAt.toLocal(),
             style: textStyle,
           );
         },
@@ -360,6 +341,7 @@ class ChannelLastMessageText extends StatefulWidget {
     super.key,
     required this.channel,
     this.textStyle,
+    this.lastMessagePredicate = _defaultLastMessagePredicate,
   }) : assert(
           channel.state != null,
           'Channel ${channel.id} is not initialized',
@@ -371,33 +353,67 @@ class ChannelLastMessageText extends StatefulWidget {
   /// The style of the text displayed
   final TextStyle? textStyle;
 
+  /// The predicate to determine if the message should be considered for the
+  /// last message.
+  ///
+  /// This predicate is used to filter out messages that should not be
+  /// considered for the last message.
+  final bool Function(Message) lastMessagePredicate;
+
+  // The default predicate to determine if the message should be
+  // considered for the last message.
+  static bool _defaultLastMessagePredicate(Message message) {
+    if (message.isShadowed) return false;
+    if (message.isDeleted) return false;
+    if (message.isError) return false;
+    if (message.isEphemeral) return false;
+
+    return true;
+  }
+
   @override
   State<ChannelLastMessageText> createState() => _ChannelLastMessageTextState();
 }
 
 class _ChannelLastMessageTextState extends State<ChannelLastMessageText> {
-  Message? _lastMessage;
+  Message? _currentLastMessage;
 
   @override
-  Widget build(BuildContext context) => BetterStreamBuilder<List<Message>>(
-        stream: widget.channel.state!.messagesStream,
-        initialData: widget.channel.state!.messages,
-        builder: (context, messages) {
-          final lastMessage = messages.lastWhereOrNull(
-            (m) => !m.shadowed && !m.isDeleted,
+  Widget build(BuildContext context) {
+    return BetterStreamBuilder<List<Message>>(
+      stream: widget.channel.state!.messagesStream,
+      initialData: widget.channel.state!.messages,
+      builder: (context, messages) {
+        final message = messages.lastWhereOrNull(widget.lastMessagePredicate);
+        final latestLastMessage = [message, _currentLastMessage].latest;
+
+        if (latestLastMessage == null) {
+          return Text(
+            maxLines: 1,
+            context.translations.emptyMessagesText,
+            style: widget.textStyle,
+            overflow: TextOverflow.ellipsis,
           );
+        }
 
-          if (widget.channel.state?.isUpToDate == true) {
-            _lastMessage = lastMessage;
-          }
+        return StreamMessagePreviewText(
+          message: latestLastMessage,
+          textStyle: widget.textStyle,
+          channel: widget.channel.state?.channelState.channel,
+        );
+      },
+    );
+  }
+}
 
-          if (_lastMessage == null) return const Offstage();
+extension on Iterable<Message?> {
+  Message? get latest {
+    return reduce((a, b) {
+      if (a == null) return b;
+      if (b == null) return a;
 
-          return StreamMessagePreviewText(
-            message: _lastMessage!,
-            textStyle: widget.textStyle,
-            language: widget.channel.client.state.currentUser?.language,
-          );
-        },
-      );
+      if (a.createdAt.isAfter(b.createdAt)) return a;
+      return b;
+    });
+  }
 }

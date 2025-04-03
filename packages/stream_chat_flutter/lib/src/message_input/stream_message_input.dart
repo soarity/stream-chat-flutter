@@ -12,6 +12,11 @@ import 'package:stream_chat_flutter/src/message_input/quoting_message_top_area.d
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
 import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
+<<<<<<< HEAD
+=======
+import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
+import 'package:stream_chat_flutter/src/misc/gradient_box_border.dart';
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 const _kCommandTrigger = '/';
@@ -434,39 +439,40 @@ class StreamMessageInput extends StatefulWidget {
     return true;
   }
 
-  static bool _defaultValidator(Message message) =>
-      message.text?.isNotEmpty == true || message.attachments.isNotEmpty;
+  static bool _defaultValidator(Message message) {
+    // The message is valid if it has text or attachments.
+    if (message.attachments.isNotEmpty) return true;
+    if (message.text?.trim() case final text? when text.isNotEmpty) return true;
+
+    return false;
+  }
 
   static bool _defaultSendMessageKeyPredicate(
     FocusNode node,
     KeyEvent event,
   ) {
-    if (CurrentPlatform.isWeb ||
-        CurrentPlatform.isMacOS ||
-        CurrentPlatform.isWindows ||
-        CurrentPlatform.isLinux) {
-      // On desktop/web, send the message when the user presses the enter key.
-      return event is KeyUpEvent &&
-          event.logicalKey == LogicalKeyboardKey.enter;
-    }
+    // Do not handle the event if the user is using a mobile device.
+    if (CurrentPlatform.isAndroid || CurrentPlatform.isIos) return false;
 
-    return false;
+    // Do not send the message if the shift key is pressed. Generally, this
+    // means the user is trying to add a new line.
+    if (HardwareKeyboard.instance.isShiftPressed) return false;
+
+    // Otherwise, send the message when the user presses the enter key.
+    final isEnterKeyPressed = event.logicalKey == LogicalKeyboardKey.enter;
+    return isEnterKeyPressed && event is KeyDownEvent;
   }
 
   static bool _defaultClearQuotedMessageKeyPredicate(
     FocusNode node,
     KeyEvent event,
   ) {
-    if (CurrentPlatform.isWeb ||
-        CurrentPlatform.isMacOS ||
-        CurrentPlatform.isWindows ||
-        CurrentPlatform.isLinux) {
-      // On desktop/web, clear the quoted message when the user presses the escape key.
-      return event is KeyUpEvent &&
-          event.logicalKey == LogicalKeyboardKey.escape;
-    }
+    // Do not handle the event if the user is using a mobile device.
+    if (CurrentPlatform.isAndroid || CurrentPlatform.isIos) return false;
 
-    return false;
+    // Otherwise, Clear the quoted message when the user presses the escape key.
+    final isEscapeKeyPressed = event.logicalKey == LogicalKeyboardKey.escape;
+    return isEscapeKeyPressed && event is KeyDownEvent;
   }
 
   @override
@@ -585,8 +591,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
   @override
   Widget build(BuildContext context) {
     final channel = StreamChannel.of(context).channel;
-    if (channel.state != null &&
-        !channel.ownCapabilities.contains(PermissionType.sendMessage)) {
+    if (channel.state != null && !channel.canSendMessage) {
       return SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -840,11 +845,68 @@ class StreamMessageInputState extends State<StreamMessageInput>
         true => CrossFadeState.showFirst,
         false => CrossFadeState.showSecond,
       },
+<<<<<<< HEAD
       firstChild: _buildSendButton(context),
       secondChild: const Offstage(),
     );
   }
 
+=======
+      layoutBuilder: (top, topKey, bottom, bottomKey) => Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          Positioned(key: bottomKey, top: 0, child: bottom),
+          Positioned(key: topKey, child: top),
+        ],
+      ),
+      firstChild: StreamMessageInputIconButton(
+        color: _messageInputTheme.expandButtonColor,
+        icon: Transform.rotate(
+          angle: (widget.actionsLocation == ActionsLocation.right ||
+                  widget.actionsLocation == ActionsLocation.rightInside)
+              ? pi
+              : 0,
+          child: const StreamSvgIcon(icon: StreamSvgIcons.emptyCircleRight),
+        ),
+        onPressed: () {
+          if (_actionsShrunk) {
+            setState(() => _actionsShrunk = false);
+          }
+        },
+      ),
+      secondChild: widget.disableAttachments &&
+              !widget.showCommandsButton &&
+              !(widget.actionsBuilder != null)
+          ? const Empty()
+          : Row(
+              spacing: widget.spaceBetweenActions,
+              mainAxisSize: MainAxisSize.min,
+              children: _actionsList(),
+            ),
+    );
+  }
+
+  List<Widget> _actionsList() {
+    final channel = StreamChannel.of(context).channel;
+    final defaultActions = <Widget>[
+      if (!widget.disableAttachments && channel.canUploadFile)
+        _buildAttachmentButton(context),
+      if (widget.showCommandsButton &&
+          !_isEditing &&
+          channel.state != null &&
+          channel.config?.commands.isNotEmpty == true)
+        _buildCommandButton(context),
+    ];
+
+    if (widget.actionsBuilder case final builder?) {
+      return builder(context, defaultActions);
+    }
+
+    return defaultActions;
+  }
+
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
   Widget _buildAttachmentButton(BuildContext context) {
     final defaultButton = AttachmentButton(
       color: _messageInputTheme.actionButtonIdleColor,
@@ -906,9 +968,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
         if (it != AttachmentPickerType.poll) return false;
         if (_effectiveController.message.parentId != null) return true;
         final channel = StreamChannel.of(context).channel;
-        if (channel.ownCapabilities.contains(PermissionType.sendPoll)) {
-          return false;
-        }
+        if (channel.canSendPoll) return false;
 
         return true;
       });
@@ -974,6 +1034,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             _buildAttachments(),
             LimitedBox(
               maxHeight: widget.maxHeight,
+<<<<<<< HEAD
               child: PlatformWidgetBuilder(
                 web: (context, child) => Focus(
                   skipTraversal: true,
@@ -1014,6 +1075,28 @@ class StreamMessageInputState extends State<StreamMessageInput>
                     ),
                     widget.emojiSendButton ?? const Offstage(),
                   ],
+=======
+              child: Focus(
+                skipTraversal: true,
+                onKeyEvent: _handleKeyPressed,
+                child: StreamMessageTextField(
+                  key: const Key('messageInputText'),
+                  maxLines: widget.maxLines,
+                  minLines: widget.minLines,
+                  textInputAction: widget.textInputAction,
+                  onSubmitted: (_) => sendMessage(),
+                  keyboardType: widget.keyboardType,
+                  controller: _effectiveController,
+                  focusNode: _effectiveFocusNode,
+                  style: _messageInputTheme.inputTextStyle,
+                  autofocus: widget.autofocus,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: _getInputDecoration(context),
+                  textCapitalization: widget.textCapitalization,
+                  autocorrect: widget.autoCorrect,
+                  contentInsertionConfiguration:
+                      widget.contentInsertionConfiguration,
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
                 ),
               ),
             ),
@@ -1133,8 +1216,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       value = value.trim();
 
       final channel = StreamChannel.of(context).channel;
-      if (value.isNotEmpty &&
-          channel.ownCapabilities.contains(PermissionType.sendTypingEvents)) {
+      if (value.isNotEmpty && channel.canSendTypingEvents) {
         // Notify the server that the user started typing.
         channel.keyStroke(_effectiveController.message.parentId).onError(
           (error, stackTrace) {
@@ -1201,10 +1283,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
     // Reset the og attachment if the text doesn't contain any url
     if (matchedUrls.isEmpty ||
-        !StreamChannel.of(context)
-            .channel
-            .ownCapabilities
-            .contains(PermissionType.sendLinks)) {
+        !StreamChannel.of(context).channel.canSendLinks) {
       _effectiveController.clearOGAttachment();
       return;
     }
@@ -1253,7 +1332,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
   }
 
   Widget _buildReplyToMessage() {
-    if (!_hasQuotedMessage) return const Offstage();
+    if (!_hasQuotedMessage) return const Empty();
     final quotedMessage = _effectiveController.message.quotedMessage!;
 
     final quotedMessageBuilder = widget.quotedMessageBuilder;
@@ -1290,7 +1369,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
     }).toList(growable: false);
 
     // If there are no attachments, return an empty widget
-    if (nonOGAttachments.isEmpty) return const Offstage();
+    if (nonOGAttachments.isEmpty) return const Empty();
 
     // If the user has provided a custom attachment list builder, use that.
     final attachmentListBuilder = widget.attachmentListBuilder;
@@ -1366,7 +1445,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
     final channel = streamChannel.channel;
     var message = _effectiveController.value;
 
-    if (!channel.ownCapabilities.contains(PermissionType.sendLinks) &&
+    if (!channel.canSendLinks &&
         _urlRegex.allMatches(message.text ?? '').any((element) =>
             element.group(0)?.split('.').last.isValidTLD() == true)) {
       showInfoBottomSheet(
@@ -1401,8 +1480,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
       message = await widget.preMessageSending!(message);
     }
 
-    message = message.replaceMentionsWithId();
-
     // If the channel is not up to date, we should reload it before sending
     // the message.
     if (!channel.state!.isUpToDate) {
@@ -1427,17 +1504,15 @@ class StreamMessageInputState extends State<StreamMessageInput>
   Future<void> _sendOrUpdateMessage({
     required Message message,
   }) async {
-    final channel = StreamChannel.of(context).channel;
-
     try {
-      final resp = await switch (_isEditing) {
+      final channel = StreamChannel.of(context).channel;
+
+      // Note: edited messages which are bounced back with an error needs to be
+      // sent as new messages as the backend doesn't store them.
+      final resp = await switch (_isEditing && !message.isBouncedWithError) {
         true => channel.updateMessage(message),
         false => channel.sendMessage(message),
       };
-
-      if (resp.message.isError) {
-        _effectiveController.message = message;
-      }
 
       // We don't want to start the cooldown if an already sent message is
       // being edited.

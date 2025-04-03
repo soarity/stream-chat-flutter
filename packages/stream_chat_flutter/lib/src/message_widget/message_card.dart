@@ -227,11 +227,35 @@ class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
     final onQuotedMessageTap = widget.onQuotedMessageTap;
+<<<<<<< HEAD
     final message = widget.message;
     return BubbleChat(
       isMyMessage: widget.reverse,
       tail: !widget.isGiphy && widget.showTailBubble,
       color: _getBackgroundColor ?? Colors.transparent,
+=======
+    final quotedMessageBuilder = widget.quotedMessageBuilder;
+
+    return Container(
+      constraints: const BoxConstraints().copyWith(maxWidth: widthLimit),
+      margin: EdgeInsets.symmetric(
+        horizontal: (widget.isFailedState ? 12.0 : 0.0) +
+            (widget.showUserAvatar == DisplayWidget.gone ? 0 : 4.0),
+      ),
+      clipBehavior: Clip.hardEdge,
+      decoration: ShapeDecoration(
+        color: _getBackgroundColor(),
+        shape: widget.shape ??
+            RoundedRectangleBorder(
+              side: widget.borderSide ??
+                  BorderSide(
+                    color: widget.messageTheme.messageBorderColor ??
+                        Colors.transparent,
+                  ),
+              borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
+            ),
+      ),
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

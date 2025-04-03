@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/src/misc/timestamp.dart';
+import 'package:stream_chat_flutter/src/utils/date_formatter.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamDateDivider}
@@ -20,6 +22,7 @@ class StreamDateDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final createdAt = Jiffy.parseFromDateTime(dateTime);
     final now = Jiffy.parseFromDateTime(DateTime.now());
 
@@ -48,7 +51,33 @@ class StreamDateDivider extends StatelessWidget {
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                 ),
+=======
+    final chatThemeData = StreamChatTheme.of(context);
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+        decoration: BoxDecoration(
+          color: chatThemeData.colorTheme.overlayDark,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: StreamTimestamp(
+          date: dateTime.toLocal(),
+          style: chatThemeData.textTheme.footnote.copyWith(
+            color: chatThemeData.colorTheme.barsBg,
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
           ),
+          formatter: (context, date) {
+            final timestamp = switch (date) {
+              _ when date.isToday => context.translations.todayLabel,
+              _ when date.isYesterday => context.translations.yesterdayLabel,
+              _ when date.isWithinAWeek => Jiffy.parseFromDateTime(date).EEEE,
+              _ when date.isWithinAYear => Jiffy.parseFromDateTime(date).MMMd,
+              _ => Jiffy.parseFromDateTime(date).yMMMd,
+            };
+
+            if (uppercase) return timestamp.toUpperCase();
+            return timestamp;
+          },
         ),
       ),
     );

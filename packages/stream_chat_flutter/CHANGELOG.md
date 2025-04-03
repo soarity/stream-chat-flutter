@@ -2,8 +2,21 @@
 
 🐞 Fixed
 
+- [[#2150]](https://github.com/GetStream/stream-chat-flutter/issues/2150) Fixed Push notifications
+  for mentions shows user ID instead of Username.
+
+## 9.7.0
+
+🐞 Fixed
+
 - [[#2118]](https://github.com/GetStream/stream-chat-flutter/issues/2118) Fixed invalid assertions
   applied on message input command and attachment button.
+- [[#2042]](https://github.com/GetStream/stream-chat-flutter/issues/2042) Fixed `StreamMessageInput`
+  send message predicate to properly handle shift+enter for new lines and improve message text validation.
+
+✅ Added
+
+- Added support for new message moderation feature in the SDK.
 
 ## 9.6.0
 

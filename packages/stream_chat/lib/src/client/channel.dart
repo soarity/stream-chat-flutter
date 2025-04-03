@@ -270,7 +270,7 @@ class Channel {
     final userLastMessageAt = currentUserLastMessageAt;
     if (userLastMessageAt == null) return 0;
 
-    if (ownCapabilities.contains(PermissionType.skipSlowMode)) return 0;
+    if (canSkipSlowMode) return 0;
 
     final currentTime = DateTime.timestamp();
     final elapsedTime = currentTime.difference(userLastMessageAt).inSeconds;
@@ -413,11 +413,11 @@ class Channel {
   }
 
   /// List of user permissions on this channel
-  List<String> get ownCapabilities =>
+  List<ChannelCapability> get ownCapabilities =>
       state?._channelState.channel?.ownCapabilities ?? [];
 
   /// List of user permissions on this channel
-  Stream<List<String>> get ownCapabilitiesStream {
+  Stream<List<ChannelCapability>> get ownCapabilitiesStream {
     _checkInitialized();
     return state!.channelStateStream
         .map((cs) => cs.channel?.ownCapabilities ?? [])
@@ -644,6 +644,10 @@ class Channel {
     bool skipEnrichUrl = false,
   }) async {
     _checkInitialized();
+
+    // Clean up stale error messages before sending a new message.
+    state!.cleanUpStaleErrorMessages();
+
     // Cancelling previous completer in case it's called again in the process
     // Eg. Updating the message while the previous call is in progress.
     _messageAttachmentsUploadCompleter
@@ -885,11 +889,12 @@ class Channel {
   }) async {
     _checkInitialized();
 
-    // Directly deleting the local messages which are not yet sent to server.
-    if (message.remoteCreatedAt == null) {
+    // Directly deleting the local messages and bounced error messages as they
+    // are not available on the server.
+    if (message.remoteCreatedAt == null || message.isBouncedWithError) {
       state!.deleteMessage(
         message.copyWith(
-          type: 'deleted',
+          type: MessageType.deleted,
           localDeletedAt: DateTime.now(),
           state: MessageState.deleted(hard: hard),
         ),
@@ -908,7 +913,7 @@ class Channel {
 
     // ignore: parameter_assignments
     message = message.copyWith(
-      type: 'deleted',
+      type: MessageType.deleted,
       deletedAt: DateTime.now(),
       state: MessageState.deleting(hard: hard),
     );
@@ -1675,7 +1680,7 @@ class Channel {
     _checkInitialized();
     final res = await _client.getMessagesById(id!, type, messageIDs);
     final messages = res.messages;
-    state?.updateChannelState(ChannelState(messages: messages));
+    state!.updateChannelState(state!.channelState.copyWith(messages: messages));
     return res;
   }
 
@@ -2110,43 +2115,84 @@ class ChannelClientState {
 
   void _listenMemberAdded() {
     _subscriptions.add(_channel.on(EventType.memberAdded).listen((Event e) {
-      final member = e.member;
+      final member = e.member!;
       final existingMembers = channelState.members ?? [];
-      updateChannelState(channelState.copyWith(
-        members: [
-          ...existingMembers,
-          member!,
-        ],
-      ));
+
+      updateChannelState(
+        channelState.copyWith(
+          members: [...existingMembers, member],
+        ),
+      );
     }));
   }
 
   void _listenMemberRemoved() {
     _subscriptions.add(_channel.on(EventType.memberRemoved).listen((Event e) {
-      final user = e.user;
-      final existingMembers = channelState.members ?? [];
+      final user = e.user!;
       final existingRead = channelState.read ?? [];
-      updateChannelState(channelState.copyWith(
-        members: existingMembers
-            .where((m) => m.userId != user!.id)
-            .toList(growable: false),
-        read: existingRead
-            .where((r) => r.user.id != user!.id)
-            .toList(growable: false),
-      ));
+      final existingMembers = channelState.members ?? [];
+
+      updateChannelState(
+        channelState.copyWith(
+          read: [...existingRead.where((r) => r.user.id != user.id)],
+          members: [...existingMembers.where((m) => m.userId != user.id)],
+        ),
+      );
     }));
   }
 
   void _listenMemberUpdated() {
-    _subscriptions.add(_channel.on(EventType.memberUpdated).listen((Event e) {
-      final member = e.member;
-      final existingMembers = channelState.members ?? [];
-      updateChannelState(channelState.copyWith(
-        members: existingMembers
-            .map((m) => m.userId == member!.userId ? member : m)
-            .toList(growable: false),
+    _subscriptions
+      // Listen to events containing member users
+      ..add(_channel.on().listen(
+        (event) {
+          final user = event.user;
+          if (user == null) return;
+
+          final existingMembers = [...?channelState.members];
+          final existingMembership = channelState.membership;
+
+          // Return if the user is not a existing member of the channel.
+          if (!existingMembers.any((m) => m.userId == user.id)) return;
+
+          Member? maybeUpdateMemberUser(Member? existingMember) {
+            if (existingMember == null) return null;
+            if (existingMember.userId == user.id) {
+              return existingMember.copyWith(user: user);
+            }
+            return existingMember;
+          }
+
+          updateChannelState(
+            channelState.copyWith(
+              membership: maybeUpdateMemberUser(existingMembership),
+              members: [...existingMembers.map(maybeUpdateMemberUser).nonNulls],
+            ),
+          );
+        },
+      ))
+
+      // Listen to member updated events.
+      ..add(_channel.on(EventType.memberUpdated).listen(
+        (Event e) {
+          final member = e.member!;
+          final existingMembers = channelState.members ?? [];
+          final existingMembership = channelState.membership;
+
+          Member? maybeUpdateMember(Member? existingMember) {
+            if (existingMember == null) return null;
+            if (existingMember.userId == member.userId) return member;
+            return existingMember;
+          }
+
+          updateChannelState(
+            channelState.copyWith(
+              membership: maybeUpdateMember(existingMembership),
+              members: [...existingMembers.map(maybeUpdateMember).nonNulls],
+            ),
+          );
+        },
       ));
-    }));
   }
 
   void _listenChannelUpdated() {
@@ -2567,6 +2613,7 @@ class ChannelClientState {
   // Logic taken from the backend SDK
   // https://github.com/GetStream/chat/blob/9245c2b3f7e679267d57ee510c60e93de051cb8e/types/channel.go#L1136-L1150
   bool _shouldUpdateChannelLastMessageAt(Message message) {
+    if (message.isError) return false;
     if (message.shadowed) return false;
     if (message.isEphemeral) return false;
 
@@ -2656,6 +2703,16 @@ class ChannelClientState {
     if (message.parentId != null) {
       updateThreadInfo(message.parentId!, [message]);
     }
+  }
+
+  /// Cleans up all the stale error messages which requires no action.
+  void cleanUpStaleErrorMessages() {
+    final errorMessages = messages.where((message) {
+      return message.isError && !message.isBounced;
+    });
+
+    if (errorMessages.isEmpty) return;
+    return errorMessages.forEach(removeMessage);
   }
 
   /// Updates the list of pinned messages based on the current message's
@@ -2899,9 +2956,7 @@ class ChannelClientState {
     if (_channel.isMuted) return false;
 
     // Don't count if the channel doesn't allow read events.
-    if (!_channel.ownCapabilities.contains(PermissionType.readEvents)) {
-      return false;
-    }
+    if (!_channel.canReceiveReadEvents) return false;
 
     // Don't count thread replies which are not shown in the channel as unread.
     if (message.parentId != null && message.showInChannel == false) {
@@ -2976,34 +3031,34 @@ class ChannelClientState {
 
   /// Update channelState with updated information.
   void updateChannelState(ChannelState updatedState) {
-    final _existingStateMessages = [...messages];
+    final _existingStateMessages = <Message>[...messages];
     final newMessages = <Message>[
-      ..._existingStateMessages.merge(updatedState.messages),
+      ..._existingStateMessages.merge(
+        updatedState.messages,
+        key: (message) => message.id,
+        update: (original, updated) => updated.syncWith(original),
+      ),
     ].sorted(_sortByCreatedAt);
 
-    final _existingStateWatchers = _channelState.watchers ?? [];
-    final _updatedStateWatchers = updatedState.watchers ?? [];
+    final _existingStateWatchers = <User>[...?_channelState.watchers];
     final newWatchers = <User>[
-      ..._updatedStateWatchers,
-      ..._existingStateWatchers
-          .where((w) =>
-              !_updatedStateWatchers.any((newWatcher) => newWatcher.id == w.id))
-          .toList(),
+      ..._existingStateWatchers.merge(
+        updatedState.watchers,
+        key: (watcher) => watcher.id,
+        update: (original, updated) => updated,
+      ),
     ];
 
-    final newMembers = <Member>[
-      ...updatedState.members ?? [],
-    ];
-
-    final _existingStateRead = _channelState.read ?? [];
-    final _updatedStateRead = updatedState.read ?? [];
+    final _existingStateRead = <Read>[...?_channelState.read];
     final newReads = <Read>[
-      ..._updatedStateRead,
-      ..._existingStateRead
-          .where((r) =>
-              !_updatedStateRead.any((newRead) => newRead.user.id == r.user.id))
-          .toList(),
+      ..._existingStateRead.merge(
+        updatedState.read,
+        key: (read) => read.user.id,
+        update: (original, updated) => updated,
+      ),
     ];
+
+    final newMembers = <Member>[...?updatedState.members];
 
     _checkExpiredAttachmentMessages(updatedState);
 
@@ -3013,6 +3068,7 @@ class ChannelClientState {
       watchers: newWatchers,
       watcherCount: updatedState.watcherCount,
       members: newMembers,
+      membership: updatedState.membership,
       read: newReads,
       pinnedMessages: updatedState.pinnedMessages,
     );
@@ -3090,32 +3146,6 @@ class ChannelClientState {
             if (user != null && user.id != currentUser.id) {
               final events = {...typingEvents}..remove(user);
               _typingEventsController.safeAdd(events);
-            }
-          },
-        ),
-      )
-      ..add(
-        _channel.on().where((event) {
-          final user = event.user;
-          if (user == null) return false;
-          return members.any((m) => m.userId == user.id);
-        }).listen(
-          (event) {
-            final newMembers = List<Member>.from(members);
-            final oldMemberIndex =
-                newMembers.indexWhere((m) => m.userId == event.user!.id);
-            if (oldMemberIndex > -1) {
-              final oldMember = newMembers.removeAt(oldMemberIndex);
-              updateChannelState(
-                ChannelState(
-                  members: [
-                    ...newMembers,
-                    oldMember.copyWith(
-                      user: event.user,
-                    ),
-                  ],
-                ),
-              );
             }
           },
         ),
@@ -3198,20 +3228,186 @@ bool _pinIsValid(Message message) {
   return message.pinExpires!.isAfter(now);
 }
 
-extension on Iterable<Message> {
-  Iterable<Message> merge(Iterable<Message>? other) {
-    if (other == null) return this;
+/// Extension methods for checking channel capabilities on a Channel instance.
+///
+/// These methods provide a convenient way to check if the current user has
+/// specific capabilities in a channel.
+extension ChannelCapabilityCheck on Channel {
+  /// True, if the current user can send a message to this channel.
+  bool get canSendMessage {
+    return ownCapabilities.contains(ChannelCapability.sendMessage);
+  }
 
-    final messageMap = {for (final message in this) message.id: message};
+  /// True, if the current user can send a reply to this channel.
+  bool get canSendReply {
+    return ownCapabilities.contains(ChannelCapability.sendReply);
+  }
 
-    for (final message in other) {
-      messageMap.update(
-        message.id,
-        message.syncWith,
-        ifAbsent: () => message,
-      );
-    }
+  /// True, if the current user can send a message with restricted visibility.
+  bool get canSendRestrictedVisibilityMessage {
+    return ownCapabilities.contains(
+      ChannelCapability.sendRestrictedVisibilityMessage,
+    );
+  }
 
-    return messageMap.values;
+  /// True, if the current user can send reactions.
+  bool get canSendReaction {
+    return ownCapabilities.contains(ChannelCapability.sendReaction);
+  }
+
+  /// True, if the current user can attach links to messages.
+  bool get canSendLinks {
+    return ownCapabilities.contains(ChannelCapability.sendLinks);
+  }
+
+  /// True, if the current user can attach files to messages.
+  bool get canCreateAttachment {
+    return ownCapabilities.contains(ChannelCapability.createAttachment);
+  }
+
+  /// True, if the current user can freeze or unfreeze channel.
+  bool get canFreezeChannel {
+    return ownCapabilities.contains(ChannelCapability.freezeChannel);
+  }
+
+  /// True, if the current user can enable or disable slow mode.
+  bool get canSetChannelCooldown {
+    return ownCapabilities.contains(ChannelCapability.setChannelCooldown);
+  }
+
+  /// True, if the current user can leave channel (remove own membership).
+  bool get canLeaveChannel {
+    return ownCapabilities.contains(ChannelCapability.leaveChannel);
+  }
+
+  /// True, if the current user can join channel (add own membership).
+  bool get canJoinChannel {
+    return ownCapabilities.contains(ChannelCapability.joinChannel);
+  }
+
+  /// True, if the current user can pin a message.
+  bool get canPinMessage {
+    return ownCapabilities.contains(ChannelCapability.pinMessage);
+  }
+
+  /// True, if the current user can delete any message from the channel.
+  bool get canDeleteAnyMessage {
+    return ownCapabilities.contains(ChannelCapability.deleteAnyMessage);
+  }
+
+  /// True, if the current user can delete own messages from the channel.
+  bool get canDeleteOwnMessage {
+    return ownCapabilities.contains(ChannelCapability.deleteOwnMessage);
+  }
+
+  /// True, if the current user can update any message in the channel.
+  bool get canUpdateAnyMessage {
+    return ownCapabilities.contains(ChannelCapability.updateAnyMessage);
+  }
+
+  /// True, if the current user can update own messages in the channel.
+  bool get canUpdateOwnMessage {
+    return ownCapabilities.contains(ChannelCapability.updateOwnMessage);
+  }
+
+  /// True, if the current user can use message search.
+  bool get canSearchMessages {
+    return ownCapabilities.contains(ChannelCapability.searchMessages);
+  }
+
+  /// True, if the current user can send typing events.
+  bool get canSendTypingEvents {
+    return ownCapabilities.contains(ChannelCapability.sendTypingEvents);
+  }
+
+  /// True, if the current user can upload message attachments.
+  bool get canUploadFile {
+    return ownCapabilities.contains(ChannelCapability.uploadFile);
+  }
+
+  /// True, if the current user can delete channel.
+  bool get canDeleteChannel {
+    return ownCapabilities.contains(ChannelCapability.deleteChannel);
+  }
+
+  /// True, if the current user can update channel data.
+  bool get canUpdateChannel {
+    return ownCapabilities.contains(ChannelCapability.updateChannel);
+  }
+
+  /// True, if the current user can update channel members.
+  bool get canUpdateChannelMembers {
+    return ownCapabilities.contains(ChannelCapability.updateChannelMembers);
+  }
+
+  /// True, if the current user can update thread data.
+  bool get canUpdateThread {
+    return ownCapabilities.contains(ChannelCapability.updateThread);
+  }
+
+  /// True, if the current user can quote a message.
+  bool get canQuoteMessage {
+    return ownCapabilities.contains(ChannelCapability.quoteMessage);
+  }
+
+  /// True, if the current user can ban channel members.
+  bool get canBanChannelMembers {
+    return ownCapabilities.contains(ChannelCapability.banChannelMembers);
+  }
+
+  /// True, if the current user can flag a message.
+  bool get canFlagMessage {
+    return ownCapabilities.contains(ChannelCapability.flagMessage);
+  }
+
+  /// True, if the current user can mute a channel.
+  bool get canMuteChannel {
+    return ownCapabilities.contains(ChannelCapability.muteChannel);
+  }
+
+  /// True, if the current user can send custom events.
+  bool get canSendCustomEvents {
+    return ownCapabilities.contains(ChannelCapability.sendCustomEvents);
+  }
+
+  /// True, if the current user has read events capability.
+  bool get canReceiveReadEvents {
+    return ownCapabilities.contains(ChannelCapability.readEvents);
+  }
+
+  /// True, if the current user has connect events capability.
+  bool get canReceiveConnectEvents {
+    return ownCapabilities.contains(ChannelCapability.connectEvents);
+  }
+
+  /// True, if the current user can send and receive typing events.
+  bool get canUseTypingEvents {
+    return ownCapabilities.contains(ChannelCapability.typingEvents);
+  }
+
+  /// True, if channel slow mode is active.
+  bool get isInSlowMode {
+    return ownCapabilities.contains(ChannelCapability.slowMode);
+  }
+
+  /// True, if the current user is allowed to post messages as usual even if the
+  /// channel is in slow mode.
+  bool get canSkipSlowMode {
+    return ownCapabilities.contains(ChannelCapability.skipSlowMode);
+  }
+
+  /// True, if the current user can create a poll.
+  bool get canSendPoll {
+    return ownCapabilities.contains(ChannelCapability.sendPoll);
+  }
+
+  /// True, if the current user can vote in a poll.
+  bool get canCastPollVote {
+    return ownCapabilities.contains(ChannelCapability.castPollVote);
+  }
+
+  /// True, if the current user can query poll votes.
+  bool get canQueryPollVotes {
+    return ownCapabilities.contains(ChannelCapability.queryPollVotes);
   }
 }

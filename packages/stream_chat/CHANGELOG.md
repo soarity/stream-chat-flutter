@@ -1,3 +1,34 @@
+## 9.7.0
+
+✅ Added
+
+- Added new helper extensions on `Channel` to provide a convenient way to check if the current user
+  has specific capabilities in a channel.
+
+  ```dart
+  final canSendMessage = channel.canSendMessage;
+  final canSendReaction = channel.canSendReaction;
+  ```
+
+- Added support for message moderation feature.
+
+- Improved user blocking functionality by updating client state when blocking/unblocking users:
+  - `client.blockUser` now updates `currentUser.blockedUserIds` list with newly blocked user IDs.
+  - `client.unblockUser` now removes the unblocked user ID from `currentUser.blockedUserIds` list.
+  - `client.queryBlockedUsers` now updates `currentUser.blockedUserIds` with the latest blocked users data.
+
+🐞 Fixed
+
+- [[#1964]](https://github.com/GetStream/stream-chat-flutter/issues/1964) Fixes `Channel.membership`
+  field not updating correctly.
+- [[#2171]](https://github.com/GetStream/stream-chat-flutter/issues/2171) Fixed [Flutter Web]
+  dynamic TypeError
+
+🔄 Changed
+
+- Deprecated `PermissionType` in favor of `ChannelCapability`.
+- Deprecated third party calls related APIs (Agora and 100ms).
+
 ## 9.6.0
 
 🐞 Fixed

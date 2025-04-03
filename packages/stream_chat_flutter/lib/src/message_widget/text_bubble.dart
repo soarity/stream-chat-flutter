@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template textBubble}
@@ -54,6 +55,7 @@ class TextBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     if (message.text?.trim().isEmpty ?? false) return const Offstage();
 
     if (message.user!.id == 'wer6bot' &&
@@ -62,6 +64,9 @@ class TextBubble extends StatelessWidget {
       return botBuilder!(context, message);
     }
 
+=======
+    if (message.text?.trim().isEmpty ?? true) return const Empty();
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
     return Padding(
       padding: isOnlyEmoji ? EdgeInsets.zero : textPadding,
       child: textBuilder != null

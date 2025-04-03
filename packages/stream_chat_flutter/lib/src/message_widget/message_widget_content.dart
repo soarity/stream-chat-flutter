@@ -319,6 +319,24 @@ class MessageWidgetContent extends StatelessWidget {
                         isDm: isDm,
                       ),
                   ],
+<<<<<<< HEAD
+=======
+                  if (showBottomRow)
+                    SizedBox(
+                      height: context.textScaleFactor * 18.0,
+                    ),
+                ],
+              ),
+            ),
+            if (isFailedState)
+              Positioned(
+                right: reverse ? 0 : null,
+                left: reverse ? null : 0,
+                bottom: showBottomRow ? 18 : -2,
+                child: StreamSvgIcon(
+                  icon: StreamSvgIcons.error,
+                  color: streamChatTheme.colorTheme.accentError,
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
                 ),
               ),
               if (showReactionPickerTail)

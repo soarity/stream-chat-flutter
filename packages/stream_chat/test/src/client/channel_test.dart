@@ -1,9 +1,9 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'package:mocktail/mocktail.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:stream_chat/src/client/retry_policy.dart';
 import 'package:stream_chat/src/core/models/banned_user.dart';
+import 'package:stream_chat/src/core/models/moderation.dart';
 import 'package:stream_chat/stream_chat.dart';
 import 'package:test/test.dart';
 
@@ -16,6 +16,7 @@ void main() {
     String channelId,
     String channelType, {
     DateTime? lastMessageAt,
+    List<ChannelCapability>? ownCapabilities,
     bool mockChannelConfig = false,
   }) {
     ChannelConfig? config;
@@ -28,6 +29,7 @@ void main() {
       id: channelId,
       type: channelType,
       config: config,
+      ownCapabilities: ownCapabilities,
       lastMessageAt: lastMessageAt,
     );
     final state = ChannelState(channel: channel);
@@ -142,10 +144,6 @@ void main() {
       );
       when(() => client.retryPolicy).thenReturn(retryPolicy);
 
-      final event = Event(type: 'event.local');
-      when(() => client.on(any(), any(), any(), any()))
-          .thenAnswer((_) => Stream.value(event));
-
       // fake clientState
       final clientState = FakeClientState();
       when(() => client.state).thenReturn(clientState);
@@ -199,10 +197,6 @@ void main() {
         delayFactor: Duration.zero,
       );
       when(() => client.retryPolicy).thenReturn(retryPolicy);
-
-      final event = Event(type: 'event.local');
-      when(() => client.on(any(), any(), any(), any()))
-          .thenAnswer((_) => Stream.value(event));
 
       // fake clientState
       final clientState = FakeClientState();
@@ -2759,12 +2753,9 @@ void main() {
       const eventType = 'test.event';
       final event = Event(type: eventType, cid: channelCid);
 
-      when(() => client.on(eventType, any(), any(), any()))
-          .thenAnswer((_) => Stream.value(event));
+      Future.microtask(() => client.addEvent(event));
 
-      expectLater(channel.on(eventType), emitsInOrder([event]));
-
-      verify(() => client.on(eventType, any(), any(), any())).called(1);
+      return expectLater(channel.on(eventType), emitsInOrder([event]));
     });
 
     group(
@@ -2855,6 +2846,51 @@ void main() {
             )).called(1);
       });
     });
+
+    // This test verifies that stale error messages (error messages without bounce moderation)
+    // are automatically cleaned up when we send a new message.
+    group('stale error message cleanup', () {
+      final channelState = _generateChannelState(channelId, channelType);
+
+      final errorMessage = Message(type: MessageType.error);
+      final bouncedErrorMessage = Message(
+        type: MessageType.error,
+        moderation: const Moderation(
+          action: ModerationAction.bounce,
+          originalText: 'original text',
+        ),
+      );
+
+      // Test case: sending a message cleans up stale error messages
+      test('when sending a new message', () async {
+        // Channel with 2 error messages
+        final channel = Channel.fromState(
+          client,
+          channelState.copyWith(
+            messages: [errorMessage, bouncedErrorMessage],
+          ),
+        );
+
+        // Set up the mock response for sending message
+        final newMessage = Message(text: 'New message');
+
+        when(() => client.sendMessage(any(), channelId, channelType))
+            .thenAnswer((_) async => SendMessageResponse()
+              ..message = newMessage.copyWith(state: MessageState.sent));
+
+        // Send a new message
+        await channel.sendMessage(newMessage);
+        final messages = channel.state!.messages;
+
+        // Verify the cleanup
+        expect(messages.length, 2);
+        expect(messages.any((m) => m.id == errorMessage.id), false);
+        expect(messages.any((m) => m.id == bouncedErrorMessage.id), true);
+        expect(messages.any((m) => m.id == newMessage.id), true);
+
+        verify(() => client.sendMessage(any(), channelId, channelType));
+      });
+    });
   });
 
   group('WS events', () {
@@ -2890,22 +2926,11 @@ void main() {
       '${EventType.messageNew} or ${EventType.notificationMessageNew}',
       () {
         final initialLastMessageAt = DateTime.now();
-        late PublishSubject<Event> eventController;
         const channelId = 'test-channel-id';
         const channelType = 'test-channel-type';
         late Channel channel;
 
         setUp(() {
-          final localEvent = Event(type: 'event.local');
-          when(() => client.on(any(), any(), any(), any()))
-              .thenAnswer((_) => Stream.value(localEvent));
-
-          eventController = PublishSubject<Event>();
-          when(() => client.on(
-                EventType.messageNew,
-                EventType.notificationMessageNew,
-              )).thenAnswer((_) => eventController.stream);
-
           final channelState = _generateChannelState(
             channelId,
             channelType,
@@ -2916,10 +2941,7 @@ void main() {
           channel = Channel.fromState(client, channelState);
         });
 
-        tearDown(() {
-          eventController.close();
-          channel.dispose();
-        });
+        tearDown(() => channel.dispose());
 
         Event createNewMessageEvent(Message message) {
           return Event(
@@ -2941,7 +2963,7 @@ void main() {
             );
 
             final newMessageEvent = createNewMessageEvent(message);
-            eventController.add(newMessageEvent);
+            client.addEvent(newMessageEvent);
 
             // Wait for the event to get processed
             await Future.delayed(Duration.zero);
@@ -2965,7 +2987,7 @@ void main() {
             );
 
             final newMessageEvent = createNewMessageEvent(message);
-            eventController.add(newMessageEvent);
+            client.addEvent(newMessageEvent);
 
             // Wait for the event to get processed
             await Future.delayed(Duration.zero);
@@ -2988,7 +3010,7 @@ void main() {
             );
 
             final newMessageEvent = createNewMessageEvent(message);
-            eventController.add(newMessageEvent);
+            client.addEvent(newMessageEvent);
 
             // Wait for the event to get processed
             await Future.delayed(Duration.zero);
@@ -3011,7 +3033,7 @@ void main() {
             );
 
             final newMessageEvent = createNewMessageEvent(message);
-            eventController.add(newMessageEvent);
+            client.addEvent(newMessageEvent);
 
             // Wait for the event to get processed
             await Future.delayed(Duration.zero);
@@ -3034,7 +3056,7 @@ void main() {
             );
 
             final newMessageEvent = createNewMessageEvent(message);
-            eventController.add(newMessageEvent);
+            client.addEvent(newMessageEvent);
 
             // Wait for the event to get processed
             await Future.delayed(Duration.zero);
@@ -3058,7 +3080,7 @@ void main() {
             );
 
             final newMessageEvent = createNewMessageEvent(message);
-            eventController.add(newMessageEvent);
+            client.addEvent(newMessageEvent);
 
             // Wait for the event to get processed
             await Future.delayed(Duration.zero);
@@ -3085,7 +3107,7 @@ void main() {
             );
 
             final newMessageEvent = createNewMessageEvent(message);
-            eventController.add(newMessageEvent);
+            client.addEvent(newMessageEvent);
 
             // Wait for the event to get processed
             await Future.delayed(Duration.zero);
@@ -3096,5 +3118,389 @@ void main() {
         );
       },
     );
+
+    group('Member Events', () {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+      late Channel channel;
+
+      setUp(() {
+        final channelState = _generateChannelState(channelId, channelType);
+        channel = Channel.fromState(client, channelState);
+      });
+
+      tearDown(() {
+        channel.dispose();
+      });
+
+      test(
+        'should update membership when member is updated and is current user',
+        () async {
+          final currentUser = client.state.currentUser;
+          final currentMember = Member(user: currentUser);
+
+          // Setup initial membership
+          channel.state?.updateChannelState(
+            channel.state!.channelState.copyWith(
+              members: [currentMember],
+              membership: currentMember,
+            ),
+          );
+
+          // Verify initial state
+          expect(channel.membership, isNotNull);
+          expect(channel.membership?.channelRole, isNull);
+          expect(channel.membership?.isModerator, false);
+
+          // Create updated member with same userId but updated properties
+          final updatedMember = currentMember.copyWith(
+            channelRole: 'moderator',
+            isModerator: true,
+          );
+
+          // Create member updated event
+          final memberUpdatedEvent = Event(
+            cid: channel.cid,
+            type: EventType.memberUpdated,
+            user: currentUser,
+            member: updatedMember,
+          );
+
+          // Dispatch event
+          client.addEvent(memberUpdatedEvent);
+
+          // Wait for the event to be processed
+          await Future.delayed(Duration.zero);
+
+          // Verify membership is updated with new properties
+          expect(channel.membership, isNotNull);
+          expect(channel.membership?.userId, equals(currentUser?.id));
+          expect(channel.membership?.channelRole, equals('moderator'));
+          expect(channel.membership?.isModerator, isTrue);
+        },
+      );
+
+      test(
+        'should update membership user when any event containing user is updated',
+        () async {
+          final currentUser = client.state.currentUser;
+          final currentMember = Member(user: currentUser);
+
+          // Setup initial membership
+          channel.state?.updateChannelState(
+            channel.state!.channelState.copyWith(
+              members: [currentMember],
+              membership: currentMember,
+            ),
+          );
+
+          // Verify initial state
+          expect(channel.membership, isNotNull);
+          expect(channel.membership?.user?.id, equals(currentUser?.id));
+          expect(channel.membership?.user?.role, equals(currentUser?.role));
+
+          // Create updated user with same userId but updated properties
+          final updatedUser = currentUser?.copyWith(role: 'moderator');
+
+          // Create any event with same updated user as membership.
+          final anyEvent = Event(
+            cid: channel.cid,
+            type: EventType.any,
+            user: updatedUser,
+          );
+
+          // Dispatch event
+          client.addEvent(anyEvent);
+
+          // Wait for the event to be processed
+          await Future.delayed(Duration.zero);
+
+          // Verify membership is updated with new properties
+          expect(channel.membership, isNotNull);
+          expect(channel.membership?.user?.id, equals(updatedUser?.id));
+          expect(channel.membership?.user?.role, equals(updatedUser?.role));
+        },
+      );
+    });
+  });
+
+  group('ChannelCapabilityCheck', () {
+    const channelId = 'test-channel-id';
+    const channelType = 'test-channel-type';
+    late final client = MockStreamChatClient();
+
+    setUpAll(() {
+      // detached loggers
+      when(() => client.detachedLogger(any())).thenAnswer((invocation) {
+        final name = invocation.positionalArguments.first;
+        return _createLogger(name);
+      });
+
+      final retryPolicy = RetryPolicy(
+        shouldRetry: (_, __, ___) => false,
+        delayFactor: Duration.zero,
+      );
+      when(() => client.retryPolicy).thenReturn(retryPolicy);
+
+      // fake clientState
+      final clientState = FakeClientState();
+      when(() => client.state).thenReturn(clientState);
+
+      // client logger
+      when(() => client.logger).thenReturn(_createLogger('mock-client-logger'));
+    });
+
+    /// Parameterized test for channel capability extension properties
+    void testCapability(
+      String capabilityName,
+      ChannelCapability capability,
+      bool Function(Channel) getterMethod,
+    ) {
+      test('can$capabilityName returns false when capability is absent', () {
+        final channelState = _generateChannelState(channelId, channelType);
+        final channel = Channel.fromState(client, channelState);
+        expect(getterMethod(channel), false);
+      });
+
+      test('can$capabilityName returns true when capability is present', () {
+        final channelState = _generateChannelState(
+          channelId,
+          channelType,
+          ownCapabilities: [capability],
+        );
+        final channel = Channel.fromState(client, channelState);
+        expect(getterMethod(channel), true);
+      });
+    }
+
+    // Test all channel capabilities using the parameterized function
+    testCapability(
+      'SendMessage',
+      ChannelCapability.sendMessage,
+      (channel) => channel.canSendMessage,
+    );
+
+    testCapability(
+      'SendReply',
+      ChannelCapability.sendReply,
+      (channel) => channel.canSendReply,
+    );
+
+    testCapability(
+      'SendRestrictedVisibilityMessage',
+      ChannelCapability.sendRestrictedVisibilityMessage,
+      (channel) => channel.canSendRestrictedVisibilityMessage,
+    );
+
+    testCapability(
+      'SendReaction',
+      ChannelCapability.sendReaction,
+      (channel) => channel.canSendReaction,
+    );
+
+    testCapability(
+      'SendLinks',
+      ChannelCapability.sendLinks,
+      (channel) => channel.canSendLinks,
+    );
+
+    testCapability(
+      'CreateAttachment',
+      ChannelCapability.createAttachment,
+      (channel) => channel.canCreateAttachment,
+    );
+
+    testCapability(
+      'FreezeChannel',
+      ChannelCapability.freezeChannel,
+      (channel) => channel.canFreezeChannel,
+    );
+
+    testCapability(
+      'SetChannelCooldown',
+      ChannelCapability.setChannelCooldown,
+      (channel) => channel.canSetChannelCooldown,
+    );
+
+    testCapability(
+      'LeaveChannel',
+      ChannelCapability.leaveChannel,
+      (channel) => channel.canLeaveChannel,
+    );
+
+    testCapability(
+      'JoinChannel',
+      ChannelCapability.joinChannel,
+      (channel) => channel.canJoinChannel,
+    );
+
+    testCapability(
+      'PinMessage',
+      ChannelCapability.pinMessage,
+      (channel) => channel.canPinMessage,
+    );
+
+    testCapability(
+      'DeleteAnyMessage',
+      ChannelCapability.deleteAnyMessage,
+      (channel) => channel.canDeleteAnyMessage,
+    );
+
+    testCapability(
+      'DeleteOwnMessage',
+      ChannelCapability.deleteOwnMessage,
+      (channel) => channel.canDeleteOwnMessage,
+    );
+
+    testCapability(
+      'UpdateAnyMessage',
+      ChannelCapability.updateAnyMessage,
+      (channel) => channel.canUpdateAnyMessage,
+    );
+
+    testCapability(
+      'UpdateOwnMessage',
+      ChannelCapability.updateOwnMessage,
+      (channel) => channel.canUpdateOwnMessage,
+    );
+
+    testCapability(
+      'SearchMessages',
+      ChannelCapability.searchMessages,
+      (channel) => channel.canSearchMessages,
+    );
+
+    testCapability(
+      'SendTypingEvents',
+      ChannelCapability.sendTypingEvents,
+      (channel) => channel.canSendTypingEvents,
+    );
+
+    testCapability(
+      'UploadFile',
+      ChannelCapability.uploadFile,
+      (channel) => channel.canUploadFile,
+    );
+
+    testCapability(
+      'DeleteChannel',
+      ChannelCapability.deleteChannel,
+      (channel) => channel.canDeleteChannel,
+    );
+
+    testCapability(
+      'UpdateChannel',
+      ChannelCapability.updateChannel,
+      (channel) => channel.canUpdateChannel,
+    );
+
+    testCapability(
+      'UpdateChannelMembers',
+      ChannelCapability.updateChannelMembers,
+      (channel) => channel.canUpdateChannelMembers,
+    );
+
+    testCapability(
+      'UpdateThread',
+      ChannelCapability.updateThread,
+      (channel) => channel.canUpdateThread,
+    );
+
+    testCapability(
+      'QuoteMessage',
+      ChannelCapability.quoteMessage,
+      (channel) => channel.canQuoteMessage,
+    );
+
+    testCapability(
+      'BanChannelMembers',
+      ChannelCapability.banChannelMembers,
+      (channel) => channel.canBanChannelMembers,
+    );
+
+    testCapability(
+      'FlagMessage',
+      ChannelCapability.flagMessage,
+      (channel) => channel.canFlagMessage,
+    );
+
+    testCapability(
+      'MuteChannel',
+      ChannelCapability.muteChannel,
+      (channel) => channel.canMuteChannel,
+    );
+
+    testCapability(
+      'SendCustomEvents',
+      ChannelCapability.sendCustomEvents,
+      (channel) => channel.canSendCustomEvents,
+    );
+
+    testCapability(
+      'ReceiveReadEvents',
+      ChannelCapability.readEvents,
+      (channel) => channel.canReceiveReadEvents,
+    );
+
+    testCapability(
+      'ReceiveConnectEvents',
+      ChannelCapability.connectEvents,
+      (channel) => channel.canReceiveConnectEvents,
+    );
+
+    testCapability(
+      'UseTypingEvents',
+      ChannelCapability.typingEvents,
+      (channel) => channel.canUseTypingEvents,
+    );
+
+    testCapability(
+      'InSlowMode',
+      ChannelCapability.slowMode,
+      (channel) => channel.isInSlowMode,
+    );
+
+    testCapability(
+      'SkipSlowMode',
+      ChannelCapability.skipSlowMode,
+      (channel) => channel.canSkipSlowMode,
+    );
+
+    testCapability(
+      'SendPoll',
+      ChannelCapability.sendPoll,
+      (channel) => channel.canSendPoll,
+    );
+
+    testCapability(
+      'CastPollVote',
+      ChannelCapability.castPollVote,
+      (channel) => channel.canCastPollVote,
+    );
+
+    testCapability(
+      'QueryPollVotes',
+      ChannelCapability.queryPollVotes,
+      (channel) => channel.canQueryPollVotes,
+    );
+
+    test('returns correct values with multiple capabilities', () {
+      final channelState = _generateChannelState(
+        channelId,
+        channelType,
+        ownCapabilities: [
+          ChannelCapability.sendMessage,
+          ChannelCapability.sendReply,
+          ChannelCapability.deleteOwnMessage,
+        ],
+      );
+
+      final channel = Channel.fromState(client, channelState);
+      expect(channel.canSendMessage, true);
+      expect(channel.canSendReply, true);
+      expect(channel.canDeleteOwnMessage, true);
+      expect(channel.canDeleteAnyMessage, false);
+      expect(channel.canUpdateChannel, false);
+    });
   });
 }

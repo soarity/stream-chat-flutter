@@ -11,7 +11,11 @@ import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart
 import 'package:stream_chat_flutter/src/message_list_view/mlv_utils.dart';
 import 'package:stream_chat_flutter/src/message_list_view/unread_messages_separator.dart';
 import 'package:stream_chat_flutter/src/message_widget/ephemeral_message.dart';
+<<<<<<< HEAD
 import 'package:stream_chat_flutter/src/progress_indicator.dart';
+=======
+import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Spacing Types (These are properties of a message to help inform the decision
@@ -108,11 +112,15 @@ class StreamMessageListView extends StatefulWidget {
     this.emptyBuilder,
     this.systemMessageBuilder,
     this.ephemeralMessageBuilder,
+    this.moderatedMessageBuilder,
     this.messageListBuilder,
     this.errorBuilder,
     this.messageFilter,
     this.onMessageTap,
     this.onSystemMessageTap,
+    this.onEphemeralMessageTap,
+    this.onModeratedMessageTap,
+    this.onMessageLongPress,
     this.showFloatingDateDivider = true,
     this.unreadMessagesSeparatorBuilder,
     this.messageListController,
@@ -165,6 +173,9 @@ class StreamMessageListView extends StatefulWidget {
 
   /// {@macro ephemeralMessageBuilder}
   final EphemeralMessageBuilder? ephemeralMessageBuilder;
+
+  /// {@macro moderatedMessageBuilder}
+  final ModeratedMessageBuilder? moderatedMessageBuilder;
 
   /// {@macro parentMessageBuilder}
   final ParentMessageBuilder? parentMessageBuilder;
@@ -291,13 +302,31 @@ class StreamMessageListView extends StatefulWidget {
   /// Predicate used to filter messages
   final bool Function(Message)? messageFilter;
 
-  /// Called when any message is tapped except a system message
-  /// (use [onSystemMessageTap] instead)
+  /// Called when a regular message is tapped.
+  ///
+  /// For system, ephemeral, and moderated messages, use [onSystemMessageTap],
+  /// [onEphemeralMessageTap], and [onModeratedMessageTap] respectively.
   final OnMessageTap? onMessageTap;
 
-  /// Called when system message is tapped
+  /// Called when system message is tapped.
   final OnMessageTap? onSystemMessageTap;
 
+<<<<<<< HEAD
+=======
+  /// Called when ephemeral message is tapped.
+  final OnMessageTap? onEphemeralMessageTap;
+
+  /// Called when moderated message is tapped.
+  final OnMessageTap? onModeratedMessageTap;
+
+  /// Called when a regular message is long pressed.
+  final OnMessageLongPress? onMessageLongPress;
+
+  /// Builder used to build the thread separator in case it's a thread view
+  final Function(BuildContext context, Message parentMessage)?
+      threadSeparatorBuilder;
+
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
   /// Builder used to build the unread message separator
   final Widget Function(BuildContext context, int unreadCount)?
       unreadMessagesSeparatorBuilder;
@@ -336,7 +365,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   int? _messageListLength;
   StreamChannelState? streamChannel;
   late StreamChatThemeData _streamTheme;
-  late List<String> _userPermissions;
   late int unreadCount;
 
   double get _initialAlignment {
@@ -386,7 +414,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     super.didChangeDependencies();
     final newStreamChannel = StreamChannel.of(context);
     _streamTheme = StreamChatTheme.of(context);
-    _userPermissions = newStreamChannel.channel.ownCapabilities;
 
     if (newStreamChannel != streamChannel) {
       streamChannel = newStreamChannel;
@@ -643,7 +670,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   separatorBuilder: (context, i) {
                     if (i == itemCount - 2) {
                       if (widget.parentMessage == null) {
-                        return const Offstage();
+                        return const Empty();
                       }
                     }
                     if (i == itemCount - 3) {
@@ -653,7 +680,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                         if (messages.isNotEmpty) {
                           return _buildDateDivider(messages.last);
                         }
+<<<<<<< HEAD
 
+=======
+                        if (_isThreadConversation) return const Empty();
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
                         return const SizedBox(height: 52);
                       }
                       return const SizedBox(height: 8);
@@ -667,7 +698,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       return const SizedBox(height: 8);
                     }
 
-                    if (i == 1 || i == itemCount - 4) return const Offstage();
+                    if (i == 1 || i == itemCount - 4) return const Empty();
 
                     late final Message message, nextMessage;
                     if (widget.reverse) {
@@ -730,7 +761,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   itemBuilder: (context, i) {
                     if (i == itemCount - 1) {
                       if (widget.parentMessage == null) {
-                        return const Offstage();
+                        return const Empty();
                       }
                       return buildParentMessage(widget.parentMessage!);
                     }
@@ -738,10 +769,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                     if (i == itemCount - 2) {
                       if (widget.reverse) {
                         return widget.headerBuilder?.call(context) ??
-                            const Offstage();
+                            const Empty();
                       } else {
                         return widget.footerBuilder?.call(context) ??
-                            const Offstage();
+                            const Empty();
                       }
                     }
 
@@ -769,32 +800,21 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                     if (i == 0) {
                       if (widget.reverse) {
                         return widget.footerBuilder?.call(context) ??
-                            const Offstage();
+                            const Empty();
                       } else {
                         return widget.headerBuilder?.call(context) ??
-                            const Offstage();
+                            const Empty();
                       }
                     }
 
-                    const bottomMessageIndex = 2; // 1 -> loader // 0 -> footer
+                    // Offset the index to account for two extra items
+                    // (loader and footer) at the bottom of the ListView.
+                    final messageIndex = i - 2;
+                    final message = messages[messageIndex];
 
-                    final message = messages[i - 2];
-                    Widget messageWidget;
-
-                    if (i == bottomMessageIndex) {
-                      messageWidget = _buildBottomMessage(
-                        context,
-                        message,
-                        messages,
-                        streamChannel!,
-                        i - 2,
-                      );
-                    } else {
-                      messageWidget = buildMessage(message, messages, i - 2);
-                    }
                     return KeyedSubtree(
                       key: ValueKey(message.id),
-                      child: messageWidget,
+                      child: buildMessage(message, messages, messageIndex),
                     );
                   },
                 ),
@@ -826,7 +846,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                 if (!snapshot || value) {
                   return child!;
                 }
-                return const Offstage();
+                return const Empty();
               },
             ),
           ),
@@ -952,28 +972,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   }
 
   Widget _buildDateDivider(Message message) {
-    final divider = widget.dateDividerBuilder != null
-        ? widget.dateDividerBuilder!(
-            message.createdAt.toLocal(),
-          )
-        : Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: StreamDateDivider(
-              dateTime: message.createdAt.toLocal(),
-            ),
-          );
-    return divider;
-  }
-
-  Widget _buildBottomMessage(
-    BuildContext context,
-    Message message,
-    List<Message> messages,
-    StreamChannelState streamChannel,
-    int index,
-  ) {
-    final messageWidget = buildMessage(message, messages, index);
-    return messageWidget;
+    final createdAt = message.createdAt.toLocal();
+    return switch (widget.dateDividerBuilder) {
+      final builder? => builder(createdAt),
+      _ => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: StreamDateDivider(dateTime: createdAt),
+        ),
+    };
   }
 
   Widget buildParentMessage(
@@ -1048,12 +1054,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme
           : _streamTheme.otherMessageTheme,
-      onMessageTap: (message) {
-        widget.onMessageTap?.call(message);
-        FocusScope.of(context).unfocus();
-      },
+      onMessageTap: widget.onMessageTap,
+      onMessageLongPress: widget.onMessageLongPress,
       showPinButton: currentUserMember != null &&
-          _userPermissions.contains(PermissionType.pinMessage) &&
+          streamChannel?.channel.canPinMessage == true &&
           // Pinning a restricted visibility message is not allowed, simply
           // because pinning a message is meant to bring attention to that
           // message, that is not possible with a message that is only visible
@@ -1077,9 +1081,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       stream: streamChannel!.channel.state!.unreadCountStream,
       builder: (_, snapshot) {
         if (snapshot.hasError) {
-          return const Offstage();
+          return const Empty();
         } else if (!snapshot.hasData) {
-          return const Offstage();
+          return const Empty();
         }
         final unreadCount = snapshot.data!;
         if (widget.scrollToBottomBuilder != null) {
@@ -1156,9 +1160,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       stream: streamChannel!.channel.state!.unreadCountStream,
       builder: (_, snapshot) {
         if (snapshot.hasError) {
-          return const Offstage();
+          return const Empty();
         } else if (!snapshot.hasData) {
-          return const Offstage();
+          return const Empty();
         }
         final unreadCount = snapshot.data!;
 
@@ -1175,7 +1179,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                 e.userId ==
                 streamChannel!.channel.client.state.currentUser!.id);
 
-        if (!showUnread) return const Offstage();
+        if (!showUnread) return const Empty();
 
         final lastReadMessageId =
             streamChannel!.channel.state!.currentUserRead?.lastReadMessageId;
@@ -1219,17 +1223,42 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     );
   }
 
+  Widget buildSystemMessage(Message message) {
+    if (widget.systemMessageBuilder case final builder?) {
+      return builder(context, message);
+    }
+
+    return StreamSystemMessage(
+      message: message,
+      onMessageTap: widget.onSystemMessageTap,
+    );
+  }
+
+  Widget buildModeratedMessage(Message message) {
+    if (widget.moderatedMessageBuilder case final builder?) {
+      return builder(context, message);
+    }
+
+    return StreamModeratedMessage(
+      message: message,
+      onMessageTap: widget.onModeratedMessageTap,
+    );
+  }
+
+  Widget buildEphemeralMessage(Message message) {
+    if (widget.ephemeralMessageBuilder case final builder?) {
+      return builder(context, message);
+    }
+
+    return StreamEphemeralMessage(
+      message: message,
+      onMessageTap: widget.onEphemeralMessageTap,
+    );
+  }
+
   Widget buildMessage(Message message, List<Message> messages, int index) {
-    if ((message.isSystem || message.isError) &&
-        message.text?.isNotEmpty == true) {
-      return widget.systemMessageBuilder?.call(context, message) ??
-          StreamSystemMessage(
-            message: message,
-            onMessageTap: (message) {
-              widget.onSystemMessageTap?.call(message);
-              FocusScope.of(context).unfocus();
-            },
-          );
+    if (message.isSystem) {
+      return buildSystemMessage(message);
     }
 
     // Video Meeting message
@@ -1240,8 +1269,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     }
 
     if (message.isEphemeral) {
-      return widget.ephemeralMessageBuilder?.call(context, message) ??
-          StreamEphemeralMessage(message: message);
+      return buildEphemeralMessage(message);
+    }
+
+    if (message.isError && !message.isBounced) {
+      return buildModeratedMessage(message);
     }
 
     final userId = StreamChat.of(context).currentUser!.id;
@@ -1338,6 +1370,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       },
       showEditMessage: isMyMessage,
       showDeleteMessage: isMyMessage,
+<<<<<<< HEAD
+=======
+      showThreadReplyMessage:
+          !isThreadMessage && streamChannel?.channel.canSendReply == true,
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
       showFlagButton: !isMyMessage,
       borderSide: borderSide,
       attachmentShape: RoundedRectangleBorder(
@@ -1371,6 +1408,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme
           : _streamTheme.otherMessageTheme,
+<<<<<<< HEAD
       onMessageTap: (message) {
         widget.onMessageTap?.call(message);
         FocusScope.of(context).unfocus();
@@ -1378,6 +1416,17 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       showPinButton: false,
       showPinHighlight: false,
       botBuilder: widget.botBuilder,
+=======
+      onMessageTap: widget.onMessageTap,
+      onMessageLongPress: widget.onMessageLongPress,
+      showPinButton: currentUserMember != null &&
+          streamChannel?.channel.canPinMessage == true &&
+          // Pinning a restricted visibility message is not allowed, simply
+          // because pinning a message is meant to bring attention to that
+          // message, that is not possible with a message that is only visible
+          // to a subset of users.
+          !message.hasRestrictedVisibility,
+>>>>>>> 78604c60fb775e9251282984293587b8888c7a46
     );
 
     if (widget.messageBuilder != null) {
