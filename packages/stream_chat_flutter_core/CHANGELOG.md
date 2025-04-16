@@ -1,3 +1,10 @@
+## 9.8.0
+
+✅ Added
+
+- Added `StreamChannelState.getFirstUnreadMessage` to get the first unread message in the channel.
+- Added support for Channel pinning and archiving.
+
 ## 9.7.0
 
 🐞 Fixed

@@ -1,9 +1,18 @@
-## Upcoming
+## 9.8.0
 
 🐞 Fixed
 
+- [[#2184]](https://github.com/GetStream/stream-chat-flutter/issues/2184) Fixed messages not being
+  marked as read when scrolled to the bottom.
+- [[#2187]](https://github.com/GetStream/stream-chat-flutter/issues/2187) Fixed `MessageListView`
+  scrolling back up after reaching bottom when unread indicator or scroll to bottom button is
+  tapped.
+- [[#2085]](https://github.com/GetStream/stream-chat-flutter/issues/2085) Fixed handling of read
+  events in the Channel class.
 - [[#2150]](https://github.com/GetStream/stream-chat-flutter/issues/2150) Fixed Push notifications
   for mentions shows user ID instead of Username.
+- [[#2203]](https://github.com/GetStream/stream-chat-flutter/issues/2203) Fixed StreamMessageInput
+  shows Poll option even if polls are disabled in channel config.
 
 ## 9.7.0
 

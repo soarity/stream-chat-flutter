@@ -9,6 +9,7 @@ import 'package:stream_chat/src/client/retry_policy.dart';
 import 'package:stream_chat/src/core/api/attachment_file_uploader.dart';
 import 'package:stream_chat/src/core/api/requests.dart';
 import 'package:stream_chat/src/core/api/responses.dart';
+import 'package:stream_chat/src/core/api/sort_order.dart';
 import 'package:stream_chat/src/core/api/stream_chat_api.dart';
 import 'package:stream_chat/src/core/error/error.dart';
 import 'package:stream_chat/src/core/http/connection_id_manager.dart';
@@ -17,7 +18,10 @@ import 'package:stream_chat/src/core/http/system_environment_manager.dart';
 import 'package:stream_chat/src/core/http/token.dart';
 import 'package:stream_chat/src/core/http/token_manager.dart';
 import 'package:stream_chat/src/core/models/attachment_file.dart';
+import 'package:stream_chat/src/core/models/banned_user.dart';
 import 'package:stream_chat/src/core/models/channel_state.dart';
+import 'package:stream_chat/src/core/models/draft.dart';
+import 'package:stream_chat/src/core/models/draft_message.dart';
 import 'package:stream_chat/src/core/models/event.dart';
 import 'package:stream_chat/src/core/models/filter.dart';
 import 'package:stream_chat/src/core/models/member.dart';
@@ -608,7 +612,7 @@ class StreamChatClient {
   /// Requests channels with a given query.
   Stream<List<Channel>> queryChannels({
     Filter? filter,
-    List<SortOption<ChannelState>>? channelStateSort,
+    SortOrder<ChannelState>? channelStateSort,
     bool state = true,
     bool watch = true,
     bool presence = false,
@@ -633,37 +637,63 @@ class StreamChatClient {
       paginationParams,
     ]);
 
+    // Return results from cache if available
     if (_queryChannelsStreams.containsKey(hash)) {
-      yield await _queryChannelsStreams[hash]!;
-    } else {
-      final channels = await queryChannelsOffline(
+      try {
+        yield await _queryChannelsStreams[hash]!;
+        return;
+      } catch (e, stk) {
+        logger.severe('Error retrieving cached query results', e, stk);
+        // Cache is invalid, continue with fresh query
+        _queryChannelsStreams.remove(hash);
+      }
+    }
+
+    // Get offline results first
+    var offlineChannels = <Channel>[];
+    try {
+      offlineChannels = await queryChannelsOffline(
         filter: filter,
         channelStateSort: channelStateSort,
         paginationParams: paginationParams,
       );
-      if (channels.isNotEmpty) yield channels;
 
-      try {
-        final newQueryChannelsFuture = queryChannelsOnline(
-          filter: filter,
-          sort: channelStateSort,
-          state: state,
-          watch: watch,
-          presence: presence,
-          memberLimit: memberLimit,
-          messageLimit: messageLimit,
-          paginationParams: paginationParams,
-          waitForConnect: waitForConnect,
-        ).whenComplete(() {
-          _queryChannelsStreams.remove(hash);
-        });
+      if (offlineChannels.isNotEmpty) yield offlineChannels;
+    } catch (e, stk) {
+      logger.warning('Error querying channels offline', e, stk);
+      // Continue to online query even if offline fails
+    }
 
-        _queryChannelsStreams[hash] = newQueryChannelsFuture;
+    try {
+      final newQueryChannelsFuture = queryChannelsOnline(
+        filter: filter,
+        sort: channelStateSort,
+        state: state,
+        watch: watch,
+        presence: presence,
+        memberLimit: memberLimit,
+        messageLimit: messageLimit,
+        paginationParams: paginationParams,
+        waitForConnect: waitForConnect,
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          logger.warning('Online channel query timed out');
+          throw TimeoutException('Channel query timed out');
+        },
+      ).whenComplete(() {
+        // Always clean up cache reference when done
+        _queryChannelsStreams.remove(hash);
+      });
 
-        yield await newQueryChannelsFuture;
-      } catch (_) {
-        if (channels.isEmpty) rethrow;
-      }
+      // Store the future in cache
+      _queryChannelsStreams[hash] = newQueryChannelsFuture;
+
+      yield await newQueryChannelsFuture;
+    } catch (e, stk) {
+      logger.severe('Error querying channels online', e, stk);
+      // Only rethrow if we have no channels to show the user
+      if (offlineChannels.isEmpty) rethrow;
     }
   }
 
@@ -691,7 +721,7 @@ class StreamChatClient {
   /// Requests channels with a given query from the API.
   Future<List<Channel>> queryChannelsOnline({
     Filter? filter,
-    List<SortOption>? sort,
+    SortOrder<ChannelState>? sort,
     bool state = true,
     bool watch = true,
     bool presence = false,
@@ -765,7 +795,7 @@ class StreamChatClient {
   /// Requests channels with a given query from the Persistence client.
   Future<List<Channel>> queryChannelsOffline({
     Filter? filter,
-    List<SortOption<ChannelState>>? channelStateSort,
+    SortOrder<ChannelState>? channelStateSort,
     PaginationParams paginationParams = const PaginationParams(),
   }) async {
     final offlineChannels = (await chatPersistenceClient?.getChannelStates(
@@ -804,7 +834,7 @@ class StreamChatClient {
   Future<QueryUsersResponse> queryUsers({
     bool? presence,
     Filter? filter,
-    List<SortOption>? sort,
+    SortOrder<User>? sort,
     PaginationParams? pagination,
   }) async {
     final response = await _chatApi.user.queryUsers(
@@ -820,7 +850,7 @@ class StreamChatClient {
   /// Query banned users.
   Future<QueryBannedUsersResponse> queryBannedUsers({
     required Filter filter,
-    List<SortOption>? sort,
+    SortOrder<BannedUser>? sort,
     PaginationParams? pagination,
   }) =>
       _chatApi.moderation.queryBannedUsers(
@@ -833,7 +863,7 @@ class StreamChatClient {
   Future<SearchMessagesResponse> search(
     Filter filter, {
     String? query,
-    List<SortOption>? sort,
+    SortOrder? sort,
     PaginationParams? paginationParams,
     Filter? messageFilters,
   }) =>
@@ -1038,7 +1068,7 @@ class StreamChatClient {
     Filter? filter,
     String? channelId,
     List<Member>? members,
-    List<SortOption>? sort,
+    SortOrder<Member>? sort,
     PaginationParams? pagination,
   }) =>
       _chatApi.general.queryMembers(
@@ -1359,7 +1389,7 @@ class StreamChatClient {
   /// Queries Polls with the given [filter] and [sort] options.
   Future<QueryPollsResponse> queryPolls({
     Filter? filter,
-    List<SortOption>? sort,
+    SortOrder<Poll>? sort,
     PaginationParams pagination = const PaginationParams(),
   }) =>
       _chatApi.polls.queryPolls(
@@ -1373,7 +1403,7 @@ class StreamChatClient {
   Future<QueryPollVotesResponse> queryPollVotes(
     String pollId, {
     Filter? filter,
-    List<SortOption>? sort,
+    SortOrder<PollVote>? sort,
     PaginationParams pagination = const PaginationParams(),
   }) =>
       _chatApi.polls.queryPollVotes(
@@ -1691,6 +1721,57 @@ class StreamChatClient {
         language,
       );
 
+  /// Creates a draft for the given [channelId] of type [channelType].
+  Future<CreateDraftResponse> createDraft(
+    DraftMessage draft,
+    String channelId,
+    String channelType,
+  ) =>
+      _chatApi.message.createDraft(
+        channelId,
+        channelType,
+        draft,
+      );
+
+  /// Retrieves a draft for the given [channelId] of type [channelType].
+  ///
+  /// Optionally, pass [parentId] to get the draft for a thread.
+  Future<GetDraftResponse> getDraft(
+    String channelId,
+    String channelType, {
+    String? parentId,
+  }) =>
+      _chatApi.message.getDraft(
+        channelId,
+        channelType,
+        parentId: parentId,
+      );
+
+  /// Deletes a draft for the given [channelId] of type [channelType].
+  ///
+  /// Optionally, pass [parentId] to delete the draft for a thread.
+  Future<EmptyResponse> deleteDraft(
+    String channelId,
+    String channelType, {
+    String? parentId,
+  }) =>
+      _chatApi.message.deleteDraft(
+        channelId,
+        channelType,
+        parentId: parentId,
+      );
+
+  /// Queries drafts for the current user.
+  Future<QueryDraftsResponse> queryDrafts({
+    Filter? filter,
+    SortOrder<Draft>? sort,
+    PaginationParams? pagination,
+  }) =>
+      _chatApi.message.queryDrafts(
+        sort: sort,
+        pagination: pagination,
+      );
+
   /// Enables slow mode
   Future<PartialUpdateChannelResponse> enableSlowdown(
     String channelId,
@@ -1795,6 +1876,83 @@ class StreamChatClient {
         set: set,
         unset: unset,
       );
+
+  /// Pins the channel for the current user.
+  Future<PartialUpdateMemberResponse> pinChannel({
+    required String channelId,
+    required String channelType,
+  }) {
+    return partialMemberUpdate(
+      channelId: channelId,
+      channelType: channelType,
+      set: const MemberUpdatePayload(pinned: true).toJson(),
+    );
+  }
+
+  /// Unpins the channel for the current user.
+  Future<PartialUpdateMemberResponse> unpinChannel({
+    required String channelId,
+    required String channelType,
+  }) {
+    return partialMemberUpdate(
+      channelId: channelId,
+      channelType: channelType,
+      unset: [MemberUpdateType.pinned.name],
+    );
+  }
+
+  /// Archives the channel for the current user.
+  Future<PartialUpdateMemberResponse> archiveChannel({
+    required String channelId,
+    required String channelType,
+  }) {
+    final currentUser = state.currentUser;
+    if (currentUser == null) {
+      throw const StreamChatError(
+        'User is not set on client, '
+        'use `connectUser` or `connectAnonymousUser` instead',
+      );
+    }
+
+    return partialMemberUpdate(
+      channelId: channelId,
+      channelType: channelType,
+      set: const MemberUpdatePayload(archived: true).toJson(),
+    );
+  }
+
+  /// Unarchives the channel for the current user.
+  Future<PartialUpdateMemberResponse> unarchiveChannel({
+    required String channelId,
+    required String channelType,
+  }) {
+    return partialMemberUpdate(
+      channelId: channelId,
+      channelType: channelType,
+      unset: [MemberUpdateType.archived.name],
+    );
+  }
+
+  /// Partially updates the member of the given channel.
+  ///
+  /// Use [set] to define values to be set.
+  /// Use [unset] to define values to be unset.
+  /// When [userId] is not provided, the current user will be used.
+  Future<PartialUpdateMemberResponse> partialMemberUpdate({
+    required String channelId,
+    required String channelType,
+    Map<String, Object?>? set,
+    List<String>? unset,
+  }) {
+    assert(set != null || unset != null, 'Set or unset must be provided.');
+
+    return _chatApi.channel.updateMemberPartial(
+      channelId: channelId,
+      channelType: channelType,
+      set: set,
+      unset: unset,
+    );
+  }
 
   /// Closes the [_ws] connection and resets the [state]
   /// If [flushChatPersistence] is true the client deletes all offline

@@ -1,7 +1,5 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:stream_chat/src/core/http/token.dart';
-import 'package:stream_chat/src/core/models/banned_user.dart';
-import 'package:stream_chat/src/core/models/user_block.dart';
 import 'package:stream_chat/stream_chat.dart';
 import 'package:test/test.dart';
 
@@ -815,10 +813,11 @@ void main() {
 
   group('Client with connected user without persistence', () {
     const apiKey = 'test-api-key';
+    const userId = 'test-user-id';
     late final api = FakeChatApi();
     late final ws = FakeWebSocket();
 
-    final user = User(id: 'test-user-id');
+    final user = User(id: userId);
     final token = Token.development(user.id).rawValue;
 
     late StreamChatClient client;
@@ -827,6 +826,7 @@ void main() {
       // fallback values
       registerFallbackValue(FakeEvent());
       registerFallbackValue(FakeMessage());
+      registerFallbackValue(FakeDraftMessage());
       registerFallbackValue(FakePollVote());
       registerFallbackValue(const PaginationParams());
     });
@@ -1605,6 +1605,182 @@ void main() {
       verifyNoMoreInteractions(api.moderation);
     });
 
+    test('`.partialMemberUpdate with userId`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+      const otherUserId = 'test-other-user-id';
+      const set = {'pinned': true};
+      const unset = ['pinned'];
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: otherUserId),
+          ));
+
+      final res = await client.partialMemberUpdate(
+        channelId: channelId,
+        channelType: channelType,
+        set: set,
+        unset: unset,
+      );
+
+      expect(res, isNotNull);
+      expect(res.channelMember.userId, otherUserId);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.partialMemberUpdate with current user`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+      const set = {'pinned': true};
+      const unset = ['pinned'];
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId),
+          ));
+
+      final res = await client.partialMemberUpdate(
+        channelId: channelId,
+        channelType: channelType,
+        set: set,
+        unset: unset,
+      );
+
+      expect(res, isNotNull);
+      expect(res.channelMember.userId, userId);
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.pinChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(pinned: true).toJson(),
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, pinnedAt: DateTime.now()),
+          ));
+
+      final res = await client.pinChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(pinned: true).toJson(),
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.unpinChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.pinned.name],
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, pinnedAt: DateTime.now()),
+          ));
+
+      final res = await client.unpinChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.pinned.name],
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.archiveChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(archived: true).toJson(),
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, archivedAt: DateTime.now()),
+          ));
+
+      final res = await client.archiveChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(archived: true).toJson(),
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.unarchiveChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.archived.name],
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, pinnedAt: DateTime.now()),
+          ));
+
+      final res = await client.unarchiveChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.archived.name],
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
     test('`.acceptChannelInvite`', () async {
       const channelType = 'test-channel-type';
       const channelId = 'test-channel-id';
@@ -2067,7 +2243,7 @@ void main() {
 
     test('`.queryPolls`', () async {
       final filter = Filter.in_('id', const ['test-poll-id']);
-      final sort = [const SortOption('created_at')];
+      final sort = [const SortOption<Poll>('created_at')];
       const pagination = PaginationParams(limit: 20);
 
       final polls = List.generate(
@@ -2109,7 +2285,7 @@ void main() {
     test('`.queryPollVotes`', () async {
       const pollId = 'test-poll-id';
       final filter = Filter.in_('id', const ['test-vote-id']);
-      final sort = [const SortOption('created_at')];
+      final sort = [const SortOption<PollVote>('created_at')];
       const pagination = PaginationParams(limit: 20);
 
       final votes = List.generate(
@@ -2745,6 +2921,105 @@ void main() {
             channelType,
             any(that: isSameMessageAs(message)),
           )).called(1);
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.createDraft`', () async {
+      final message = DraftMessage(id: 'test-message-id', text: 'Hello!');
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      when(
+        () => api.message.createDraft(
+          channelId,
+          channelType,
+          any(that: isSameDraftMessageAs(message)),
+        ),
+      ).thenAnswer(
+        (_) async => CreateDraftResponse()
+          ..draft = Draft(
+            channelCid: '$channelType:$channelId',
+            createdAt: DateTime.now(),
+            message: message,
+          ),
+      );
+
+      final res = await client.createDraft(
+        message,
+        channelId,
+        channelType,
+      );
+
+      expect(res, isNotNull);
+      expect(res.draft.message, isSameDraftMessageAs(message));
+
+      verify(() => api.message.createDraft(
+            channelId,
+            channelType,
+            any(that: isSameDraftMessageAs(message)),
+          )).called(1);
+
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.deleteDraft`', () async {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      when(() => api.message.deleteDraft(channelId, channelType))
+          .thenAnswer((_) async => EmptyResponse());
+
+      final res = await client.deleteDraft(channelId, channelType);
+      expect(res, isNotNull);
+
+      verify(() => api.message.deleteDraft(channelId, channelType));
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.getDraft`', () async {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      final message = DraftMessage(id: 'test-message-id', text: 'Hello!');
+
+      when(() => api.message.getDraft(channelId, channelType))
+          .thenAnswer((_) async => GetDraftResponse()
+            ..draft = Draft(
+              channelCid: '$channelType:$channelId',
+              createdAt: DateTime.now(),
+              message: message,
+            ));
+
+      final res = await client.getDraft(channelId, channelType);
+
+      expect(res, isNotNull);
+      expect(res.draft.message, isSameDraftMessageAs(message));
+
+      verify(() => api.message.getDraft(channelId, channelType));
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.queryDrafts`', () async {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      final drafts = [
+        Draft(
+          channelCid: '$channelType:$channelId',
+          createdAt: DateTime.now(),
+          message: DraftMessage(id: 'test-message-id', text: 'Hello!'),
+        )
+      ];
+
+      when(() => api.message.queryDrafts())
+          .thenAnswer((_) async => QueryDraftsResponse()..drafts = drafts);
+
+      final res = await client.queryDrafts();
+
+      expect(res, isNotNull);
+      expect(res.drafts.length, drafts.length);
+
+      verify(() => api.message.queryDrafts()).called(1);
       verifyNoMoreInteractions(api.message);
     });
 

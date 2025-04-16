@@ -54,6 +54,13 @@ QueryMembersResponse _$QueryMembersResponseFromJson(
               .toList() ??
           [];
 
+PartialUpdateMemberResponse _$PartialUpdateMemberResponseFromJson(
+        Map<String, dynamic> json) =>
+    PartialUpdateMemberResponse()
+      ..duration = json['duration'] as String?
+      ..channelMember =
+          Member.fromJson(json['channel_member'] as Map<String, dynamic>);
+
 QueryUsersResponse _$QueryUsersResponseFromJson(Map<String, dynamic> json) =>
     QueryUsersResponse()
       ..duration = json['duration'] as String?
@@ -414,6 +421,25 @@ QueryThreadsResponse _$QueryThreadsResponseFromJson(
       ..duration = json['duration'] as String?
       ..threads = (json['threads'] as List<dynamic>?)
               ?.map((e) => Thread.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          []
+      ..next = json['next'] as String?;
+
+CreateDraftResponse _$CreateDraftResponseFromJson(Map<String, dynamic> json) =>
+    CreateDraftResponse()
+      ..duration = json['duration'] as String?
+      ..draft = Draft.fromJson(json['draft'] as Map<String, dynamic>);
+
+GetDraftResponse _$GetDraftResponseFromJson(Map<String, dynamic> json) =>
+    GetDraftResponse()
+      ..duration = json['duration'] as String?
+      ..draft = Draft.fromJson(json['draft'] as Map<String, dynamic>);
+
+QueryDraftsResponse _$QueryDraftsResponseFromJson(Map<String, dynamic> json) =>
+    QueryDraftsResponse()
+      ..duration = json['duration'] as String?
+      ..drafts = (json['drafts'] as List<dynamic>?)
+              ?.map((e) => Draft.fromJson(e as Map<String, dynamic>))
               .toList() ??
           []
       ..next = json['next'] as String?;

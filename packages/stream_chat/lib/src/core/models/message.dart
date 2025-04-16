@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:stream_chat/src/core/models/attachment.dart';
+import 'package:stream_chat/src/core/models/comparable_field.dart';
+import 'package:stream_chat/src/core/models/draft.dart';
 import 'package:stream_chat/src/core/models/message_state.dart';
 import 'package:stream_chat/src/core/models/moderation.dart';
 import 'package:stream_chat/src/core/models/poll.dart';
@@ -19,7 +21,7 @@ const _nullConst = _NullConst();
 
 /// The class that contains the information about a message.
 @JsonSerializable()
-class Message extends Equatable {
+class Message extends Equatable implements ComparableFieldProvider {
   /// Constructor used for json serialization.
   Message({
     String? id,
@@ -59,6 +61,7 @@ class Message extends Equatable {
     this.i18n,
     this.restrictedVisibility,
     this.moderation,
+    this.draft,
   })  : id = id ?? const Uuid().v4(),
         type = MessageType(type),
         pinExpires = pinExpires?.toUtc(),
@@ -256,6 +259,11 @@ class Message extends Equatable {
   @JsonKey(includeToJson: false, readValue: _moderationReadValue)
   final Moderation? moderation;
 
+  /// Optional draft message linked to this message.
+  ///
+  /// This is present when the message is a thread i.e. contains replies.
+  final Draft? draft;
+
   /// Message custom extraData.
   final Map<String, Object?> extraData;
 
@@ -301,12 +309,24 @@ class Message extends Equatable {
     'restricted_visibility',
     'moderation',
     'moderation_details',
+    'draft',
   ];
 
   /// Serialize to json.
-  Map<String, dynamic> toJson() => Serializer.moveFromExtraDataToRoot(
-        _$MessageToJson(this),
-      );
+  Map<String, dynamic> toJson() {
+    final message = removeMentionsIfNotIncluded();
+    final json = Serializer.moveFromExtraDataToRoot(
+      _$MessageToJson(message),
+    );
+
+    // If the message contains command we should append it to the text
+    // before sending it.
+    if (command case final command? when command.isNotEmpty) {
+      json.update('text', (text) => '/$command $text', ifAbsent: () => null);
+    }
+
+    return json;
+  }
 
   /// Creates a copy of [Message] with specified attributes overridden.
   Message copyWith({
@@ -347,6 +367,7 @@ class Message extends Equatable {
     Map<String, String>? i18n,
     List<String>? restrictedVisibility,
     Moderation? moderation,
+    Object? draft = _nullConst,
   }) {
     assert(() {
       if (pinExpires is! DateTime &&
@@ -422,6 +443,7 @@ class Message extends Equatable {
       i18n: i18n ?? this.i18n,
       restrictedVisibility: restrictedVisibility ?? this.restrictedVisibility,
       moderation: moderation ?? this.moderation,
+      draft: draft == _nullConst ? this.draft : draft as Draft?,
     );
   }
 
@@ -466,6 +488,7 @@ class Message extends Equatable {
       i18n: other.i18n,
       restrictedVisibility: other.restrictedVisibility,
       moderation: other.moderation,
+      draft: other.draft,
     );
   }
 
@@ -530,7 +553,37 @@ class Message extends Equatable {
         i18n,
         restrictedVisibility,
         moderation,
+        draft,
       ];
+
+  @override
+  ComparableField? getComparableField(String sortKey) {
+    final value = switch (sortKey) {
+      MessageSortKey.id => id,
+      MessageSortKey.createdAt => createdAt,
+      MessageSortKey.updatedAt => updatedAt,
+      _ => extraData[sortKey],
+    };
+
+    return ComparableField.fromValue(value);
+  }
+}
+
+/// Extension type representing sortable fields for [Message].
+///
+/// This type provides type-safe keys that can be used for sorting messages
+/// in queries. Each constant represents a field that can be sorted on.
+extension type const MessageSortKey(String key) implements String {
+  /// Sort messages by their unique ID.
+  static const id = MessageSortKey('id');
+
+  /// Sort messages by their creation date.
+  ///
+  /// This is the default sort field (in descending order).
+  static const createdAt = MessageSortKey('created_at');
+
+  /// Sort messages by their last update date.
+  static const updatedAt = MessageSortKey('updated_at');
 }
 
 /// {@template messageType}
@@ -670,4 +723,27 @@ extension MessageModerationHelper on Message {
 
   /// True if the message is bounced with an error by the moderation system.
   bool get isBouncedWithError => isBounced && isError;
+}
+
+extension on Message {
+  /// Removes mentions from the message if they are not included in the text.
+  ///
+  /// This is useful for cleaning up the list of mentioned users before
+  /// sending the message.
+  Message removeMentionsIfNotIncluded() {
+    if (mentionedUsers.isEmpty) return this;
+
+    final messageTextToSend = text;
+    if (messageTextToSend == null) return this;
+
+    final updatedMentionedUsers = [...mentionedUsers];
+    for (final user in mentionedUsers.toSet()) {
+      if (messageTextToSend.contains('@${user.id}')) continue;
+      if (messageTextToSend.contains('@${user.name}')) continue;
+
+      updatedMentionedUsers.remove(user);
+    }
+
+    return copyWith(mentionedUsers: updatedMentionedUsers);
+  }
 }

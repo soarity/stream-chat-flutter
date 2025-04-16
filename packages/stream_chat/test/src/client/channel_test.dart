@@ -2,8 +2,6 @@
 
 import 'package:mocktail/mocktail.dart';
 import 'package:stream_chat/src/client/retry_policy.dart';
-import 'package:stream_chat/src/core/models/banned_user.dart';
-import 'package:stream_chat/src/core/models/moderation.dart';
 import 'package:stream_chat/stream_chat.dart';
 import 'package:test/test.dart';
 
@@ -460,6 +458,117 @@ void main() {
               any(that: isSameMessageAs(message)),
               channelId,
               channelType,
+            )).called(1);
+      });
+    });
+
+    group('`.createDraft`', () {
+      final draftMessage = DraftMessage(text: 'Draft message text');
+
+      setUp(() {
+        when(() => client.createDraft(
+              draftMessage,
+              channelId,
+              channelType,
+            )).thenAnswer(
+          (_) async => CreateDraftResponse()
+            ..draft = Draft(
+              channelCid: channelCid,
+              createdAt: DateTime.now(),
+              message: draftMessage,
+            ),
+        );
+      });
+
+      test('should call client.createDraft', () async {
+        final res = await channel.createDraft(draftMessage);
+
+        expect(res, isNotNull);
+        expect(res.draft.message, draftMessage);
+
+        verify(() => channel.client.createDraft(
+              draftMessage,
+              channelId,
+              channelType,
+            )).called(1);
+      });
+    });
+
+    group('`.getDraft`', () {
+      final draftMessage = DraftMessage(text: 'Draft message text');
+
+      setUp(() {
+        when(() => client.getDraft(
+              channelId,
+              channelType,
+              parentId: any(named: 'parentId'),
+            )).thenAnswer(
+          (_) async => GetDraftResponse()
+            ..draft = Draft(
+              channelCid: channelCid,
+              createdAt: DateTime.now(),
+              message: draftMessage,
+            ),
+        );
+      });
+
+      test('should call client.getDraft', () async {
+        final res = await channel.getDraft();
+
+        expect(res, isNotNull);
+        expect(res.draft.message, draftMessage);
+
+        verify(() => channel.client.getDraft(
+              channelId,
+              channelType,
+            )).called(1);
+      });
+
+      test('with parentId should pass parentId to client', () async {
+        const parentId = 'parent-123';
+        final res = await channel.getDraft(parentId: parentId);
+
+        expect(res, isNotNull);
+        expect(res.draft.message, draftMessage);
+
+        verify(() => channel.client.getDraft(
+              channelId,
+              channelType,
+              parentId: parentId,
+            )).called(1);
+      });
+    });
+
+    group('`.deleteDraft`', () {
+      setUp(() {
+        when(() => client.deleteDraft(
+              channelId,
+              channelType,
+              parentId: any(named: 'parentId'),
+            )).thenAnswer((_) async => EmptyResponse());
+      });
+
+      test('should call client.deleteDraft', () async {
+        final res = await channel.deleteDraft();
+
+        expect(res, isNotNull);
+
+        verify(() => channel.client.deleteDraft(
+              channelId,
+              channelType,
+            )).called(1);
+      });
+
+      test('with parentId should pass parentId to client', () async {
+        const parentId = 'parent-123';
+        final res = await channel.deleteDraft(parentId: parentId);
+
+        expect(res, isNotNull);
+
+        verify(() => channel.client.deleteDraft(
+              channelId,
+              channelType,
+              parentId: parentId,
             )).called(1);
       });
     });
@@ -2260,7 +2369,6 @@ void main() {
       final res = await channel.markRead(messageId: messageId);
 
       expect(res, isNotNull);
-      expect(client.state.totalUnreadCount, 0);
 
       verify(() => client.markChannelRead(channelId, channelType,
           messageId: messageId)).called(1);
@@ -2749,6 +2857,63 @@ void main() {
       verify(() => client.showChannel(channelId, channelType)).called(1);
     });
 
+    // testing archiving
+    test('`.archive`', () async {
+      when(() => client.archiveChannel(
+          channelId: channelId, channelType: channelType)).thenAnswer(
+        (_) async => FakePartialUpdateMemberResponse(),
+      );
+
+      final res = await channel.archive();
+
+      expect(res, isNotNull);
+
+      verify(() => client.archiveChannel(
+          channelId: channelId, channelType: channelType)).called(1);
+    });
+
+    test('`.unarchive`', () async {
+      when(() => client.unarchiveChannel(
+          channelId: channelId, channelType: channelType)).thenAnswer(
+        (_) async => FakePartialUpdateMemberResponse(),
+      );
+
+      final res = await channel.unarchive();
+
+      expect(res, isNotNull);
+
+      verify(() => client.unarchiveChannel(
+          channelId: channelId, channelType: channelType)).called(1);
+    });
+
+    // testing pinning
+    test('`.pin`', () async {
+      when(() =>
+              client.pinChannel(channelId: channelId, channelType: channelType))
+          .thenAnswer((_) async => FakePartialUpdateMemberResponse());
+
+      final res = await channel.pin();
+
+      expect(res, isNotNull);
+
+      verify(() =>
+              client.pinChannel(channelId: channelId, channelType: channelType))
+          .called(1);
+    });
+
+    test('`.unpin`', () async {
+      when(() => client.unpinChannel(
+              channelId: channelId, channelType: channelType))
+          .thenAnswer((_) async => FakePartialUpdateMemberResponse());
+
+      final res = await channel.unpin();
+
+      expect(res, isNotNull);
+
+      verify(() => client.unpinChannel(
+          channelId: channelId, channelType: channelType)).called(1);
+    });
+
     test('`.on`', () async {
       const eventType = 'test.event';
       final event = Event(type: eventType, cid: channelCid);
@@ -2935,6 +3100,7 @@ void main() {
             channelId,
             channelType,
             mockChannelConfig: true,
+            ownCapabilities: const [ChannelCapability.readEvents],
             lastMessageAt: initialLastMessageAt,
           );
 
@@ -3116,6 +3282,195 @@ void main() {
             expect(channel.lastMessageAt, equals(initialLastMessageAt));
           },
         );
+
+        test("should update 'unreadCount'", () async {
+          expect(channel.state?.unreadCount, equals(0));
+
+          final message = Message(
+            id: 'test-message-id',
+            user: User(id: 'other-user'),
+            createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+          );
+
+          final newMessageEvent = createNewMessageEvent(message);
+          client.addEvent(newMessageEvent);
+
+          // Wait for the event to get processed
+          await Future.delayed(Duration.zero);
+
+          expect(channel.state?.unreadCount, equals(1));
+
+          final message2 = Message(
+            id: 'test-message-id-2',
+            user: User(id: 'other-user'),
+            createdAt: message.createdAt.add(const Duration(seconds: 3)),
+          );
+
+          final newMessage2Event = createNewMessageEvent(message2);
+          client.addEvent(newMessage2Event);
+
+          // Wait for the event to get processed
+          await Future.delayed(Duration.zero);
+
+          expect(channel.state?.unreadCount, equals(2));
+        });
+
+        group("should not update 'unreadCount'", () {
+          test(
+            'when the message is silent',
+            () async {
+              expect(channel.state?.unreadCount, equals(0));
+
+              final message = Message(
+                id: 'test-message-id',
+                silent: true,
+                user: User(id: 'other-user'),
+                createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+              );
+
+              final newMessageEvent = createNewMessageEvent(message);
+              client.addEvent(newMessageEvent);
+
+              // Wait for the event to get processed
+              await Future.delayed(Duration.zero);
+
+              expect(channel.state?.unreadCount, equals(0));
+            },
+          );
+
+          test(
+            'when the message is shadowed',
+            () async {
+              expect(channel.state?.unreadCount, equals(0));
+
+              final message = Message(
+                id: 'test-message-id',
+                shadowed: true,
+                user: User(id: 'other-user'),
+                createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+              );
+
+              final newMessageEvent = createNewMessageEvent(message);
+              client.addEvent(newMessageEvent);
+
+              // Wait for the event to get processed
+              await Future.delayed(Duration.zero);
+
+              expect(channel.state?.unreadCount, equals(0));
+            },
+          );
+
+          test(
+            'when the message type is ephemeral',
+            () async {
+              expect(channel.state?.unreadCount, equals(0));
+
+              final message = Message(
+                id: 'test-message-id',
+                type: MessageType.ephemeral,
+                user: User(id: 'other-user'),
+                createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+              );
+
+              final newMessageEvent = createNewMessageEvent(message);
+              client.addEvent(newMessageEvent);
+
+              // Wait for the event to get processed
+              await Future.delayed(Duration.zero);
+
+              expect(channel.state?.unreadCount, equals(0));
+            },
+          );
+
+          test(
+            'when the message is a thread reply',
+            () async {
+              expect(channel.state?.unreadCount, equals(0));
+
+              final message = Message(
+                id: 'test-message-id',
+                parentId: 'test-parent-id',
+                showInChannel: false,
+                user: User(id: 'other-user'),
+                createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+              );
+
+              final newMessageEvent = createNewMessageEvent(message);
+              client.addEvent(newMessageEvent);
+
+              // Wait for the event to get processed
+              await Future.delayed(Duration.zero);
+
+              expect(channel.state?.unreadCount, equals(0));
+            },
+          );
+
+          test(
+            'when the message is a thread reply',
+            () async {
+              expect(channel.state?.unreadCount, equals(0));
+
+              final message = Message(
+                id: 'test-message-id',
+                parentId: 'test-parent-id',
+                showInChannel: false,
+                user: User(id: 'other-user'),
+                createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+              );
+
+              final newMessageEvent = createNewMessageEvent(message);
+              client.addEvent(newMessageEvent);
+
+              // Wait for the event to get processed
+              await Future.delayed(Duration.zero);
+
+              expect(channel.state?.unreadCount, equals(0));
+            },
+          );
+
+          test(
+            'when the message is from the current user',
+            () async {
+              expect(channel.state?.unreadCount, equals(0));
+
+              final message = Message(
+                id: 'test-message-id',
+                user: client.state.currentUser,
+                createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+              );
+
+              final newMessageEvent = createNewMessageEvent(message);
+              client.addEvent(newMessageEvent);
+
+              // Wait for the event to get processed
+              await Future.delayed(Duration.zero);
+
+              expect(channel.state?.unreadCount, equals(0));
+            },
+          );
+
+          test(
+            'when the message is not restricted for the current user',
+            () async {
+              expect(channel.state?.unreadCount, equals(0));
+
+              final message = Message(
+                id: 'test-message-id',
+                user: User(id: 'other-user'),
+                createdAt: initialLastMessageAt.add(const Duration(seconds: 3)),
+                restrictedVisibility: const ['other-user-2'],
+              );
+
+              final newMessageEvent = createNewMessageEvent(message);
+              client.addEvent(newMessageEvent);
+
+              // Wait for the event to get processed
+              await Future.delayed(Duration.zero);
+
+              expect(channel.state?.unreadCount, equals(0));
+            },
+          );
+        });
       },
     );
 
@@ -3138,6 +3493,7 @@ void main() {
         () async {
           final currentUser = client.state.currentUser;
           final currentMember = Member(user: currentUser);
+          final now = DateTime.now();
 
           // Setup initial membership
           channel.state?.updateChannelState(
@@ -3151,11 +3507,15 @@ void main() {
           expect(channel.membership, isNotNull);
           expect(channel.membership?.channelRole, isNull);
           expect(channel.membership?.isModerator, false);
+          expect(channel.isPinned, isFalse);
+          expect(channel.isArchived, isFalse);
 
           // Create updated member with same userId but updated properties
           final updatedMember = currentMember.copyWith(
             channelRole: 'moderator',
             isModerator: true,
+            pinnedAt: now,
+            archivedAt: now,
           );
 
           // Create member updated event
@@ -3177,6 +3537,8 @@ void main() {
           expect(channel.membership?.userId, equals(currentUser?.id));
           expect(channel.membership?.channelRole, equals('moderator'));
           expect(channel.membership?.isModerator, isTrue);
+          expect(channel.isPinned, isTrue);
+          expect(channel.isArchived, isTrue);
         },
       );
 
@@ -3219,6 +3581,484 @@ void main() {
           expect(channel.membership, isNotNull);
           expect(channel.membership?.user?.id, equals(updatedUser?.id));
           expect(channel.membership?.user?.role, equals(updatedUser?.role));
+        },
+      );
+    });
+
+    group('Read Events', () {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+      late Channel channel;
+
+      setUp(() {
+        final channelState = _generateChannelState(
+          channelId,
+          channelType,
+          mockChannelConfig: true,
+        );
+
+        channel = Channel.fromState(client, channelState);
+      });
+
+      tearDown(() {
+        channel.dispose();
+      });
+
+      test('should update read state on message read event', () async {
+        final currentUser = User(id: 'test-user');
+        final currentRead = Read(
+          user: currentUser,
+          lastRead: DateTime(2020),
+          unreadMessages: 10,
+        );
+
+        // Setup initial read state
+        channel.state?.updateChannelState(
+          channel.state!.channelState.copyWith(
+            read: [currentRead],
+          ),
+        );
+
+        // Verify initial state
+        final read = channel.state?.read.first;
+        expect(read?.user.id, 'test-user');
+        expect(read?.unreadMessages, 10);
+        expect(read?.lastReadMessageId, isNull);
+        expect(read?.lastRead.isAtSameMomentAs(DateTime(2020)), isTrue);
+
+        // Create message read event
+        final messageReadEvent = Event(
+          cid: channel.cid,
+          type: EventType.messageRead,
+          user: currentUser,
+          createdAt: DateTime(2022),
+          unreadMessages: 0,
+          lastReadMessageId: 'message-123',
+        );
+
+        // Dispatch event
+        client.addEvent(messageReadEvent);
+
+        // Wait for event to be processed
+        await Future.delayed(Duration.zero);
+
+        // Verify read state is updated
+        final updatedRead = channel.state?.read.first;
+        expect(updatedRead?.user.id, 'test-user');
+        expect(updatedRead?.unreadMessages, 0);
+        expect(updatedRead?.lastReadMessageId, 'message-123');
+        expect(updatedRead?.lastRead.isAtSameMomentAs(DateTime(2022)), isTrue);
+      });
+
+      test('should update read state on notification mark read event',
+          () async {
+        // Create the current read state
+        final currentUser = User(id: 'test-user');
+        final currentRead = Read(
+          user: currentUser,
+          lastRead: DateTime(2020),
+          unreadMessages: 10,
+        );
+
+        // Setup initial read state
+        channel.state?.updateChannelState(
+          channel.state!.channelState.copyWith(
+            read: [currentRead],
+          ),
+        );
+
+        // Verify initial state
+        final read = channel.state?.read.first;
+        expect(read?.user.id, 'test-user');
+        expect(read?.unreadMessages, 10);
+        expect(read?.lastReadMessageId, isNull);
+        expect(read?.lastRead.isAtSameMomentAs(DateTime(2020)), isTrue);
+
+        // Create mark read notification event
+        final markReadEvent = Event(
+          cid: channel.cid,
+          type: EventType.notificationMarkRead,
+          user: currentUser,
+          createdAt: DateTime(2022),
+          unreadMessages: 0,
+          lastReadMessageId: 'message-123',
+        );
+
+        // Dispatch event
+        client.addEvent(markReadEvent);
+
+        // Wait for event to be processed
+        await Future.delayed(Duration.zero);
+
+        // Verify read state is updated
+        final updatedRead = channel.state?.read.first;
+        expect(updatedRead?.user.id, 'test-user');
+        expect(updatedRead?.unreadMessages, 0);
+        expect(updatedRead?.lastReadMessageId, 'message-123');
+        expect(updatedRead?.lastRead.isAtSameMomentAs(DateTime(2022)), isTrue);
+      });
+
+      test(
+        'should add a new read state if not exist on notification mark read',
+        () async {
+          // Create the current read state
+          final currentUser = User(id: 'test-user');
+
+          // Verify initial state
+          final read = channel.state?.read;
+          expect(read, isEmpty);
+
+          // Create mark read notification event
+          final markReadEvent = Event(
+            cid: channel.cid,
+            type: EventType.notificationMarkRead,
+            user: currentUser,
+            createdAt: DateTime(2022),
+            unreadMessages: 0,
+            lastReadMessageId: 'message-123',
+          );
+
+          // Dispatch event
+          client.addEvent(markReadEvent);
+
+          // Wait for event to be processed
+          await Future.delayed(Duration.zero);
+
+          // Verify read list has not changed
+          final updated = channel.state?.read;
+          expect(updated?.length, 1);
+          expect(updated?.any((r) => r.user.id == currentUser.id), isTrue);
+        },
+      );
+
+      test('should update read state on notification mark unread event',
+          () async {
+        // Create the current read state
+        final currentUser = User(id: 'test-user');
+        final currentRead = Read(
+          user: currentUser,
+          lastRead: DateTime(2020),
+          unreadMessages: 10,
+        );
+
+        // Setup initial read state
+        channel.state?.updateChannelState(
+          channel.state!.channelState.copyWith(
+            read: [currentRead],
+          ),
+        );
+
+        // Verify initial state
+        final read = channel.state?.read.first;
+        expect(read?.user.id, 'test-user');
+        expect(read?.unreadMessages, 10);
+        expect(read?.lastReadMessageId, isNull);
+        expect(read?.lastRead.isAtSameMomentAs(DateTime(2020)), isTrue);
+
+        // Create mark unread notification event
+        final markUnreadEvent = Event(
+          cid: channel.cid,
+          type: EventType.notificationMarkUnread,
+          user: currentUser,
+          lastReadAt: DateTime(2019),
+          unreadMessages: 15,
+          lastReadMessageId: 'message-100',
+        );
+
+        // Dispatch event
+        client.addEvent(markUnreadEvent);
+
+        // Wait for event to be processed
+        await Future.delayed(Duration.zero);
+
+        // Verify read state is updated
+        final updatedRead = channel.state?.read.first;
+        expect(updatedRead?.user.id, 'test-user');
+        expect(updatedRead?.unreadMessages, 15);
+        expect(updatedRead?.lastReadMessageId, 'message-100');
+        expect(updatedRead?.lastRead.isAtSameMomentAs(DateTime(2019)), isTrue);
+      });
+
+      test(
+        'should add a new read state if not exist on notification mark unread',
+        () async {
+          // Verify initial state
+          final read = channel.state?.read;
+          expect(read, isEmpty);
+
+          // Create event for non-existing user
+          final markUnreadEvent = Event(
+            cid: channel.cid,
+            type: EventType.notificationMarkUnread,
+            user: User(id: 'non-existing-user'),
+            lastReadAt: DateTime(2019),
+            unreadMessages: 15,
+            lastReadMessageId: 'message-100',
+          );
+
+          // Dispatch event
+          client.addEvent(markUnreadEvent);
+
+          // Wait for event to be processed
+          await Future.delayed(Duration.zero);
+
+          // Verify read list has not changed
+          final updated = channel.state?.read;
+          expect(updated?.length, 1);
+          expect(updated?.any((r) => r.user.id == 'non-existing-user'), isTrue);
+        },
+      );
+    });
+
+    group('Draft events', () {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+      late Channel channel;
+
+      setUp(() {
+        final channelState = _generateChannelState(channelId, channelType);
+        channel = Channel.fromState(client, channelState);
+      });
+
+      tearDown(() {
+        channel.dispose();
+      });
+
+      test('should handle draft.updated event for channel drafts', () async {
+        // Verify initial state
+        expect(channel.state?.draft, isNull);
+
+        // Create Draft
+        final draft = Draft(
+          channelCid: channel.cid!,
+          createdAt: DateTime.now(),
+          message: DraftMessage(text: 'test message'),
+        );
+
+        // Create draft.updated event
+        final draftUpdatedEvent = Event(
+          cid: channel.cid,
+          type: EventType.draftUpdated,
+          draft: draft,
+        );
+
+        // Dispatch event
+        client.addEvent(draftUpdatedEvent);
+
+        // Wait for the event to be processed
+        await Future.delayed(Duration.zero);
+
+        // Verify channel draft was updated
+        expect(channel.state?.draft, isNotNull);
+        expect(channel.state?.draft?.message.text, 'test message');
+      });
+
+      test('should handle draft.updated event for thread drafts', () async {
+        const threadParentMessageId = 'thread-parent-id';
+
+        // Setup initial state with a regular message
+        channel.state?.updateMessage(
+          Message(
+            id: threadParentMessageId,
+            user: client.state.currentUser,
+          ),
+        );
+
+        // Verify initial state
+        expect(channel.state?.threadDraft(threadParentMessageId), isNull);
+
+        // Create thread Draft
+        final draft = Draft(
+          channelCid: channel.cid!,
+          createdAt: DateTime.now(),
+          parentId: threadParentMessageId,
+          message: DraftMessage(text: 'thread reply'),
+        );
+
+        // Create draft.updated event
+        final draftUpdatedEvent = Event(
+          cid: channel.cid,
+          type: EventType.draftUpdated,
+          draft: draft,
+        );
+
+        // Dispatch event
+        client.addEvent(draftUpdatedEvent);
+
+        // Wait for the event to be processed
+        await Future.delayed(Duration.zero);
+
+        // Verify thread draft was updated
+        final threadDraft = channel.state?.threadDraft(threadParentMessageId);
+        expect(threadDraft, isNotNull);
+        expect(threadDraft?.message.text, 'thread reply');
+      });
+
+      test('should handle draft.deleted event for channel drafts', () async {
+        // Setup initial state with a draft
+        channel.state?.updateChannelState(
+          channel.state!.channelState.copyWith(
+            draft: Draft(
+              channelCid: channel.cid!,
+              createdAt: DateTime.now(),
+              message: DraftMessage(text: 'test message'),
+            ),
+          ),
+        );
+
+        // Verify initial state
+        final draft = channel.state?.draft;
+        expect(draft, isNotNull);
+        expect(draft?.message.text, 'test message');
+
+        // Create draft.deleted event
+        final draftUpdatedEvent = Event(
+          cid: channel.cid,
+          type: EventType.draftDeleted,
+          draft: draft,
+        );
+
+        // Dispatch event
+        client.addEvent(draftUpdatedEvent);
+
+        // Wait for the event to be processed
+        await Future.delayed(Duration.zero);
+
+        // Verify channel draft was updated
+        expect(channel.state?.draft, isNull);
+      });
+
+      test('should handle draft.deleted event for thread drafts', () async {
+        const threadParentMessageId = 'thread-parent-id';
+
+        // Setup initial state with a thread draft
+        channel.state?.updateMessage(
+          Message(
+            id: threadParentMessageId,
+            user: client.state.currentUser,
+            draft: Draft(
+              channelCid: channel.cid!,
+              createdAt: DateTime.now(),
+              parentId: threadParentMessageId,
+              message: DraftMessage(text: 'thread reply'),
+            ),
+          ),
+        );
+
+        // Verify initial state
+        final threadDraft = channel.state?.threadDraft(threadParentMessageId);
+        expect(threadDraft, isNotNull);
+        expect(threadDraft?.message.text, 'thread reply');
+
+        // Create draft.deleted event
+        final draftDeletedEvent = Event(
+          cid: channel.cid,
+          type: EventType.draftDeleted,
+          draft: threadDraft,
+        );
+
+        // Dispatch event
+        client.addEvent(draftDeletedEvent);
+
+        // Allow event to be processed
+        await Future.delayed(Duration.zero);
+
+        // Verify thread draft was removed
+        expect(channel.state?.threadDraft(threadParentMessageId), isNull);
+      });
+
+      test(
+        'should update current channel draft if draft.updated event is emitted',
+        () async {
+          // Setup initial state with a draft
+          final initialDraft = Draft(
+            channelCid: channel.cid!,
+            createdAt: DateTime.now(),
+            message: DraftMessage(text: 'test message'),
+          );
+
+          channel.state?.updateChannelState(
+            channel.state!.channelState.copyWith(
+              draft: initialDraft,
+            ),
+          );
+
+          // Verify initial state
+          expect(channel.state?.draft, isNotNull);
+          expect(channel.state?.draft?.message.text, 'test message');
+
+          // Create Draft
+          final updatedDraft = initialDraft.copyWith(
+            message: DraftMessage(text: 'updated message'),
+          );
+
+          // Create draft.updated event
+          final draftUpdatedEvent = Event(
+            cid: channel.cid,
+            type: EventType.draftUpdated,
+            draft: updatedDraft,
+          );
+
+          // Dispatch event
+          client.addEvent(draftUpdatedEvent);
+
+          // Wait for the event to be processed
+          await Future.delayed(Duration.zero);
+
+          // Verify channel draft was updated
+          expect(channel.state?.draft, isNotNull);
+          expect(channel.state?.draft?.message.text, 'updated message');
+        },
+      );
+
+      test(
+        'should update current thread draft if draft.updated event is emitted',
+        () async {
+          const threadParentMessageId = 'thread-parent-id';
+
+          // Setup initial state with a thread draft
+          final initialDraft = Draft(
+            channelCid: channel.cid!,
+            createdAt: DateTime.now(),
+            parentId: threadParentMessageId,
+            message: DraftMessage(text: 'thread reply'),
+          );
+
+          channel.state?.updateMessage(
+            Message(
+              id: threadParentMessageId,
+              user: client.state.currentUser,
+              draft: initialDraft,
+            ),
+          );
+
+          // Verify initial state
+          final draft = channel.state?.threadDraft(threadParentMessageId);
+          expect(draft, isNotNull);
+          expect(draft?.message.text, 'thread reply');
+
+          // Create Draft
+          final updatedDraft = initialDraft.copyWith(
+            message: DraftMessage(text: 'updated thread reply'),
+          );
+
+          // Create draft.updated event
+          final draftUpdatedEvent = Event(
+            cid: channel.cid,
+            type: EventType.draftUpdated,
+            draft: updatedDraft,
+          );
+
+          // Dispatch event
+          client.addEvent(draftUpdatedEvent);
+
+          // Wait for the event to be processed
+          await Future.delayed(Duration.zero);
+
+          // Verify thread draft was updated
+          final threadDraft = channel.state?.threadDraft(threadParentMessageId);
+          expect(threadDraft, isNotNull);
+          expect(threadDraft?.message.text, 'updated thread reply');
         },
       );
     });

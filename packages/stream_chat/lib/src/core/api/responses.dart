@@ -7,6 +7,7 @@ import 'package:stream_chat/src/core/models/call_payload.dart';
 import 'package:stream_chat/src/core/models/channel_model.dart';
 import 'package:stream_chat/src/core/models/channel_state.dart';
 import 'package:stream_chat/src/core/models/device.dart';
+import 'package:stream_chat/src/core/models/draft.dart';
 import 'package:stream_chat/src/core/models/event.dart';
 import 'package:stream_chat/src/core/models/member.dart';
 import 'package:stream_chat/src/core/models/message.dart';
@@ -97,6 +98,18 @@ class QueryMembersResponse extends _BaseResponse {
   /// Create a new instance from a json
   static QueryMembersResponse fromJson(Map<String, dynamic> json) =>
       _$QueryMembersResponseFromJson(json);
+}
+
+/// Model response for update member API calls, such as
+/// [StreamChatClient.updateMemberPartial]
+@JsonSerializable(createToJson: false)
+class PartialUpdateMemberResponse extends _BaseResponse {
+  /// The updated member state
+  late Member channelMember;
+
+  /// Create a new instance from a json
+  static PartialUpdateMemberResponse fromJson(Map<String, dynamic> json) =>
+      _$PartialUpdateMemberResponseFromJson(json);
 }
 
 /// Model response for [StreamChatClient.queryUsers] api call
@@ -713,4 +726,41 @@ class QueryThreadsResponse extends _BaseResponse {
   /// Create a new instance from a json
   static QueryThreadsResponse fromJson(Map<String, dynamic> json) =>
       _$QueryThreadsResponseFromJson(json);
+}
+
+/// Base Model response for draft based api calls.
+class DraftResponse extends _BaseResponse {
+  /// Draft returned by the api call
+  late Draft draft;
+}
+
+/// Model response for [StreamChatClient.createDraft] api call
+@JsonSerializable(createToJson: false)
+class CreateDraftResponse extends DraftResponse {
+  /// Create a new instance from a json
+  static CreateDraftResponse fromJson(Map<String, dynamic> json) =>
+      _$CreateDraftResponseFromJson(json);
+}
+
+/// Model response for [StreamChatClient.getDraft] api call
+@JsonSerializable(createToJson: false)
+class GetDraftResponse extends DraftResponse {
+  /// Create a new instance from a json
+  static GetDraftResponse fromJson(Map<String, dynamic> json) =>
+      _$GetDraftResponseFromJson(json);
+}
+
+/// Model response for [StreamChatClient.queryDrafts] api call
+@JsonSerializable(createToJson: false)
+class QueryDraftsResponse extends _BaseResponse {
+  /// List of draft messages returned by the query
+  @JsonKey(defaultValue: [])
+  late List<Draft> drafts;
+
+  /// The next page token
+  late String? next;
+
+  /// Create a new instance from a json
+  static QueryDraftsResponse fromJson(Map<String, dynamic> json) =>
+      _$QueryDraftsResponseFromJson(json);
 }

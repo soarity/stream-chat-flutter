@@ -1,3 +1,23 @@
+## 9.8.0
+
+✅ Added
+
+- Added support for Channel pinning and archiving.
+- Added support for 'DraftMessage' feature, which allows users to save draft messages in channels.
+  Several methods have been added to the `Client` and `Channel` class to manage draft messages:
+    - `channel.createDraft`: Saves a draft message for a specific channel.
+    - `channel.getDraft`: Retrieves a draft message for a specific channel.
+    - `channel.deleteDraft`: Deletes a draft message for a specific channel.
+    - `client.queryDrafts`: Queries draft messages created by the current user.
+
+🐞 Fixed
+
+- Fixed `channelState.unreadCount` not updating if the user is not part of the read list.
+
+🔄 Changed
+
+- Improved read event handling in the `Channel` class to properly update unread state information.
+
 ## 9.7.0
 
 ✅ Added
