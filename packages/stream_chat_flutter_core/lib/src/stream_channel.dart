@@ -546,17 +546,29 @@ class StreamChannelState extends State<StreamChannel> {
     return FutureBuilder<void>(
       future: _channelInitFuture,
       builder: (context, snapshot) {
+        Widget child;
+
         if (snapshot.hasError) {
           final error = snapshot.error!;
           final stackTrace = snapshot.stackTrace;
-          return widget.errorBuilder(context, error, stackTrace);
+          child = widget.errorBuilder(context, error, stackTrace);
+        } else if (snapshot.connectionState != ConnectionState.done) {
+          if (widget.showLoading) {
+            child = widget.loadingBuilder(context);
+          } else {
+            child = const SizedBox.shrink();
+          }
+        } else {
+          child = widget.child;
         }
 
-        if (snapshot.connectionState != ConnectionState.done) {
-          if (widget.showLoading) return widget.loadingBuilder(context);
-        }
-
-        return widget.child;
+        return AnimatedSwitcher(
+          duration:
+              const Duration(milliseconds: 300), // Smooth transition duration
+          switchInCurve: Curves.easeInOut,
+          switchOutCurve: Curves.easeInOut,
+          child: child,
+        );
       },
     );
   }
