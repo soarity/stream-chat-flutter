@@ -220,6 +220,17 @@ void main() {
         ),
       );
       final channel = ChannelModel(cid: cid);
+      final draft = Draft(
+        channelCid: cid,
+        createdAt: DateTime.now(),
+        message: DraftMessage(
+          id: 'testDraftId',
+          text: 'Test draft message',
+        ),
+      );
+
+      when(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
+          .thenAnswer((_) async => draft);
 
       when(() => mockDatabase.memberDao.getMembersByCid(cid))
           .thenAnswer((_) async => members);
@@ -231,6 +242,8 @@ void main() {
           .thenAnswer((_) async => messages);
       when(() => mockDatabase.pinnedMessageDao.getMessagesByCid(cid))
           .thenAnswer((_) async => messages);
+      when(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
+          .thenAnswer((_) async => draft);
 
       final fetchedChannelState = await client.getChannelStateByCid(cid);
       expect(fetchedChannelState.messages?.length, messages.length);
@@ -238,12 +251,15 @@ void main() {
       expect(fetchedChannelState.members?.length, members.length);
       expect(fetchedChannelState.read?.length, reads.length);
       expect(fetchedChannelState.channel!.cid, channel.cid);
+      expect(fetchedChannelState.draft?.message.id, draft.message.id);
 
       verify(() => mockDatabase.memberDao.getMembersByCid(cid)).called(1);
       verify(() => mockDatabase.readDao.getReadsByCid(cid)).called(1);
       verify(() => mockDatabase.channelDao.getChannelByCid(cid)).called(1);
       verify(() => mockDatabase.messageDao.getMessagesByCid(cid)).called(1);
       verify(() => mockDatabase.pinnedMessageDao.getMessagesByCid(cid))
+          .called(1);
+      verify(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
           .called(1);
     });
 
@@ -613,6 +629,64 @@ void main() {
 
       await client.deleteMembersByCids(cids);
       verify(() => mockDatabase.memberDao.deleteMemberByCids(cids)).called(1);
+    });
+
+    test('getDraftMessageByCid', () async {
+      const cid = 'testCid';
+      const parentId = 'testParentId';
+      final draft = Draft(
+        channelCid: cid,
+        parentId: parentId,
+        createdAt: DateTime.now(),
+        message: DraftMessage(
+          id: 'testDraftId',
+          text: 'Test draft message',
+        ),
+      );
+
+      when(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
+          .thenAnswer((_) async => draft);
+
+      final fetchedDraft = await client.getDraftMessageByCid(cid);
+      expect(fetchedDraft, isNotNull);
+      expect(fetchedDraft!.channelCid, cid);
+      expect(fetchedDraft.message.id, draft.message.id);
+      expect(fetchedDraft.message.text, draft.message.text);
+      verify(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
+          .called(1);
+    });
+
+    test('updateDraftMessages', () async {
+      final drafts = List.generate(
+        3,
+        (index) => Draft(
+          channelCid: 'testCid',
+          createdAt: DateTime.now(),
+          message: DraftMessage(
+            id: 'testDraftId$index',
+            text: 'Test draft message $index',
+          ),
+        ),
+      );
+
+      when(() => mockDatabase.draftMessageDao.updateDraftMessages(drafts))
+          .thenAnswer((_) async {});
+
+      await client.updateDraftMessages(drafts);
+      verify(() => mockDatabase.draftMessageDao.updateDraftMessages(drafts))
+          .called(1);
+    });
+
+    test('deleteDraftMessageByCid', () async {
+      const cid = 'testCid';
+      const parentId = 'testParentId';
+
+      when(() => mockDatabase.draftMessageDao.deleteDraftMessageByCid(cid,
+          parentId: parentId)).thenAnswer((_) async {});
+
+      await client.deleteDraftMessageByCid(cid, parentId: parentId);
+      verify(() => mockDatabase.draftMessageDao
+          .deleteDraftMessageByCid(cid, parentId: parentId)).called(1);
     });
 
     tearDown(() async {

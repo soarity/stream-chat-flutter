@@ -1,6 +1,11 @@
+## 9.9.0
+
+- Added support for `User.teamsRole` field.
+
 ## 9.8.0
 
 - Added `pinnedAt` and `archivedAt` fields on `Member`.
+- Added support for DraftMessages.
 
 ## 9.7.0
 

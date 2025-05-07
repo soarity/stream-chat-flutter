@@ -1,3 +1,9 @@
+## 9.9.0
+
+- Added translations for new `draftLabel` label.
+- Added translations for new `endLabel` label.
+- Added translations for new `endVoteConfirmationText` text.
+
 ## 9.8.0
 
 - Updated `stream_chat_flutter` dependency to [`9.8.0`](https://pub.dev/packages/stream_chat/changelog).

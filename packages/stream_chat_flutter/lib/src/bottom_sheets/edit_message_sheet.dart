@@ -143,6 +143,7 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
                       ),
                     );
                   },
+                  elevation: 0,
                   messageInputController: controller,
                   // Disallow editing poll for now as it's not supported.
                   allowedAttachmentPickerTypes: [

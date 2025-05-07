@@ -549,7 +549,14 @@ class StreamChatLocalizationsNo extends GlobalStreamChatLocalizations {
   String get enterYourCommentLabel => 'Skriv inn kommentaren din';
 
   @override
+  String get endVoteConfirmationText =>
+      'Er du sikker på at du vil avslutte avstemningen?';
+
+  @override
   String get createLabel => 'Opprett';
+
+  @override
+  String get endLabel => 'Avslutt';
 
   @override
   String pollVotingModeLabel(PollVotingMode votingMode) {
@@ -653,4 +660,7 @@ class StreamChatLocalizationsNo extends GlobalStreamChatLocalizations {
 
   @override
   String pollSomeoneCreatedText(String username) => '$username opprettet';
+
+  @override
+  String get draftLabel => 'Utkast';
 }

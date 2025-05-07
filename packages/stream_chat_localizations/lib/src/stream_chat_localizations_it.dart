@@ -566,7 +566,14 @@ Attenzione: il limite massimo di $limit file è stato superato.
   String get enterYourCommentLabel => 'Inserisci il tuo commento';
 
   @override
+  String get endVoteConfirmationText =>
+      'Sei sicuro di voler terminare il voto?';
+
+  @override
   String get createLabel => 'Crea';
+
+  @override
+  String get endLabel => 'Fine';
 
   @override
   String pollVotingModeLabel(PollVotingMode votingMode) {
@@ -672,4 +679,7 @@ Attenzione: il limite massimo di $limit file è stato superato.
 
   @override
   String pollSomeoneCreatedText(String username) => '$username ha creato';
+
+  @override
+  String get draftLabel => 'Bozza';
 }

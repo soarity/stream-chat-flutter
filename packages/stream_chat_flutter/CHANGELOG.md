@@ -1,3 +1,19 @@
+## 9.9.0
+
+✅ Added
+
+- Added support for Draft messages preview.
+- Added a new `StreamDraftListView` for displaying draft messages.
+- Added a confirmation dialog for end vote in Polls. [[#2211]](https://github.com/GetStream/stream-chat-flutter/issues/2211)
+
+🐞 Fixed
+
+- [[#2182]](https://github.com/GetStream/stream-chat-flutter/issues/2182) Fixes StreamMessageInput not listening to channel capabilities.
+
+🔄 Changed
+
+- Exported `StreamQuotedMessageWidget` to allow customization of quoted messages using `StreamMessageWidget.quotedMessageBuilder`.
+
 ## 9.8.0
 
 🐞 Fixed

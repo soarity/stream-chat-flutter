@@ -1,3 +1,10 @@
+## 9.9.0
+
+✅ Added
+
+- Added `StreamDraftListController` to manage the list of draft messages.
+- Added support for Filtering and Sorting in the `StreamThreadListController`.
+
 ## 9.8.0
 
 ✅ Added

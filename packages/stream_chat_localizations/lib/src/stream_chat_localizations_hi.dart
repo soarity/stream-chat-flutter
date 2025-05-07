@@ -550,6 +550,13 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
   String get enterYourCommentLabel => 'अपनी टिप्पणी दर्ज करें';
 
   @override
+  String get endVoteConfirmationText =>
+      'क्या आप वाकई मतदान समाप्त करना चाहते हैं?';
+
+  @override
+  String get endLabel => 'समाप्त';
+
+  @override
   String get loadingPollVotesError => 'पोल वोट लोड करने में त्रुटि';
 
   @override
@@ -663,4 +670,7 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
 
   @override
   String pollSomeoneCreatedText(String username) => '$username ने बनाया';
+
+  @override
+  String get draftLabel => 'ड्राफ्ट';
 }

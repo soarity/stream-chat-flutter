@@ -19,6 +19,7 @@ void main() {
       expect(localizations.userLastOnlineText, isNotNull);
       expect(localizations.userOnlineText, isNotNull);
       expect(localizations.userOnlineText, isNotNull);
+      expect(localizations.draftLabel, isNotNull);
       // no users
       expect(localizations.userTypingText([]), isNotNull);
       // single user
@@ -250,7 +251,9 @@ void main() {
       expect(localizations.anonymousPollLabel, isNotNull);
       expect(localizations.suggestAnOptionLabel, isNotNull);
       expect(localizations.addACommentLabel, isNotNull);
+      expect(localizations.endVoteConfirmationText, isNotNull);
       expect(localizations.createLabel, isNotNull);
+      expect(localizations.endLabel, isNotNull);
       expect(localizations.endVoteLabel, isNotNull);
       expect(localizations.enterANewOptionLabel, isNotNull);
       expect(localizations.enterYourCommentLabel, isNotNull);

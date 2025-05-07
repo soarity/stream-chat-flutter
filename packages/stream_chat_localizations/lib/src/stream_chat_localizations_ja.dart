@@ -540,7 +540,13 @@ class StreamChatLocalizationsJa extends GlobalStreamChatLocalizations {
   String get enterYourCommentLabel => 'コメントを入力';
 
   @override
+  String get endVoteConfirmationText => '投票を終了してもよろしいですか？';
+
+  @override
   String get createLabel => '作成';
+
+  @override
+  String get endLabel => '終了';
 
   @override
   String pollVotingModeLabel(PollVotingMode votingMode) {
@@ -638,8 +644,11 @@ class StreamChatLocalizationsJa extends GlobalStreamChatLocalizations {
   String pollSomeoneVotedText(String username) => '$usernameが投票しました';
 
   @override
-  String get pollYouCreatedText => '作成しました';
+  String get pollYouCreatedText => 'あなたが作成しました';
 
   @override
   String pollSomeoneCreatedText(String username) => '$usernameが作成しました';
+
+  @override
+  String get draftLabel => '下書き';
 }

@@ -553,10 +553,17 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
   String get updateYourCommentLabel => 'Kommentar aktualisieren';
 
   @override
-  String get enterYourCommentLabel => 'Kommentar eingeben';
+  String get enterYourCommentLabel => 'Geben Sie Ihren Kommentar ein';
+
+  @override
+  String get endVoteConfirmationText =>
+      'Sind Sie sicher, dass Sie die Abstimmung beenden möchten?';
 
   @override
   String get createLabel => 'Erstellen';
+
+  @override
+  String get endLabel => 'Beenden';
 
   @override
   String pollVotingModeLabel(PollVotingMode votingMode) {
@@ -660,4 +667,7 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
 
   @override
   String pollSomeoneCreatedText(String username) => '$username hat erstellt';
+
+  @override
+  String get draftLabel => 'Entwurf';
 }
