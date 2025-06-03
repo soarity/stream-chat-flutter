@@ -1,3 +1,20 @@
+## 9.11.0
+
+✅ Added
+
+- Added `reactionGroups` to the `Message` model. This field is a map of reaction types to their
+  respective counts and scores and additional metadata such as the first and last reaction
+  timestamps.
+
+🔄 Changed
+
+- Deprecated `message.reactionCounts`, `message.reactionScores` in favor of
+  `message.reactionGroups`.
+
+🐞 Fixed
+- `Null check operator used on a null value` in Websocket connect.
+- Ensure query cache is cleared when refreshing channel queries.
+
 ## 9.10.0
 
 🐞 Fixed
