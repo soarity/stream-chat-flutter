@@ -2243,7 +2243,7 @@ void main() {
 
     test('`.queryPolls`', () async {
       final filter = Filter.in_('id', const ['test-poll-id']);
-      final sort = [const SortOption<Poll>('created_at')];
+      final sort = [const SortOption<Poll>.desc('created_at')];
       const pagination = PaginationParams(limit: 20);
 
       final polls = List.generate(
@@ -2285,7 +2285,7 @@ void main() {
     test('`.queryPollVotes`', () async {
       const pollId = 'test-poll-id';
       final filter = Filter.in_('id', const ['test-vote-id']);
-      final sort = [const SortOption<PollVote>('created_at')];
+      final sort = [const SortOption<PollVote>.desc('created_at')];
       const pagination = PaginationParams(limit: 20);
 
       final votes = List.generate(
@@ -2630,6 +2630,100 @@ void main() {
         },
       );
     });
+
+    test('`.getUnreadCount`', () async {
+      when(() => api.user.getUnreadCount()).thenAnswer(
+        (_) async => GetUnreadCountResponse()
+          ..totalUnreadCount = 42
+          ..totalUnreadThreadsCount = 8
+          ..channelType = []
+          ..channels = [
+            UnreadCountsChannel(
+              channelId: 'messaging:test-channel-1',
+              unreadCount: 10,
+              lastRead: DateTime.now(),
+            ),
+            UnreadCountsChannel(
+              channelId: 'messaging:test-channel-2',
+              unreadCount: 15,
+              lastRead: DateTime.now(),
+            ),
+          ]
+          ..threads = [
+            UnreadCountsThread(
+              unreadCount: 3,
+              lastRead: DateTime.now(),
+              lastReadMessageId: 'message-1',
+              parentMessageId: 'parent-message-1',
+            ),
+            UnreadCountsThread(
+              unreadCount: 5,
+              lastRead: DateTime.now(),
+              lastReadMessageId: 'message-2',
+              parentMessageId: 'parent-message-2',
+            ),
+          ],
+      );
+
+      final res = await client.getUnreadCount();
+
+      expect(res, isNotNull);
+      expect(res.totalUnreadCount, 42);
+      expect(res.totalUnreadThreadsCount, 8);
+
+      verify(() => api.user.getUnreadCount()).called(1);
+      verifyNoMoreInteractions(api.user);
+    });
+
+    test(
+      '`.getUnreadCount` should also update user unread count as a side effect',
+      () async {
+        when(() => api.user.getUnreadCount()).thenAnswer(
+          (_) async => GetUnreadCountResponse()
+            ..totalUnreadCount = 25
+            ..totalUnreadThreadsCount = 2
+            ..channelType = []
+            ..channels = [
+              UnreadCountsChannel(
+                channelId: 'messaging:test-channel-1',
+                unreadCount: 10,
+                lastRead: DateTime.now(),
+              ),
+              UnreadCountsChannel(
+                channelId: 'messaging:test-channel-2',
+                unreadCount: 15,
+                lastRead: DateTime.now(),
+              ),
+            ]
+            ..threads = [
+              UnreadCountsThread(
+                unreadCount: 3,
+                lastRead: DateTime.now(),
+                lastReadMessageId: 'message-1',
+                parentMessageId: 'parent-message-1',
+              ),
+              UnreadCountsThread(
+                unreadCount: 5,
+                lastRead: DateTime.now(),
+                lastReadMessageId: 'message-2',
+                parentMessageId: 'parent-message-2',
+              ),
+            ],
+        );
+
+        client.getUnreadCount().ignore();
+
+        // Wait for the local side effect event to be processed
+        await Future.delayed(Duration.zero);
+
+        expect(client.state.currentUser?.totalUnreadCount, 25);
+        expect(client.state.currentUser?.unreadChannels, 2); // channels.length
+        expect(client.state.currentUser?.unreadThreads, 2); // threads.length
+
+        verify(() => api.user.getUnreadCount()).called(1);
+        verifyNoMoreInteractions(api.user);
+      },
+    );
 
     test('`.shadowBan`', () async {
       const userId = 'test-user-id';

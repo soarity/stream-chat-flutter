@@ -1,3 +1,21 @@
+## 9.14.0
+
+🐞 Fixed
+
+- Fixed cached messages are cleared from channels with unread messages when accessed
+  offline. [[#2083]](https://github.com/GetStream/stream-chat-flutter/issues/2083)
+- Fixed RetryQueue skipping messages due to premature removal from the
+  queue. [[#2308]](https://github.com/GetStream/stream-chat-flutter/pull/2308)
+
+✅ Added
+
+- Added support for `client.getUnreadCount()`, which returns the unread count information for the
+  current user.
+
+🔄 Changed
+
+- Deprecated `SortOption.new` constructor in favor of `SortOption.desc` and `SortOption.asc`.
+
 ## 9.13.0
 
 - Bug fixes and improvements

@@ -1,3 +1,9 @@
+## 9.14.0
+
+🐞 Fixed
+
+- Fixed `StreamMessageInput` tries to expand to full height when used in a unconstrained environment.
+
 ## 9.13.0
 
 🐞 Fixed
