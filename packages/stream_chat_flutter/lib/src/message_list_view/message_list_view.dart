@@ -461,9 +461,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
   @override
   void dispose() {
-    if (!_upToDate) {
-      streamChannel!.reloadChannel();
-    }
     debouncedMarkRead?.cancel();
     debouncedMarkThreadRead?.cancel();
     _messageNewListener?.cancel();

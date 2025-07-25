@@ -1,8 +1,21 @@
+## 9.15.0
+
+✅ Added
+
+- Added `bottom` and `bottomOpacity` to the `StreamChannelHeader` widget.
+- Added `StreamChat.maybeOf()` method for safe context access in async operations.
+
+🐞 Fixed
+
+- Fixed `StreamMessageInput` crashes with "Null check operator used on a null value" when async
+  operations continue after widget unmounting.
+
 ## 9.14.0
 
 🐞 Fixed
 
 - Fixed `StreamMessageInput` tries to expand to full height when used in a unconstrained environment.
+- Fixed `StreamCommandAutocompleteOptions` to style the command name with `textHighEmphasis` style.
 
 ## 9.13.0
 

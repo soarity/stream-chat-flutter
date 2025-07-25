@@ -53,7 +53,7 @@ class StreamCommandAutocompleteOptions extends StatelessWidget {
             context.translations.instantCommandsLabel,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: colorTheme.textHighEmphasis.withValues(alpha: 0.5),
+                  color: colorTheme.textLowEmphasis.withValues(alpha: 0.5),
                 ),
           ),
         );

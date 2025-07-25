@@ -8,36 +8,111 @@ import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 import 'mocks.dart';
 
 void main() {
-  testWidgets(
-    'should expose channel state through StreamChannel.of() context method',
-    (tester) async {
-      final mockChannel = MockChannel();
-      StreamChannelState? channelState;
+  group('StreamChannel.of()', () {
+    testWidgets(
+      'should return StreamChannelState when StreamChannel is found in widget tree',
+      (tester) async {
+        final mockChannel = MockChannel();
+        StreamChannelState? channelState;
 
-      // Build a widget that accesses the channel state
-      final testWidget = MaterialApp(
-        home: Scaffold(
-          body: StreamChannel(
-            channel: mockChannel,
-            child: Builder(
-              builder: (context) {
-                // Access the channel state
-                channelState = StreamChannel.of(context);
-                return const Text('Child Widget');
-              },
+        // Build a widget that accesses the channel state
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: StreamChannel(
+              channel: mockChannel,
+              child: Builder(
+                builder: (context) {
+                  // Access the channel state
+                  channelState = StreamChannel.of(context);
+                  return const Text('Child Widget');
+                },
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpWidget(testWidget);
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(testWidget);
+        await tester.pumpAndSettle();
 
-      // Verify we can access the channel state
-      expect(channelState, isNotNull);
-      expect(channelState?.channel, equals(mockChannel));
-    },
-  );
+        expect(channelState, isNotNull);
+        expect(channelState?.channel, equals(mockChannel));
+      },
+    );
+
+    testWidgets(
+      'should throw FlutterError when StreamChannel is not found in widget tree',
+      (tester) async {
+        Object? caughtError;
+
+        final testWidget = MaterialApp(
+          home: Builder(
+            builder: (context) {
+              try {
+                StreamChannel.of(context);
+              } catch (error) {
+                caughtError = error;
+              }
+              return const Text('Child Widget');
+            },
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+
+        expect(caughtError, isA<FlutterError>());
+      },
+    );
+  });
+
+  group('StreamChannel.maybeOf()', () {
+    testWidgets(
+      'should return StreamChannelState when StreamChannel is found in widget tree',
+      (tester) async {
+        final mockChannel = MockChannel();
+        StreamChannelState? channelState;
+
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: StreamChannel(
+              channel: mockChannel,
+              child: Builder(
+                builder: (context) {
+                  channelState = StreamChannel.maybeOf(context);
+                  return const Text('Child Widget');
+                },
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+        await tester.pumpAndSettle();
+
+        expect(channelState, isNotNull);
+        expect(channelState?.channel, equals(mockChannel));
+      },
+    );
+
+    testWidgets(
+      'should return null when StreamChannel is not found in widget tree',
+      (tester) async {
+        StreamChannelState? channelState;
+
+        final testWidget = MaterialApp(
+          home: Builder(
+            builder: (context) {
+              channelState = StreamChannel.maybeOf(context);
+              return const Text('Child Widget');
+            },
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+
+        expect(channelState, isNull);
+      },
+    );
+  });
 
   testWidgets(
     'should render child widget when channel has no CID (locally created)',
@@ -76,6 +151,7 @@ void main() {
       final mockChannel = MockChannel();
       when(() => mockChannel.cid).thenReturn('test:channel');
       when(() => mockChannel.state.unreadCount).thenReturn(0);
+      when(() => mockChannel.state.isUpToDate).thenReturn(true);
 
       // A simple widget that provides StreamChannel
       final testWidget = MaterialApp(
@@ -319,6 +395,7 @@ void main() {
       final mockChannel1 = MockChannel();
       when(() => mockChannel1.cid).thenReturn('test:channel1');
       when(() => mockChannel1.state.unreadCount).thenReturn(0);
+      when(() => mockChannel1.state.isUpToDate).thenReturn(true);
 
       // Build with first channel
       await tester.pumpWidget(
@@ -471,6 +548,7 @@ void main() {
       (tester) async {
         when(() => mockChannel.state.messages).thenReturn([]);
         when(() => mockChannel.state.unreadCount).thenReturn(0);
+        when(() => mockChannel.state.isUpToDate).thenReturn(true);
 
         final streamChannel = await _pumpStreamChannel(tester);
 
@@ -499,6 +577,7 @@ void main() {
         when(() => mockChannel.state.unreadCount).thenReturn(0);
         when(() => mockChannel.state.messages).thenReturn(messages);
         when(() => mockChannel.state.currentUserRead).thenReturn(mockRead);
+        when(() => mockChannel.state.isUpToDate).thenReturn(true);
 
         final streamChannel = await _pumpStreamChannel(tester);
 

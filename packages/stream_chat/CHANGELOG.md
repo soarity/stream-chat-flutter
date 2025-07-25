@@ -1,3 +1,17 @@
+## 9.15.0
+
+✅ Added
+
+- Added `avgResponseTime` field to the `User` model to track average response time in seconds.
+- Added support for `skipPush` while updating a channel message, which allows you to update a
+  message without sending a push notification.
+
+🐞 Fixed
+
+- Fixed `WebSocket` race condition where reconnection could access null user during disconnect.
+- Fixed draft message persistence issues where removed drafts were not properly deleted from the
+  database.
+
 ## 9.14.0
 
 🐞 Fixed
