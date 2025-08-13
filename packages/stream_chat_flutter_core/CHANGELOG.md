@@ -1,3 +1,13 @@
+## 9.16.0
+
+🐞 Fixed
+
+- Fixed `MessageListCore` not properly loading and paginating thread replies.
+
+✅ Added
+
+- Added methods for paginating thread replies in `StreamChannel`.
+
 ## 9.15.0
 
 ✅ Added

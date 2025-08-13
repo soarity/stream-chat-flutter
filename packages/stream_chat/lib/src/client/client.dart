@@ -31,6 +31,7 @@ import 'package:stream_chat/src/core/models/own_user.dart';
 import 'package:stream_chat/src/core/models/poll.dart';
 import 'package:stream_chat/src/core/models/poll_option.dart';
 import 'package:stream_chat/src/core/models/poll_vote.dart';
+import 'package:stream_chat/src/core/models/push_preference.dart';
 import 'package:stream_chat/src/core/models/thread.dart';
 import 'package:stream_chat/src/core/models/user.dart';
 import 'package:stream_chat/src/core/util/utils.dart';
@@ -122,6 +123,13 @@ class StreamChatClient {
             return error is StreamChatNetworkError && error.isRetriable;
           },
         );
+
+    _connectionStatusSubscription = wsConnectionStatusStream.pairwise().listen(
+      (statusPair) {
+        final [prevStatus, currStatus] = statusPair;
+        return _onConnectionStatusChanged(prevStatus, currStatus);
+      },
+    );
 
     state = ClientState(this);
   }
@@ -220,7 +228,7 @@ class StreamChatClient {
   ///```
   final LogHandlerFunction logHandlerFunction;
 
-  StreamSubscription<ConnectionStatus>? _connectionStatusSubscription;
+  StreamSubscription<List<ConnectionStatus>>? _connectionStatusSubscription;
 
   final _eventController = PublishSubject<Event>();
 
@@ -238,20 +246,14 @@ class StreamChatClient {
         },
       );
 
-  final _wsConnectionStatusController =
-      BehaviorSubject.seeded(ConnectionStatus.disconnected);
-
-  set _wsConnectionStatus(ConnectionStatus status) =>
-      _wsConnectionStatusController.add(status);
-
   /// The current status value of the [_ws] connection
-  ConnectionStatus get wsConnectionStatus =>
-      _wsConnectionStatusController.value;
+  ConnectionStatus get wsConnectionStatus => _ws.connectionStatus;
 
   /// This notifies the connection status of the [_ws] connection.
   /// Listen to this to get notified when the [_ws] tries to reconnect.
-  Stream<ConnectionStatus> get wsConnectionStatusStream =>
-      _wsConnectionStatusController.stream.distinct();
+  Stream<ConnectionStatus> get wsConnectionStatusStream {
+    return _ws.connectionStatusStream.distinct();
+  }
 
   /// Default log handler function for the [StreamChatClient] logger.
   static void defaultLogHandler(LogRecord record) {
@@ -447,16 +449,6 @@ class StreamChatClient {
       throw StreamChatError('Connection already available for ${user.id}');
     }
 
-    _wsConnectionStatus = ConnectionStatus.connecting;
-
-    // skipping `ws` seed connection status -> ConnectionStatus.disconnected
-    // otherwise `client.wsConnectionStatusStream` will emit in order
-    // 1. ConnectionStatus.disconnected -> client seed status
-    // 2. ConnectionStatus.connecting -> client connecting status
-    // 3. ConnectionStatus.disconnected -> ws seed status
-    _connectionStatusSubscription =
-        _ws.connectionStatusStream.skip(1).listen(_connectionStatusHandler);
-
     try {
       final event = await _ws.connect(
         user,
@@ -479,13 +471,7 @@ class StreamChatClient {
   /// This will not trigger default auto-retry mechanism for reconnection.
   /// You need to call [openConnection] to reconnect to [_ws].
   void closeConnection() {
-    if (wsConnectionStatus == ConnectionStatus.disconnected) return;
-
     logger.info('Closing web-socket connection for ${state.currentUser?.id}');
-    _wsConnectionStatus = ConnectionStatus.disconnected;
-
-    _connectionStatusSubscription?.cancel();
-    _connectionStatusSubscription = null;
 
     // Stop listening to events
     state.cancelEventSubscription();
@@ -513,19 +499,25 @@ class StreamChatClient {
     return _eventController.add(event);
   }
 
-  void _connectionStatusHandler(ConnectionStatus status) async {
-    final previousState = wsConnectionStatus;
-    final currentState = _wsConnectionStatus = status;
+  void _onConnectionStatusChanged(
+    ConnectionStatus prevStatus,
+    ConnectionStatus currStatus,
+  ) async {
+    // If the status hasn't changed, we don't need to do anything.
+    if (prevStatus == currStatus) return;
 
-    if (previousState != currentState) {
-      handleEvent(Event(
-        type: EventType.connectionChanged,
-        online: status == ConnectionStatus.connected,
-      ));
-    }
+    final wasConnected = prevStatus == ConnectionStatus.connected;
+    final isConnected = currStatus == ConnectionStatus.connected;
 
-    if (currentState == ConnectionStatus.connected &&
-        previousState != ConnectionStatus.connected) {
+    // Notify the connection status change event
+    handleEvent(Event(
+      type: EventType.connectionChanged,
+      online: isConnected,
+    ));
+
+    final connectionRecovered = !wasConnected && isConnected;
+
+    if (connectionRecovered) {
       // connection recovered
       final cids = state.channels.keys.toList(growable: false);
       if (cids.isNotEmpty) {
@@ -997,6 +989,54 @@ class StreamChatClient {
   /// Remove a user's device.
   Future<EmptyResponse> removeDevice(String id) =>
       _chatApi.device.removeDevice(id);
+
+  /// Set push preferences for the current user.
+  ///
+  /// This method allows you to configure push notification settings
+  /// at both global and channel-specific levels.
+  ///
+  /// [preferences] - List of push preferences to apply
+  ///
+  /// Returns [UpsertPushPreferencesResponse] with the updated preferences.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Set global push preferences
+  /// await client.setPushPreferences([
+  ///   const PushPreferenceInput(
+  ///     chatLevel: ChatLevelPushPreference.mentions,
+  ///     callLevel: CallLevelPushPreference.all,
+  ///   ),
+  /// ]);
+  ///
+  /// // Set channel-specific preferences
+  /// await client.setPushPreferences([
+  ///   const PushPreferenceInput.channel(
+  ///     channelCid: 'messaging:general',
+  ///     chatLevel: ChatLevelPushPreference.none,
+  ///   ),
+  ///   const PushPreferenceInput.channel(
+  ///     channelCid: 'messaging:support',
+  ///     chatLevel: ChatLevelPushPreference.mentions,
+  ///   ),
+  /// ]);
+  ///
+  /// // Mix global and channel-specific preferences
+  /// await client.setPushPreferences([
+  ///   const PushPreferenceInput(
+  ///     chatLevel: ChatLevelPushPreference.all,
+  ///   ), // Global default
+  ///   const PushPreferenceInput.channel(
+  ///     channelCid: 'messaging:spam',
+  ///     chatLevel: ChatLevelPushPreference.none,
+  ///   ),
+  /// ]);
+  /// ```
+  Future<UpsertPushPreferencesResponse> setPushPreferences(
+    List<PushPreferenceInput> preferences,
+  ) {
+    return _chatApi.device.setPushPreferences(preferences);
+  }
 
   /// Get a development token
   Token devToken(String userId) => Token.development(userId);
@@ -2025,6 +2065,9 @@ class StreamChatClient {
   Future<void> disconnectUser({bool flushChatPersistence = false}) async {
     logger.info('Disconnecting user : ${state.currentUser?.id}');
 
+    // closing web-socket connection
+    closeConnection();
+
     // resetting state.
     state.dispose();
     state = ClientState(this);
@@ -2035,27 +2078,17 @@ class StreamChatClient {
     _connectionIdManager.reset();
 
     // closing persistence connection.
-    await closePersistenceConnection(flush: flushChatPersistence);
-
-    // closing web-socket connection
-    return closeConnection();
+    return closePersistenceConnection(flush: flushChatPersistence);
   }
 
   /// Call this function to dispose the client
   Future<void> dispose() async {
-    logger.info('Disposing new StreamChatClient');
+    logger.info('Disposing StreamChatClient');
 
-    // disposing state.
-    state.dispose();
-
-    // closing persistence connection.
-    await closePersistenceConnection();
-
-    // closing web-socket connection.
-    closeConnection();
-
+    await disconnectUser();
+    await _ws.dispose();
     await _eventController.close();
-    await _wsConnectionStatusController.close();
+    await _connectionStatusSubscription?.cancel();
   }
 }
 
@@ -2141,10 +2174,25 @@ class ClientState {
   void _listenUserUpdated() {
     _eventsSubscription?.add(
       _client.on(EventType.userUpdated).listen((event) {
-        if (event.user!.id == currentUser!.id) {
-          currentUser = OwnUser.fromUser(event.user!);
+        var user = event.user;
+        if (user == null) return;
+
+        if (user.id == currentUser?.id) {
+          final updatedUser = OwnUser.fromUser(user);
+          currentUser = user = updatedUser.copyWith(
+            // PRESERVE these fields (we don't get them in user.updated events)
+            devices: currentUser?.devices,
+            mutes: currentUser?.mutes,
+            channelMutes: currentUser?.channelMutes,
+            totalUnreadCount: currentUser?.totalUnreadCount,
+            unreadChannels: currentUser?.unreadChannels,
+            unreadThreads: currentUser?.unreadThreads,
+            blockedUserIds: currentUser?.blockedUserIds,
+            pushPreferences: currentUser?.pushPreferences,
+          );
         }
-        updateUser(event.user);
+
+        updateUser(user);
       }),
     );
   }

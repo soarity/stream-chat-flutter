@@ -454,8 +454,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
           _firstUnreadMessage = streamChannel?.getFirstUnreadMessage();
         }),
       );
-
-      unreadCount = streamChannel?.channel.state?.unreadCount ?? 0;
     }
   }
 
