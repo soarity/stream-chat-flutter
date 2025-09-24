@@ -28,10 +28,10 @@ command:
       cached_network_image: ^3.3.1
       chewie: ^1.8.1
       collection: ^1.17.2
-      connectivity_plus: ^6.0.3
+      connectivity_plus: ">=6.0.3 <8.0.0"
       cupertino_icons: ^1.0.3
       desktop_drop: '>=0.5.0 <0.7.0'
-      device_info_plus: '>=10.1.2 <12.0.0'
+      device_info_plus: '>=11.0.0 <13.0.0'
       diacritic: ^0.1.5
       dio: ^5.4.3+1
       drift: ^2.22.1
@@ -65,7 +65,7 @@ command:
       media_kit_video: ^1.2.4
       meta: ^1.9.1
       mime: ^2.0.0
-      package_info_plus: ^8.3.0
+      package_info_plus: ">=8.3.0 <10.0.0"
       path: ^1.8.3
       path_provider: ^2.1.3
       photo_manager: ^3.2.0
@@ -76,14 +76,14 @@ command:
       responsive_builder: ^0.7.0
       rxdart: ^0.28.0
       sentry_flutter: ^8.3.0
-      share_plus: ^11.0.0
+      share_plus: ">=11.0.0 <13.0.0"
       shimmer: ^3.0.0
       sqlite3_flutter_libs: ^0.5.26
-      stream_chat: ^9.16.0
-      stream_chat_flutter: ^9.16.0
-      stream_chat_flutter_core: ^9.16.0
-      stream_chat_localizations: ^9.16.0
-      stream_chat_persistence: ^9.16.0
+      stream_chat: ^9.17.0
+      stream_chat_flutter: ^9.17.0
+      stream_chat_flutter_core: ^9.17.0
+      stream_chat_localizations: ^9.17.0
+      stream_chat_persistence: ^9.17.0
       streaming_shared_preferences: ^2.0.0
       svg_icon_widget: ^0.0.1
       synchronized: ^3.1.0+1
@@ -97,6 +97,7 @@ command:
     dev_dependencies:
       alchemist: ">=0.11.0 <0.13.0"
       build_runner: ^2.4.9
+      connectivity_plus_platform_interface: ^2.0.0
       drift_dev: ^2.22.1
       fake_async: ^1.3.1
       faker_dart: ^0.2.1

@@ -231,7 +231,7 @@ class _MessageCardState extends State<MessageCard> {
     return BubbleChat(
       isMyMessage: widget.reverse,
       tail: !widget.isGiphy && widget.showTailBubble,
-      color: _getBackgroundColor ?? Colors.transparent,
+      color: _getBackgroundColor(widget.messageTheme) ?? Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -373,21 +373,19 @@ class _MessageCardState extends State<MessageCard> {
     );
   }
 
-  Color? get _getBackgroundColor {
+  Color? _getBackgroundColor(StreamMessageThemeData theme) {
     if (widget.hasQuotedMessage) {
-      return widget.messageTheme.messageBackgroundColor;
+      return theme.messageBackgroundColor;
     }
 
     final containsOnlyUrlAttachment =
         widget.hasUrlAttachments && !widget.hasNonUrlAttachments;
 
     if (containsOnlyUrlAttachment) {
-      return widget.messageTheme.urlAttachmentBackgroundColor;
+      return theme.urlAttachmentBackgroundColor;
     }
 
-    if (widget.isOnlyEmoji) {
-      return Colors.transparent;
-    }
+    if (widget.isOnlyEmoji) return null;
 
     if (widget.isGiphy) {
       return Colors.transparent;

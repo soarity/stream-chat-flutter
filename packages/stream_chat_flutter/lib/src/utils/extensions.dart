@@ -57,6 +57,18 @@ extension StringExtension on String {
     }
   }
 
+  /// Returns the initials of a string.
+  String? get initials {
+    final parts = split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+
+    if (parts.isEmpty) return null;
+
+    var initials = parts[0].characters.first.toUpperCase();
+    if (parts.length > 1) initials += parts[1].characters.first.toUpperCase();
+
+    return initials;
+  }
+
   /// Returns whether the string contains only emoji's or not.
   ///
   ///  Emojis guidelines
@@ -386,18 +398,13 @@ extension MessageX on Message {
     for (final user in mentionedUsers.toSet()) {
       final userId = user.id;
       final userName = user.name;
-      if (linkify) {
-        messageTextToRender = messageTextToRender?.replaceAll(
-          RegExp('@($userId|$userName)'),
-          '[@$userName]($userId)',
-        );
-      } else {
-        messageTextToRender = messageTextToRender?.replaceAll(
-          RegExp('@($userId|$userName)'),
-          '@$userName',
-        );
-      }
+
+      messageTextToRender = messageTextToRender?.replaceAll(
+        RegExp('@(${RegExp.escape(userId)}|${RegExp.escape(userName)})'),
+        linkify ? '[@$userName]($userId)' : '@$userName',
+      );
     }
+
     return copyWith(text: messageTextToRender);
   }
 
