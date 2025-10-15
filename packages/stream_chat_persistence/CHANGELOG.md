@@ -1,3 +1,11 @@
+## 9.18.0
+
+✅ Added
+
+- Added support for `Message.channelRole` field.
+- Added support for `client.flush()` method to clear database.
+- Added support for `Channel.messageCount` field.
+
 ## 9.17.0
 
 - Updated `stream_chat` dependency to [`9.17.0`](https://pub.dev/packages/stream_chat/changelog).

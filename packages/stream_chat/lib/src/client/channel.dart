@@ -416,6 +416,24 @@ class Channel {
     return state!.channelStateStream.map((cs) => cs.channel?.memberCount);
   }
 
+  /// Channel message count.
+  ///
+  /// Note: This field is only populated if the `count_messages` option is
+  /// enabled for your app.
+  int? get messageCount {
+    _checkInitialized();
+    return state!._channelState.channel?.messageCount;
+  }
+
+  /// Channel message count as a stream.
+  ///
+  /// Note: This field is only populated if the `count_messages` option is
+  /// enabled for your app.
+  Stream<int?> get messageCountStream {
+    _checkInitialized();
+    return state!.channelStateStream.map((cs) => cs.channel?.messageCount);
+  }
+
   /// Channel id.
   String? get id => state?._channelState.channel?.id ?? _id;
 
@@ -2107,13 +2125,7 @@ class ChannelClientState {
   ChannelClientState(
     this._channel,
     ChannelState channelState,
-  ) : _debouncedUpdatePersistenceChannelState = debounce(
-          (ChannelState state) {
-            final persistenceClient = _channel._client.chatPersistenceClient;
-            return persistenceClient?.updateChannelState(state);
-          },
-          const Duration(seconds: 1),
-        ) {
+  ) {
     _retryQueue = RetryQueue(
       channel: _channel,
       logger: _channel.client.detachedLogger(
@@ -2121,9 +2133,11 @@ class ChannelClientState {
       ),
     );
 
-    _checkExpiredAttachmentMessages(channelState);
-
     _channelStateController = BehaviorSubject.seeded(channelState);
+    // Update the persistence storage with the seeded channel state.
+    _debouncedUpdatePersistenceChannelState.call([channelState]);
+
+    _checkExpiredAttachmentMessages(channelState);
 
     _listenTypingEvents();
 
@@ -2169,6 +2183,8 @@ class ChannelClientState {
 
     _listenChannelUpdated();
 
+    _listenChannelMessageCount();
+
     _listenMemberAdded();
 
     _listenMemberRemoved();
@@ -2199,20 +2215,11 @@ class ChannelClientState {
 
     _listenChannelPushPreferenceUpdated();
 
-    _channel._client.chatPersistenceClient
-        ?.getChannelThreads(_channel.cid!)
-        .then((threads) {
-      _threads = threads;
-    }).then((_) {
-      _channel._client.chatPersistenceClient
-          ?.getChannelStateByCid(_channel.cid!)
-          .then((state) {
-        // Replacing the persistence state members with the latest
-        // `channelState.members` as they may have changes over the time.
-        updateChannelState(state.copyWith(members: channelState.members));
-        retryFailedMessages();
-      });
-    });
+    final persistenceClient = _channel.client.chatPersistenceClient;
+    persistenceClient?.getChannelThreads(_channel.cid!).then((threads) {
+      // Load all the threads for the channel from the offline storage.
+      if (threads.isNotEmpty) _threads = threads;
+    }).then((_) => retryFailedMessages());
   }
 
   final Channel _channel;
@@ -2345,6 +2352,23 @@ class ChannelClientState {
         members: channel.members,
       ));
     }));
+  }
+
+  void _listenChannelMessageCount() {
+    _subscriptions.add(_channel.on().listen(
+      (Event e) {
+        final messageCount = e.channelMessageCount;
+        if (messageCount == null) return;
+
+        updateChannelState(
+          channelState.copyWith(
+            channel: channelState.channel?.copyWith(
+              messageCount: messageCount,
+            ),
+          ),
+        );
+      },
+    ));
   }
 
   void _listenChannelTruncated() {
@@ -3128,6 +3152,15 @@ class ChannelClientState {
       .map((cs) => cs.pinnedMessages ?? <Message>[])
       .distinct(const ListEquality().equals);
 
+  /// Channel pending message list.
+  List<Message> get pendingMessages =>
+      _channelState.pendingMessages ?? <Message>[];
+
+  /// Channel pending message list as a stream.
+  Stream<List<Message>> get pendingMessagesStream => channelStateStream
+      .map((cs) => cs.pendingMessages ?? <Message>[])
+      .distinct(const ListEquality().equals);
+
   /// Get channel last message.
   Message? get lastMessage =>
       _channelState.messages != null && _channelState.messages!.isNotEmpty
@@ -3242,7 +3275,7 @@ class ChannelClientState {
     if (message.isEphemeral) return false;
 
     // Don't count thread replies which are not shown in the channel as unread.
-    if (message.parentId != null && message.showInChannel == false) {
+    if (message.parentId != null && message.showInChannel != true) {
       return false;
     }
 
@@ -3263,6 +3296,18 @@ class ChannelClientState {
     // Don't count messages from muted users as unread.
     final isMuted = currentUser.mutes.any((it) => it.user.id == messageUser.id);
     if (isMuted) return false;
+
+    final lastRead = currentUserRead?.lastRead;
+    // Don't count messages created before the last read time as unread.
+    if (lastRead case final read? when message.createdAt.isBefore(read)) {
+      return false;
+    }
+
+    final lastReadMessageId = currentUserRead?.lastReadMessageId;
+    // Don't count if the last read message id is the same as the message id.
+    if (lastReadMessageId case final id? when message.id == id) {
+      return false;
+    }
 
     // If we've passed all checks, count the message as unread.
     return true;
@@ -3340,6 +3385,7 @@ class ChannelClientState {
       read: newReads,
       draft: updatedState.draft,
       pinnedMessages: updatedState.pinnedMessages,
+      pendingMessages: updatedState.pendingMessages,
       pushPreferences: updatedState.pushPreferences,
     );
   }
@@ -3357,12 +3403,29 @@ class ChannelClientState {
   ChannelState get channelState => _channelStateController.value;
   late BehaviorSubject<ChannelState> _channelStateController;
 
-  final Debounce _debouncedUpdatePersistenceChannelState;
+  late final _debouncedUpdatePersistenceChannelState = debounce(
+    (ChannelState state) {
+      final persistenceClient = _channel._client.chatPersistenceClient;
+      return persistenceClient?.updateChannelState(state);
+    },
+    const Duration(seconds: 1),
+  );
 
   set _channelState(ChannelState v) {
     _channelStateController.safeAdd(v);
     _debouncedUpdatePersistenceChannelState.call([v]);
   }
+
+  late final _debouncedUpdatePersistenceChannelThreads = debounce(
+    (Map<String, List<Message>> threads) async {
+      final channelCid = _channel.cid;
+      if (channelCid == null) return;
+
+      final persistenceClient = _channel._client.chatPersistenceClient;
+      return persistenceClient?.updateChannelThreads(channelCid, threads);
+    },
+    const Duration(seconds: 1),
+  );
 
   /// The channel threads related to this channel.
   Map<String, List<Message>> get threads => {..._threadsController.value};
@@ -3372,10 +3435,7 @@ class ChannelClientState {
   final _threadsController = BehaviorSubject.seeded(<String, List<Message>>{});
   set _threads(Map<String, List<Message>> threads) {
     _threadsController.safeAdd(threads);
-    _channel.client.chatPersistenceClient?.updateChannelThreads(
-      _channel.cid!,
-      threads,
-    );
+    _debouncedUpdatePersistenceChannelThreads.call([threads]);
   }
 
   /// Clears all the replies in the thread identified by [parentId].
@@ -3537,6 +3597,7 @@ class ChannelClientState {
 
   /// Call this method to dispose this object.
   void dispose() {
+    _debouncedUpdatePersistenceChannelThreads.cancel();
     _debouncedUpdatePersistenceChannelState.cancel();
     _retryQueue.dispose();
     _subscriptions.cancel();
