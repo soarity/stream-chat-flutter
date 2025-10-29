@@ -1,3 +1,11 @@
+## 9.19.0
+
+✅ Added
+
+- Added `StreamMessageListView.floatingDateDividerBuilder` in order to specifically customize the
+  floating date divider.
+- Added spacing to typing indicator.
+
 ## 9.18.0
 
 🐞 Fixed
