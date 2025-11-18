@@ -1,3 +1,27 @@
+## 9.20.0
+
+✅ Added
+
+- Added support for user-level privacy settings via `OwnUser.privacySettings`.
+- Added `invisible` field to `User` and `OwnUser` models.
+- Added message delivery receipts support with `lastDeliveredAt` and `lastDeliveredMessageId` fields
+  in `Read` model.
+- Added `Client.markChannelsDelivered` method to submit delivery receipts.
+- Added `deliveriesOf` and `readsOf` helper methods to `ReadIterableExtension` for querying read and
+  delivery statuses.
+- Added channel capability getters: `Channel.canUseDeliveryReceipts`, `Channel.canUseReadReceipts`,
+  `Channel.canUseTypingEvents`.
+
+⚠️ Deprecated
+
+- Deprecated `Channel.canSendTypingEvents` in favor of `Channel.canUseTypingEvents`.
+
+🔄 Changed
+
+- Typing and read receipts now respect both channel capabilities and user privacy settings.
+- `markRead`, `markUnread`, `markThreadRead`, and `markThreadUnread` methods now throw
+  `StreamChatError` when channel lacks required capabilities.
+
 ## 9.19.0
 
 - Minor bug fixes and improvements

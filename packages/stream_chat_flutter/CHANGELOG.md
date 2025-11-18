@@ -1,3 +1,22 @@
+## 9.20.0
+
+✅ Added
+
+- Added delivered status to `SendingIndicator` (double grey check for delivered, double accentPrimary check for read).
+- Added `isMessageDelivered` parameter to `SendingIndicator` widget.
+- Added `MessagePreviewFormatter` interface and `StreamMessagePreviewFormatter` implementation for
+  customizing message preview text formatting in channel lists and draft messages.
+- Added `messagePreviewFormatter` property to `StreamChatConfigurationData` for global customization
+  of message preview formatting.
+- Added formatter properties to theme data classes for customizing date/timestamp
+  formatting. [[#2312]](https://github.com/GetStream/stream-chat-flutter/issues/2312) [[#2406]](https://github.com/GetStream/stream-chat-flutter/issues/2406)
+
+🐞 Fixed
+
+- Fixed mistakenly passing the hyperlink text to the `onLinkTap` callback instead of the actual `href`.
+- Fixed high memory usage when displaying multiple image
+  attachments. [[#2228]](https://github.com/GetStream/stream-chat-flutter/issues/2228)
+
 ## 9.19.0
 
 ✅ Added

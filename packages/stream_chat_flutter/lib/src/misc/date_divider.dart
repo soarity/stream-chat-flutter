@@ -12,6 +12,7 @@ class StreamDateDivider extends StatelessWidget {
     super.key,
     required this.dateTime,
     this.uppercase = false,
+    this.formatter,
   });
 
   /// [DateTime] to display
@@ -19,6 +20,9 @@ class StreamDateDivider extends StatelessWidget {
 
   /// If text is uppercase
   final bool uppercase;
+
+  /// Custom formatter for the date
+  final DateFormatter? formatter;
 
   @override
   Widget build(BuildContext context) {
