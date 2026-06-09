@@ -8,7 +8,7 @@ export 'shared/shared_db.dart';
 
 part 'drift_chat_database.g.dart';
 
-/// A chat database implemented using moor
+/// A chat database implemented using drift
 @DriftDatabase(
   tables: [
     Channels,
@@ -55,7 +55,12 @@ class DriftChatDatabase extends _$DriftChatDatabase {
 
   // you should bump this number whenever you change or add a table definition.
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 29;
+
+  // Store DateTime as ISO-8601 text to preserve sub-second precision.
+  @override
+  DriftDatabaseOptions get options =>
+      const DriftDatabaseOptions(storeDateTimeAsText: true);
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

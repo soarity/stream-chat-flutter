@@ -281,8 +281,8 @@ void main() {
         itemScrollController: itemScrollController,
         itemPositionsListener: itemPositionsListener);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 1, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 1, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
 
     await tester.pump(scrollDuration ~/ 2);
@@ -319,15 +319,15 @@ void main() {
         itemScrollController: itemScrollController,
         itemPositionsListener: itemPositionsListener);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 1, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 1, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump(scrollDuration);
     expect(find.text('Item 0'), findsNothing);
     expect(find.text('Item 1'), findsOneWidget);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 2, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 2, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump(scrollDuration);
 
@@ -358,8 +358,8 @@ void main() {
         itemScrollController: itemScrollController,
         itemPositionsListener: itemPositionsListener);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 5, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 5, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
@@ -370,8 +370,8 @@ void main() {
             .itemLeadingEdge,
         0);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
@@ -402,8 +402,8 @@ void main() {
     var fadeTransition = tester.widget<FadeTransition>(fadeTransitionFinder);
     final initialOpacity = fadeTransition.opacity;
 
-    unawaited(
-        itemScrollController.scrollTo(index: 20, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 20, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -425,8 +425,8 @@ void main() {
         itemScrollController: itemScrollController,
         itemPositionsListener: itemPositionsListener);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
@@ -453,8 +453,8 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     expect(fadeTransitionFinder.evaluate().length, 2);
@@ -494,8 +494,8 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -514,15 +514,15 @@ void main() {
         itemScrollController: itemScrollController,
         itemPositionsListener: itemPositionsListener);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
     expect(find.text('Item 0'), findsNothing);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     expect(
@@ -555,12 +555,12 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -576,14 +576,14 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -602,20 +602,20 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -732,7 +732,10 @@ void main() {
         itemPositionsListener: itemPositionsListener);
 
     unawaited(itemScrollController.scrollTo(
-        index: 100, alignment: 1, duration: scrollDuration));
+        index: 100,
+        alignment: 1,
+        duration: scrollDuration,
+        curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
@@ -759,7 +762,10 @@ void main() {
         itemPositionsListener: itemPositionsListener);
 
     unawaited(itemScrollController.scrollTo(
-        index: 100, alignment: 0.5, duration: scrollDuration));
+        index: 100,
+        alignment: 0.5,
+        duration: scrollDuration,
+        curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
@@ -782,7 +788,10 @@ void main() {
         itemPositionsListener: itemPositionsListener);
 
     unawaited(itemScrollController.scrollTo(
-        index: 9, alignment: 0.5, duration: scrollDuration));
+        index: 9,
+        alignment: 0.5,
+        duration: scrollDuration,
+        curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
@@ -833,8 +842,8 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
@@ -844,8 +853,8 @@ void main() {
     await tester.pump();
     await tester.pump(scrollDuration + scrollDurationTolerance);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -864,8 +873,8 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2 - scrollDuration ~/ 20);
@@ -884,8 +893,8 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -904,12 +913,12 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2 - scrollDuration ~/ 20);
@@ -927,8 +936,8 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2 + scrollDuration ~/ 20);
@@ -952,12 +961,12 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2 + scrollDuration ~/ 20);
@@ -976,12 +985,12 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -1000,8 +1009,8 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -1021,12 +1030,12 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 250, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 250, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -1045,14 +1054,14 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 250, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 250, duration: scrollDuration, curve: Curves.linear));
 
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.text('Item 250')).dy, 0);
@@ -1064,14 +1073,14 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
 
-    final scrollFuture2 =
-        itemScrollController.scrollTo(index: 250, duration: scrollDuration);
+    final scrollFuture2 = itemScrollController.scrollTo(
+        index: 250, duration: scrollDuration, curve: Curves.linear);
 
     var futureComplete = false;
     unawaited(scrollFuture2.then((_) => futureComplete = true));
@@ -1092,18 +1101,18 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 250, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 250, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(tester.getTopLeft(find.text('Item 0')).dy, 0);
@@ -1117,12 +1126,12 @@ void main() {
     final itemScrollController = ItemScrollController();
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
-    unawaited(
-        itemScrollController.scrollTo(index: 200, duration: scrollDuration));
-    unawaited(
-        itemScrollController.scrollTo(index: 300, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
+    unawaited(itemScrollController.scrollTo(
+        index: 200, duration: scrollDuration, curve: Curves.linear));
+    unawaited(itemScrollController.scrollTo(
+        index: 300, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(find.text('Item 100'), findsNothing);
@@ -1151,11 +1160,17 @@ void main() {
       await tester.pumpAndSettle();
 
       unawaited(itemScrollController.scrollTo(
-          index: 100, alignment: 1, duration: scrollDuration));
+          index: 100,
+          alignment: 1,
+          duration: scrollDuration,
+          curve: Curves.linear));
       await tester.pumpAndSettle();
 
       unawaited(itemScrollController.scrollTo(
-          index: 400, alignment: 1, duration: scrollDuration));
+          index: 400,
+          alignment: 1,
+          duration: scrollDuration,
+          curve: Curves.linear));
       await tester.pumpAndSettle();
 
       final itemFinder = find.text('Item 399');
@@ -1179,8 +1194,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.text('Item 0')).dy, 0);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
     itemScrollController.jumpTo(index: 0);
     await tester.pumpAndSettle();
@@ -1217,8 +1232,8 @@ void main() {
         of: find.text('Item 6'), matching: find.byType(IndexedSemantics)));
     expect(indexSemantics6.index, 6);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
     itemScrollController.jumpTo(index: 0);
     await tester.pumpAndSettle();
@@ -1252,8 +1267,8 @@ void main() {
 
     expect(find.byType(IndexedSemantics), findsNothing);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
     itemScrollController.jumpTo(index: 0);
     await tester.pumpAndSettle();
@@ -1274,8 +1289,8 @@ void main() {
         tester.widget<CustomScrollView>(find.byType(UnboundedCustomScrollView));
     expect(customScrollView.semanticChildCount, 30);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     final customScrollView2 =
@@ -1294,8 +1309,8 @@ void main() {
         tester.widget<CustomScrollView>(find.byType(UnboundedCustomScrollView));
     expect(customScrollView.semanticChildCount, defaultItemCount);
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     final customScrollView2 =
@@ -1334,8 +1349,8 @@ void main() {
     expect(tester.getTopRight(find.text('Item 1')),
         const Offset(screenWidth - 10, itemHeight + 10));
 
-    unawaited(
-        itemScrollController.scrollTo(index: 490, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 490, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     await tester.drag(
@@ -1393,7 +1408,9 @@ void main() {
     );
 
     unawaited(itemScrollController.scrollTo(
-        index: defaultItemCount - 1, duration: scrollDuration));
+        index: defaultItemCount - 1,
+        duration: scrollDuration,
+        curve: Curves.linear));
     await tester.pumpAndSettle();
 
     await tester.drag(
@@ -1405,6 +1422,134 @@ void main() {
       const Offset(10, screenHeight - 10),
     );
   });
+
+  testWidgets('padding - empty list keeps both main-axis edges',
+      (WidgetTester tester) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(screenWidth, screenHeight);
+
+    // With itemCount: 0 the center sliver is the only sliver in the
+    // tree. Before the fix, isLast was false (positionedIndex 0 !=
+    // itemCount-1 = -1) so one main-axis padding edge was dropped.
+    // Smoke-test: rendering an empty list with padding must not throw
+    // and must keep symmetric padding.
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ScrollablePositionedList.builder(
+          itemCount: 0,
+          itemBuilder: (_, __) => const SizedBox.shrink(),
+          padding: const EdgeInsets.symmetric(vertical: 20),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'padding - scrollTo(0, alignment: 0) lands at content-area edge in '
+    'non-reversed list',
+    (WidgetTester tester) async {
+      final itemScrollController = ItemScrollController();
+      await setUpWidgetTest(
+        tester,
+        itemScrollController: itemScrollController,
+        padding: const EdgeInsets.only(top: 40),
+      );
+
+      // Scroll away from item 0 first so the next scrollTo isn't a no-op.
+      unawaited(itemScrollController.scrollTo(
+        index: 50,
+        duration: const Duration(milliseconds: 1),
+      ));
+      await tester.pumpAndSettle();
+
+      // Now scroll back to item 0 at alignment 0. Without the
+      // padding-adjust fix (the v10 `widget.reverse` ternary), the
+      // adjustment didn't fire for non-reversed lists and item 0 would
+      // not land at the content-area edge.
+      unawaited(itemScrollController.scrollTo(
+        index: 0,
+        duration: const Duration(milliseconds: 1),
+      ));
+      await tester.pumpAndSettle();
+
+      // Item 0's top edge sits at y = padding.top (the content-area
+      // edge), not the viewport edge.
+      expect(tester.getTopLeft(find.text('Item 0')), const Offset(0, 40));
+    },
+  );
+
+  testWidgets(
+    'horizontal RTL: itemLeadingEdge is measured from the right edge',
+    (WidgetTester tester) async {
+      final positionsListener = ItemPositionsListener.create();
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(screenWidth, screenHeight);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: ScrollablePositionedList.builder(
+              itemCount: 100,
+              scrollDirection: Axis.horizontal,
+              itemPositionsListener: positionsListener,
+              itemBuilder: (context, index) => SizedBox(
+                width: 50,
+                child: Text('Item $index'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // RTL + scrollDirection horizontal + reverse=false resolves to
+      // AxisDirection.left, so item 0 sits flush against the viewport's
+      // right edge and `itemLeadingEdge` (measured from the leading
+      // side, i.e. the right) should be near 0.
+      final pos0 =
+          positionsListener.itemPositions.value.firstWhere((p) => p.index == 0);
+      expect(pos0.itemLeadingEdge, lessThan(0.01));
+      expect(tester.getTopRight(find.text('Item 0')),
+          const Offset(screenWidth, 0));
+    },
+  );
+
+  testWidgets(
+    'horizontal RTL: EdgeInsetsDirectional padding resolves correctly',
+    (WidgetTester tester) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(screenWidth, screenHeight);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: ScrollablePositionedList.builder(
+              itemCount: 100,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsetsDirectional.only(start: 20),
+              itemBuilder: (context, index) => SizedBox(
+                width: 50,
+                child: Text('Item $index'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // In RTL, `EdgeInsetsDirectional.start` resolves to right. Item
+      // 0 (the leading-end item) should be inset by 20 from the right
+      // viewport edge.
+      expect(
+        tester.getTopRight(find.text('Item 0')),
+        const Offset(screenWidth - 20, 0),
+      );
+    },
+  );
 
   testWidgets('no repaint boundaries', (WidgetTester tester) async {
     final itemScrollController = ItemScrollController();
@@ -1458,7 +1603,9 @@ void main() {
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
     unawaited(itemScrollController.scrollTo(
-        index: defaultItemCount - 1, duration: scrollDuration));
+        index: defaultItemCount - 1,
+        duration: scrollDuration,
+        curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(tester.getBottomLeft(find.text('Item ${defaultItemCount - 1}')).dy,
@@ -1471,7 +1618,9 @@ void main() {
     await setUpWidgetTest(tester, itemScrollController: itemScrollController);
 
     unawaited(itemScrollController.scrollTo(
-        index: defaultItemCount - 1, duration: scrollDuration));
+        index: defaultItemCount - 1,
+        duration: scrollDuration,
+        curve: Curves.linear));
     await tester.pumpAndSettle();
     itemScrollController.jumpTo(index: 0);
     await tester.pumpAndSettle();
@@ -1490,11 +1639,13 @@ void main() {
     itemScrollController.jumpTo(index: defaultItemCount - 1);
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 0, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 0, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
     unawaited(itemScrollController.scrollTo(
-        index: defaultItemCount - 1, duration: scrollDuration));
+        index: defaultItemCount - 1,
+        duration: scrollDuration,
+        curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(tester.getBottomLeft(find.text('Item ${defaultItemCount - 1}')).dy,
@@ -1876,8 +2027,8 @@ void main() {
     var fadeTransition = tester.widget<FadeTransition>(fadeTransitionFinder);
     final initialOpacity = fadeTransition.opacity;
 
-    unawaited(
-        itemScrollController.scrollTo(index: 20, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 20, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -1906,8 +2057,8 @@ void main() {
     );
     final initialOpacity = fadeTransition.opacity;
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pump();
     await tester.pump();
     await tester.pump(scrollDuration ~/ 2);
@@ -1920,20 +2071,24 @@ void main() {
     expect(find.text('Item 100'), findsOneWidget);
   });
 
-  testWidgets('Position list when not enough above top item to fill viewport',
-      (WidgetTester tester) async {
-    const alignment = 0.8;
+  testWidgets(
+    'short content pins to the axis-leading edge regardless of alignment',
+    (WidgetTester tester) async {
+      // 2 items × itemHeight = far less than the viewport. The viewport
+      // overrides the requested alignment with a "fit anchor" so the
+      // content sticks to the leading edge of the axis (top of viewport
+      // for reverse=false), instead of leaving an empty strip above.
+      await setUpWidgetTest(
+        tester,
+        itemCount: 2,
+        initialAlignment: 0.8,
+      );
 
-    await setUpWidgetTest(
-      tester,
-      itemCount: 2,
-      initialAlignment: alignment,
-    );
+      await tester.pumpAndSettle();
 
-    await tester.pumpAndSettle();
-
-    expect(tester.getTopLeft(find.text('Item 0')).dy, screenHeight * alignment);
-  });
+      expect(tester.getTopLeft(find.text('Item 0')).dy, 0);
+    },
+  );
 
   testWidgets('Rebuild with scroll controller', (WidgetTester tester) async {
     tester.view.devicePixelRatio = 1.0;
@@ -1969,8 +2124,8 @@ void main() {
     key.value = const ValueKey('newKey');
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(find.text('Item 100'), findsOneWidget);
@@ -2019,8 +2174,8 @@ void main() {
     listKey.value = const ValueKey('newListKey');
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 100, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 100, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(find.text('Item 100'), findsOneWidget);
@@ -2093,8 +2248,8 @@ void main() {
     key.value = const ValueKey('newKey');
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 70, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 70, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(find.text('Item 70'), findsOneWidget);
@@ -2137,8 +2292,8 @@ void main() {
     containerKey.value = const ValueKey('newKey');
     await tester.pumpAndSettle();
 
-    unawaited(
-        itemScrollController.scrollTo(index: 70, duration: scrollDuration));
+    unawaited(itemScrollController.scrollTo(
+        index: 70, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(find.text('Item 70'), findsOneWidget);
@@ -2183,8 +2338,8 @@ void main() {
     expect(itemScrollController0.isAttached, false);
     expect(itemScrollController1.isAttached, true);
 
-    unawaited(
-        itemScrollController1.scrollTo(index: 70, duration: scrollDuration));
+    unawaited(itemScrollController1.scrollTo(
+        index: 70, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(find.text('Item 70'), findsOneWidget);
@@ -2254,10 +2409,10 @@ void main() {
     expect(itemScrollController0.isAttached, true);
     expect(itemScrollController1.isAttached, true);
 
-    unawaited(
-        itemScrollController1.scrollTo(index: 70, duration: scrollDuration));
-    unawaited(
-        itemScrollController0.scrollTo(index: 50, duration: scrollDuration));
+    unawaited(itemScrollController1.scrollTo(
+        index: 70, duration: scrollDuration, curve: Curves.linear));
+    unawaited(itemScrollController0.scrollTo(
+        index: 50, duration: scrollDuration, curve: Curves.linear));
     await tester.pumpAndSettle();
 
     expect(find.text('Item 70'), findsOneWidget);

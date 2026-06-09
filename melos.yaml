@@ -38,6 +38,7 @@ command:
       equatable: ^2.0.5
       ezanimation: ^0.6.0
       firebase_core: ^3.0.0
+      firebase_crashlytics: ^4.0.0
       firebase_messaging: ^15.0.0
       file_picker: ^10.1.2
       file_selector: ^1.0.3
@@ -56,7 +57,7 @@ command:
       image_picker: ^1.1.2
       image_size_getter: ^2.3.0
       jiffy: ^6.2.1
-      jose: ^0.3.4
+      jose: ^0.3.5+1
       json_annotation: ^4.9.0
       just_audio: ">=0.9.38 <0.11.0"
       logging: ^1.2.0
@@ -75,15 +76,22 @@ command:
       record: ">=5.2.0 <7.0.0"
       responsive_builder: ^0.7.0
       rxdart: ^0.28.0
-      sentry_flutter: ^8.3.0
       share_plus: ">=11.0.0 <13.0.0"
       shimmer: ^3.0.0
       sqlite3_flutter_libs: ^0.5.26
+<<<<<<< HEAD
       stream_chat: ^9.22.0
       #    stream_chat_flutter: ^9.22.0
       #    stream_chat_flutter_core: ^9.22.0
       stream_chat_localizations: ^9.22.0
       stream_chat_persistence: ^9.22.0
+=======
+      stream_chat: ^9.25.0
+      stream_chat_flutter: ^9.25.0
+      stream_chat_flutter_core: ^9.25.0
+      stream_chat_localizations: ^9.25.0
+      stream_chat_persistence: ^9.25.0
+>>>>>>> e19b1ceb9c2000f450599f6d8cfd7ceef84689e8
       streaming_shared_preferences: ^2.0.0
       svg_icon_widget: ^0.0.1
       synchronized: ^3.1.0+1
