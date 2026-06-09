@@ -40,7 +40,7 @@ command:
       firebase_core: ^3.0.0
       firebase_crashlytics: ^4.0.0
       firebase_messaging: ^15.0.0
-      file_picker: ^10.1.2
+      file_picker: ^11.0.2
       file_selector: ^1.0.3
       flutter_app_badger: ^1.5.0
       flutter_local_notifications: ^18.0.1
@@ -79,19 +79,9 @@ command:
       share_plus: ">=11.0.0 <13.0.0"
       shimmer: ^3.0.0
       sqlite3_flutter_libs: ^0.5.26
-<<<<<<< HEAD
-      stream_chat: ^9.22.0
-      #    stream_chat_flutter: ^9.22.0
-      #    stream_chat_flutter_core: ^9.22.0
-      stream_chat_localizations: ^9.22.0
-      stream_chat_persistence: ^9.22.0
-=======
       stream_chat: ^9.25.0
-      stream_chat_flutter: ^9.25.0
-      stream_chat_flutter_core: ^9.25.0
       stream_chat_localizations: ^9.25.0
       stream_chat_persistence: ^9.25.0
->>>>>>> e19b1ceb9c2000f450599f6d8cfd7ceef84689e8
       streaming_shared_preferences: ^2.0.0
       svg_icon_widget: ^0.0.1
       synchronized: ^3.1.0+1
@@ -103,12 +93,12 @@ command:
       stream_chat_flutter:
         git:
           url: https://github.com/soarity/stream-chat-flutter.git
-          ref: circles/release/9.22.0
+          ref: circles/release/9.25.0
           path: packages/stream_chat_flutter
       stream_chat_flutter_core:
         git:
           url: https://github.com/soarity/stream-chat-flutter.git
-          ref: circles/release/9.22.0
+          ref: circles/release/9.25.0
           path: packages/stream_chat_flutter_core
 
     # List of all the dev_dependencies used in the project.
